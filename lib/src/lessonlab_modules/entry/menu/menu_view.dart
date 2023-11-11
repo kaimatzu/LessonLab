@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/component_templates/lessonlab_appbar.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/menu_card.dart';
-
-import '../../../settings/settings_view.dart';
 
 class MenuView extends StatelessWidget {
   const MenuView({super.key
@@ -16,49 +15,7 @@ class MenuView extends StatelessWidget {
     double cardHeight = MediaQuery.of(context).size.height * 0.25;
 
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(120.0),
-        child: AppBar(
-          toolbarHeight: 120.0,
-          title: Row(
-            children: [
-              const SizedBox(width: 15),
-              Image.asset(
-                'assets/images/lessonlab_logo_final.jpg',
-                width: 100.0,
-                height: 100.0,
-              ),
-              const SizedBox(width: 15),
-              const Text(
-                'LessonLab',
-                style: TextStyle(
-                  fontSize: 36.0,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          automaticallyImplyLeading: false,
-          centerTitle: false,
-          flexibleSpace: Container(),
-          backgroundColor: Colors.white,
-          elevation: 0,
-          shape: const Border(
-            bottom: BorderSide(width: 1, color: Colors.black12),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                // Navigate to the settings page. If the user leaves and returns
-                // to the app after it has been killed while running in the
-                // background, the navigation stack is restored.
-                Navigator.restorablePushNamed(context, SettingsView.routeName);
-              },
-            ),
-          ],
-        ),
-      ),
+      appBar: const LessonLabAppBar(),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(180.0, 30.0, 180.0, 60.0),
         child: Column(
