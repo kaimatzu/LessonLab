@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lessonlab/src/component_templates/lessonlab_appbar.dart';
+import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/menu_card.dart';
 
 class MenuView extends StatelessWidget {
