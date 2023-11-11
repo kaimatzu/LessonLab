@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
-import 'sample_feature/sample_item_details_view.dart';
-import 'sample_feature/sample_item_list_view.dart';
+import 'package:lessonlab/src/global_components/route_animation.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
 
 import 'lessonlab_modules/entry/menu/menu_view.dart';
 import 'settings/settings_controller.dart';
@@ -68,20 +67,21 @@ class MyApp extends StatelessWidget {
           // Define a function to handle named routes in order to support
           // Flutter web url navigation and deep linking.
           onGenerateRoute: (RouteSettings routeSettings) {
-            return MaterialPageRoute<void>(
-              settings: routeSettings,
-              builder: (BuildContext context) {
-                switch (routeSettings.name) {
-                  case SettingsView.routeName:
-                    return SettingsView(controller: settingsController);
-                  case MenuView.routeName:
-                    return const MenuView();
-                  // case SampleItemListView.routeName:
-                  default:
-                    return const MenuView();
-                }
-              },
-            );
+            return FadePageRoute(
+            builder: (BuildContext context) {
+              switch (routeSettings.name) {
+                case '/settings':
+                  return SettingsView(controller: settingsController);
+                case '/menu':
+                  return const MenuView();
+                case '/upload':
+                  return const UploadView();
+                default:
+                  return const MenuView();
+              }
+            },
+            settings: routeSettings,
+        );
           },
         );
       },

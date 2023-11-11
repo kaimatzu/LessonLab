@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
+import 'package:lessonlab/src/global_components/route_animation.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/menu_card.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
 
 class MenuView extends StatelessWidget {
-  const MenuView({super.key
-      // add menu item here
-      });
+  const MenuView({
+    super.key,
+  });
 
   static const routeName = '/';
 
@@ -32,20 +34,26 @@ class MenuView extends StatelessWidget {
                   ),
                 ),
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Navigator.of(context).push(fadeRouteBuilder(const UploadView()));
+                    Navigator.restorablePushNamed(
+                      context,
+                      UploadView.routeName,
+                    );
+                  },
                   icon: const Icon(Icons.add),
                   label: const Text('New Material'),
                 ),
                 // Add more items as needed
               ],
             ),
-            const SizedBox(height: 16.0), 
+            const SizedBox(height: 16.0),
             Expanded(
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 12.0,
-                  mainAxisSpacing:  24.0,
+                  mainAxisSpacing: 24.0,
                   childAspectRatio: cardWidth / cardHeight,
                 ),
                 itemCount: 4,
