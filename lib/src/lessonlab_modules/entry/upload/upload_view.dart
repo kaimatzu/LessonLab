@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/files_container.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_provider.dart';
 
 class UploadView extends StatelessWidget {
   const UploadView(
@@ -18,6 +20,8 @@ class UploadView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final overlayProvider = context.watch<OverlayProvider>();
+
     return Scaffold(
       appBar: const LessonLabAppBar(),
       body: Padding(
@@ -91,7 +95,9 @@ class UploadView extends StatelessWidget {
             ),
             const SizedBox(width: 30.0),
             FloatingActionButton(
-              onPressed: () {},
+              onPressed: () {
+                overlayProvider.showOverlay(context);
+              },
               tooltip: 'Add new document',
               child: const Icon(Icons.add),
             )
@@ -102,3 +108,5 @@ class UploadView extends StatelessWidget {
     );
   }
 }
+
+
