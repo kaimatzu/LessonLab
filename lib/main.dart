@@ -22,6 +22,5 @@ void main() async {
   // SettingsView.
   runApp(ChangeNotifierProvider(
       create: (context) => OverlayProvider(),
-      child: MyApp(settingsController: settingsController)
-    ));
+      child: MyApp(settingsController: settingsController)));
 }
