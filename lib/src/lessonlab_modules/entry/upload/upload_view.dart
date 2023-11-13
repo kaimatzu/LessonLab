@@ -2,21 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/files_container.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/resources_container.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_provider.dart';
 
 class UploadView extends StatelessWidget {
   const UploadView(
-      {super.key,
-      this.pdfItems = const ["Sample.pdf", "Sample2.pdf"],
-      this.urlItems = const ["url1", "url2"],
-      this.textItems = const ["another.txt"]});
+      {super.key});
 
   static const routeName = '/upload';
-
-  final List<String> pdfItems;
-  final List<String> urlItems;
-  final List<String> textItems;
 
   @override
   Widget build(BuildContext context) {
@@ -33,16 +26,24 @@ class UploadView extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.fromLTRB(14.0, 0.0, 14.0, 4.0),
                 child: Text(
-                  'PDF',
+                  'Files',
                   style: TextStyle(
                     fontSize: 30.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              FileContainer(items: pdfItems),
+              ResourcesContainer(items: overlayProvider.files, icon: const Icon(Icons.file_open, color: Colors.white)),
+              if (overlayProvider.files.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
+                  child: Text(
+                    'No files available.',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
               const Padding(
-                padding: EdgeInsets.fromLTRB(14.0, 0.0, 14.0, 4.0),
+                padding: EdgeInsets.fromLTRB(14.0, 14.0, 14.0, 4.0),
                 child: Text(
                   'URL',
                   style: TextStyle(
@@ -51,9 +52,17 @@ class UploadView extends StatelessWidget {
                   ),
                 ),
               ),
-              FileContainer(items: urlItems),
+              ResourcesContainer(items: overlayProvider.urlFiles, icon: const Icon(Icons.link, color: Colors.white)),
+              if (overlayProvider.urlFiles.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
+                  child: Text(
+                    'No URLs available.',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
               const Padding(
-                padding: EdgeInsets.fromLTRB(14.0, 0.0, 14.0, 4.0),
+                padding: EdgeInsets.fromLTRB(14.0, 14.0, 14.0, 4.0),
                 child: Text(
                   'Text',
                   style: TextStyle(
@@ -62,7 +71,15 @@ class UploadView extends StatelessWidget {
                   ),
                 ),
               ),
-              FileContainer(items: textItems),
+              ResourcesContainer(items: overlayProvider.textFiles, icon: const Icon(Icons.description, color: Colors.white)),
+              if (overlayProvider.textFiles.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
+                  child: Text(
+                    'No text available.',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
               const SizedBox(height: 16.0),
             ],
           ),
@@ -105,8 +122,22 @@ class UploadView extends StatelessWidget {
           ],
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: overlayProvider.isOverlayVisible
+          ? Stack(
+              children: [
+                ModalBarrier(
+                  color: Colors.black.withOpacity(0.5),
+                  dismissible: false,
+                ),
+                const Positioned.fill(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              ],
+            )
+          : Container(),
     );
   }
 }
-
-
