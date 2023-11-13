@@ -34,7 +34,7 @@ class SecondaryButton extends StatelessWidget {
           shadowColor: MaterialStateProperty.all<Color>(yellow.withAlpha(0)),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(32.0, 16.0, 32.0, 16.0),
+          padding: const EdgeInsets.fromLTRB(32.0, 12.0, 32.0, 12.0),
           child: Text(
             text,
             style: const TextStyle(
