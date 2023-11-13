@@ -3,7 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/material_selection/material_selection_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_type/quiz_type_view.dart';
-// import 'package:provider/provider.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/specifications_view.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lessonlab/src/global_components/route_animation.dart';
@@ -92,6 +93,8 @@ class MyApp extends StatelessWidget {
                   return const LessonResultView();  
                   case '/quiztype':
                     return const QuizTypeView();
+                  case '/specifications':
+                  return const SpecificationsView();
                 default:
                     return const MenuView();
                 }
