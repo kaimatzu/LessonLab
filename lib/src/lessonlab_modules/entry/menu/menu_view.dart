@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
+import 'package:lessonlab/src/global_components/route_animation.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/menu_card.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/new_material_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
@@ -55,13 +56,17 @@ class MenuView extends StatelessWidget {
                 ),
                 itemCount: 4,
                 itemBuilder: (BuildContext context, int index) {
-                  return SizedBox(
-                    width: cardWidth,
-                    height: cardHeight,
-                    child: MenuCard(
-                      title: 'Item $index',
-                      content: 'Description for Item $index',
-                    ),
+                  // return SizedBox(
+                  //   width: cardWidth,
+                  //   height: cardHeight,
+                  //   child: MenuCard(
+                  //     title: 'Item $index',
+                  //     content: 'Description for Item $index',
+                  //   ),
+                  // );
+                  return MenuCard(
+                    title: 'Item $index',
+                    content: 'Description for Item $index',
                   );
                 },
               ),

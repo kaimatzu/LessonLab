@@ -1,7 +1,13 @@
+// import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/lessonlab_modules/material_selection/material_selection_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_type/quiz_type_view.dart';
+// import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lessonlab/src/global_components/route_animation.dart';
+// import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_provider.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 
@@ -61,6 +67,9 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             // useMaterial3: true,
             colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.amber),
+            // * colors from figma
+            // primary color: (241, 196, 149)
+            // secondary color: (255, 242, 148)
           ),
           darkTheme: ThemeData.dark(),
           themeMode: settingsController.themeMode,
@@ -69,22 +78,26 @@ class MyApp extends StatelessWidget {
           // Flutter web url navigation and deep linking.
           onGenerateRoute: (RouteSettings routeSettings) {
             return FadePageRoute(
-            builder: (BuildContext context) {
-              switch (routeSettings.name) {
-                case '/settings':
-                  return SettingsView(controller: settingsController);
-                case '/menu':
-                  return const MenuView();
-                case '/upload':
-                  return const UploadView();
-                case '/lesson_result':
+              builder: (BuildContext context) {
+                switch (routeSettings.name) {
+                  case '/settings':
+                    return SettingsView(controller: settingsController);
+                  case '/menu':
+                    return const MenuView();
+                  case '/upload':
+                    return const UploadView();
+                  case '/quiztype':
+                    return const QuizTypeView();
+                  case '/materialselection':
+                    return const MaterialSelectionView();
+                  case '/lesson_result':
                   return const LessonResultView();  
                 default:
-                  return const MenuView();
-              }
-            },
-            settings: routeSettings,
-        );
+                    return const MenuView();
+                }
+              },
+              settings: routeSettings,
+            );
           },
         );
       },
