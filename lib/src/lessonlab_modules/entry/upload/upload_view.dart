@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/lessonlab_modules/material_selection/material_selection_view.dart';
 import 'package:provider/provider.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
@@ -104,7 +105,12 @@ class UploadView extends StatelessWidget {
             ),
             const SizedBox(width: 30.0),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.restorablePushNamed(
+                  context,
+                  MaterialSelectionView.routeName,
+                );
+              },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(150.0, 50.0), // Set the desired size
               ),
