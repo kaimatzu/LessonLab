@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/global_components/primary_button.dart';
+import 'package:lessonlab/src/global_components/secondary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/material_selection/material_selection_view.dart';
 import 'package:provider/provider.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
@@ -91,30 +93,21 @@ class UploadView extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.restorablePushNamed(
-                  context,
-                  MenuView.routeName,
-                );
+            SecondaryButton(
+              handlePress: () {
+                Navigator.restorablePushNamed(context, MenuView.routeName);
               },
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(150.0, 50.0), // Set the desired size
-              ),
-              child: const Text('Cancel'),
+              text: 'Cancel',
             ),
             const SizedBox(width: 30.0),
-            ElevatedButton(
-              onPressed: () {
+            PrimaryButton(
+              handlePress: () {
                 Navigator.restorablePushNamed(
                   context,
                   MaterialSelectionView.routeName,
                 );
               },
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(150.0, 50.0), // Set the desired size
-              ),
-              child: const Text('Next'),
+              text: 'Next',
             ),
             const SizedBox(width: 30.0),
             FloatingActionButton(
