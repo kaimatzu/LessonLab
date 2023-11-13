@@ -86,12 +86,12 @@ class MyApp extends StatelessWidget {
                     return const MenuView();
                   case '/upload':
                     return const UploadView();
-                  case '/quiztype':
-                    return const QuizTypeView();
                   case '/materialselection':
                     return const MaterialSelectionView();
                   case '/lesson_result':
                   return const LessonResultView();  
+                  case '/quiztype':
+                    return const QuizTypeView();
                 default:
                     return const MenuView();
                 }

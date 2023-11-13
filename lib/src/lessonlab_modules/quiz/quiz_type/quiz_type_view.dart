@@ -3,6 +3,7 @@ import 'package:lessonlab/src/global_components/secondary_button.dart';
 import 'package:lessonlab/src/global_components/selection_card.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lessonlab/src/lessonlab_modules/material_selection/material_selection_view.dart';
 
 // TODO(hans): Add svg icon
 
@@ -74,6 +75,8 @@ class QuizTypeView extends StatelessWidget {
                             icon: SvgPicture.asset(
                               'assets/svg/multiple_choice.svg',
                               semanticsLabel: 'Multiple choice',
+                              colorFilter: const ColorFilter.mode(
+                                  Colors.red, BlendMode.srcIn),
                             ),
                             text: 'Multiple choice',
                           ),
@@ -108,7 +111,8 @@ class QuizTypeView extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(56.0, 32.0, 100.0, 32.0),
         child: SecondaryButton(
           handlePress: () {
-            Navigator.restorablePushNamed(context, UploadView.routeName);
+            Navigator.restorablePushNamed(
+                context, MaterialSelectionView.routeName);
           },
           text: "Cancel",
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/new_material_button.dart';
 import 'package:lessonlab/src/global_components/route_animation.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/menu_card.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/new_material_button.dart';
@@ -11,6 +12,8 @@ class MenuView extends StatelessWidget {
   });
 
   static const routeName = '/';
+
+  final Color yellow = const Color.fromRGBO(241, 196, 27, 1);
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +38,15 @@ class MenuView extends StatelessWidget {
                   ),
                 ),
                 NewMaterialButton(
-                    onPressed: () {
-                      Navigator.restorablePushNamed(
-                        context,
-                        UploadView.routeName,
-                      );
-                    },
-                    icon: const Icon(Icons.add),
-                    text: 'New Material'),
+                  onPressed: () {
+                    Navigator.restorablePushNamed(
+                      context,
+                      UploadView.routeName,
+                    );
+                  },
+                  icon: const Icon(Icons.add),
+                  text: 'New Material',
+                ),
               ],
             ),
             const SizedBox(height: 16.0),
