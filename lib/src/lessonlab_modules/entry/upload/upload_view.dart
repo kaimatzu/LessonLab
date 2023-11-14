@@ -1,19 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
 import 'package:provider/provider.dart';
+
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/resources_container.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_provider.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
 
-class UploadView extends StatelessWidget {
-  const UploadView(
-      {super.key});
+
+
+class UploadView extends StatefulWidget {
+  const UploadView({Key? key}) : super(key: key);
 
   static const routeName = '/upload';
 
   @override
+  State<UploadView> createState() => _UploadViewState();
+}
+
+class _UploadViewState extends State<UploadView> {
+  @override
   Widget build(BuildContext context) {
-    final overlayProvider = context.watch<OverlayProvider>();
+    final uploadViewModel = context.watch<UploadViewModel>();
+    final overlayProvider = context.watch<OverlayViewModel>();
 
     return Scaffold(
       appBar: const LessonLabAppBar(),
@@ -33,8 +42,8 @@ class UploadView extends StatelessWidget {
                   ),
                 ),
               ),
-              ResourcesContainer(items: overlayProvider.files, icon: const Icon(Icons.file_open, color: Colors.white)),
-              if (overlayProvider.files.isEmpty)
+              ResourcesContainer(items: uploadViewModel.files, icon: const Icon(Icons.file_open, color: Colors.white)),
+              if (uploadViewModel.files.isEmpty)
                 const Padding(
                   padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
                   child: Text(
@@ -52,8 +61,8 @@ class UploadView extends StatelessWidget {
                   ),
                 ),
               ),
-              ResourcesContainer(items: overlayProvider.urlFiles, icon: const Icon(Icons.link, color: Colors.white)),
-              if (overlayProvider.urlFiles.isEmpty)
+              ResourcesContainer(items: uploadViewModel.urlFiles, icon: const Icon(Icons.link, color: Colors.white)),
+              if (uploadViewModel.urlFiles.isEmpty)
                 const Padding(
                   padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
                   child: Text(
@@ -71,8 +80,8 @@ class UploadView extends StatelessWidget {
                   ),
                 ),
               ),
-              ResourcesContainer(items: overlayProvider.textFiles, icon: const Icon(Icons.description, color: Colors.white)),
-              if (overlayProvider.textFiles.isEmpty)
+              ResourcesContainer(items: uploadViewModel.textFiles, icon: const Icon(Icons.description, color: Colors.white)),
+              if (uploadViewModel.textFiles.isEmpty)
                 const Padding(
                   padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
                   child: Text(
@@ -104,7 +113,10 @@ class UploadView extends StatelessWidget {
             ),
             const SizedBox(width: 30.0),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () { 
+                uploadViewModel.sendData(); 
+                uploadViewModel.getData();
+              },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(150.0, 50.0), // Set the desired size
               ),

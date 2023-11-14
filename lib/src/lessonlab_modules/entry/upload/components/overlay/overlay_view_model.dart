@@ -1,11 +1,11 @@
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_buttons.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_buttons_view.dart';
 
-class OverlayProvider extends ChangeNotifier {
+class OverlayViewModel extends ChangeNotifier {
   OverlayEntry? _overlayEntry;
   Widget _currentContent =
-      const OverlayButtons(containerWidth: 480, containerHeight: 400);
+      const OverlayButtonsView(containerWidth: 480, containerHeight: 400);
 
   bool get isOverlayVisible => _overlayEntry != null;
 
@@ -13,15 +13,12 @@ class OverlayProvider extends ChangeNotifier {
   final double containerHeight = 400;
 
   // File
-  var files = <XFile>[];
   var fileCache = <XFile>[];
 
   // URL
-  var urlFiles = <String>[];
   var urlCache = <String>[];
 
-  // Text
-  var textFiles = <TextFile>[];
+  // Text needs no cache.
 
   void showOverlay(BuildContext context) {
     _overlayEntry = OverlayEntry(
@@ -60,15 +57,15 @@ class OverlayProvider extends ChangeNotifier {
 
       fileCache.clear();
       urlCache.clear();
-      
-      _currentContent = OverlayButtons(
+
+      _currentContent = OverlayButtonsView(
           containerWidth: containerWidth, containerHeight: containerHeight);
       notifyListeners();
     }
   }
 
   void changeContent(BuildContext context, Widget Function() newContent,
-      OverlayProvider overlayProvider) {
+      OverlayViewModel overlayProvider) {
     _currentContent = newContent();
     if (overlayProvider.isOverlayVisible) {
       _overlayEntry!.remove();

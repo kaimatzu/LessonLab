@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lessonlab/src/global_components/route_animation.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_provider.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
 
 import 'lessonlab_modules/entry/menu/menu_view.dart';

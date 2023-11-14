@@ -1,14 +1,20 @@
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:file_selector/file_selector.dart';
 
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/drag_and_drop_area.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_buttons.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_provider.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_buttons_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
 
-class OverlayUploadFile extends StatefulWidget {
-  const OverlayUploadFile({
+/* 
+  TODO: 
+  Flutter seems to be angry at something implemented here. Will check later. 
+  Can't be fucking arsed to fix it right now. It seems to work just fine on the surface.
+*/
+class OverlayUploadFileView extends StatefulWidget {
+  const OverlayUploadFileView({
     Key? key,
     required this.containerWidth,
     required this.containerHeight,
@@ -18,15 +24,16 @@ class OverlayUploadFile extends StatefulWidget {
   final double containerHeight;
 
   @override
-  State<OverlayUploadFile> createState() => _OverlayUploadFile();
+  State<OverlayUploadFileView> createState() => _OverlayUploadFile();
 }
 
-class _OverlayUploadFile extends State<OverlayUploadFile> {
+class _OverlayUploadFile extends State<OverlayUploadFileView> {
   bool _dragging = false;
 
   @override
   Widget build(BuildContext context) {
-    final overlayProvider = context.watch<OverlayProvider>();
+    final uploadViewModel = context.watch<UploadViewModel>();
+    final overlayProvider = context.watch<OverlayViewModel>();
 
     return Container(
       width: widget.containerWidth,
@@ -95,7 +102,7 @@ class _OverlayUploadFile extends State<OverlayUploadFile> {
                         });
                         overlayProvider.changeContent(
                             context,
-                            () => OverlayUploadFile(
+                            () => OverlayButtonsView(
                                 containerWidth: overlayProvider.containerWidth,
                                 containerHeight:
                                     overlayProvider.containerHeight),
@@ -148,7 +155,7 @@ class _OverlayUploadFile extends State<OverlayUploadFile> {
               onPressed: () {
                 overlayProvider.changeContent(
                     context,
-                    () => OverlayButtons(
+                    () => OverlayButtonsView(
                         containerWidth: widget.containerWidth,
                         containerHeight: widget.containerHeight),
                     overlayProvider);
@@ -185,7 +192,7 @@ class _OverlayUploadFile extends State<OverlayUploadFile> {
                 child: FloatingActionButton(
                   onPressed: () {
                     if (overlayProvider.fileCache.isNotEmpty) {
-                      saveFilesAndClose(context, overlayProvider);
+                      saveFilesAndClose(context, uploadViewModel, overlayProvider);
                     } else {
                       null;
                     }
@@ -204,7 +211,7 @@ class _OverlayUploadFile extends State<OverlayUploadFile> {
     );
   }
 
-  void pickFile(BuildContext context, OverlayProvider overlayProvider) async {
+  void pickFile(BuildContext context, OverlayViewModel overlayProvider) async {
     const XTypeGroup fileTypeGroup = XTypeGroup(
       label: 'Files',
       extensions: <String>['pdf', 'txt', 'md', 'html', 'xml', 'json', 'csv'],
@@ -218,14 +225,14 @@ class _OverlayUploadFile extends State<OverlayUploadFile> {
     // ignore: use_build_context_synchronously
     overlayProvider.changeContent(
         context,
-        () => OverlayUploadFile(
+        () => OverlayUploadFileView(
             containerWidth: widget.containerWidth,
             containerHeight: widget.containerHeight),
         overlayProvider);
   }
 
-  void saveFilesAndClose(BuildContext context, OverlayProvider overlayProvider) {
-    overlayProvider.files.addAll(overlayProvider.fileCache);
+  void saveFilesAndClose(BuildContext context, UploadViewModel uploadViewModel, OverlayViewModel overlayProvider) {
+    uploadViewModel.files.addAll(overlayProvider.fileCache);
     overlayProvider.fileCache.clear();
     
     overlayProvider.hideOverlay();

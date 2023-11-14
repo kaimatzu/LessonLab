@@ -1,0 +1,27 @@
+syntax = "proto3";
+package uploaded_content;
+
+message TextFile {
+    string title = 1;
+    string content = 2;
+}
+
+message CreateRequest {
+    repeated string file_paths = 1;
+    repeated string urls = 2;
+    repeated TextFile texts = 3;
+}
+
+message CreateResponse {
+    int32 status_code = 1; 
+}
+
+message ReadRequest {
+    bool req = 1;
+}
+  
+message ReadResponse {
+    repeated string file_paths = 1;
+    repeated string urls = 2;
+    repeated TextFile texts = 3;
+}

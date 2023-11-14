@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
 import 'package:provider/provider.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_buttons.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_provider.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_buttons_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
 
-class OverlayUploadText extends StatefulWidget {
-  const OverlayUploadText({
+class OverlayUploadTextView extends StatefulWidget {
+  const OverlayUploadTextView({
     Key? key,
     required this.containerWidth,
     required this.containerHeight,
@@ -14,10 +15,10 @@ class OverlayUploadText extends StatefulWidget {
   final double containerHeight;
 
   @override
-  State<OverlayUploadText> createState() => _OverlayUploadTextState();
+  State<OverlayUploadTextView> createState() => _OverlayUploadTextState();
 }
 
-class _OverlayUploadTextState extends State<OverlayUploadText> {
+class _OverlayUploadTextState extends State<OverlayUploadTextView> {
   late TextEditingController titleController;
   late TextEditingController contentController;
 
@@ -42,7 +43,8 @@ class _OverlayUploadTextState extends State<OverlayUploadText> {
 
   @override
   Widget build(BuildContext context) {
-    final overlayProvider = context.watch<OverlayProvider>();
+    final uploadViewModel = context.watch<UploadViewModel>();
+    final overlayProvider = context.watch<OverlayViewModel>();
 
     return Container(
       width: widget.containerWidth,
@@ -106,7 +108,7 @@ class _OverlayUploadTextState extends State<OverlayUploadText> {
               onPressed: () {
                 overlayProvider.changeContent(
                     context,
-                    () => OverlayButtons(
+                    () => OverlayButtonsView(
                         containerWidth: widget.containerWidth,
                         containerHeight: widget.containerHeight),
                     overlayProvider);
@@ -126,7 +128,7 @@ class _OverlayUploadTextState extends State<OverlayUploadText> {
               child: FittedBox(
                 child: FloatingActionButton(
                   onPressed: () {
-                    saveText(context, overlayProvider);
+                    saveText(context, uploadViewModel, overlayProvider);
                   },
                   tooltip: 'Add new Text resource',
                   backgroundColor: _submittable
@@ -152,15 +154,15 @@ class _OverlayUploadTextState extends State<OverlayUploadText> {
     });
   }
 
-  void saveText(BuildContext context, OverlayProvider overlayProvider) {
+  void saveText(BuildContext context, UploadViewModel uploadViewModel, OverlayViewModel overlayProvider) {
     final String title = titleController.text;
     final String content = contentController.text;
 
-    overlayProvider.textFiles.add(TextFile(title: title, content: content));
+    uploadViewModel.textFiles.add(TextFile(title: title, content: content));
 
     overlayProvider.changeContent(
         context,
-        () => OverlayUploadText(
+        () => OverlayUploadTextView(
             containerWidth: widget.containerWidth,
             containerHeight: widget.containerHeight),
         overlayProvider);
