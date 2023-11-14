@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lessonlab/src/global_components/secondary_button.dart';
 import 'package:lessonlab/src/global_components/selection_card.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/specifications_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_type/quiz_type_view.dart';
 
 class MaterialSelectionView extends StatelessWidget {
@@ -46,7 +47,7 @@ class MaterialSelectionView extends StatelessWidget {
                           onTap: () {
                             Navigator.restorablePushNamed(
                               context, // TODO(hans): change to lesson specs view
-                              UploadView.routeName,
+                              SpecificationsView.routeName,
                             );
                           },
                           child: SelectionCard(
