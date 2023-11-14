@@ -14,13 +14,13 @@ class InputFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return Padding(padding: const EdgeInsets.all(16.0),
+    return Padding(padding: const EdgeInsets.fromLTRB(0.0, 10.0, 16.0, 0.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: const TextStyle(color: Color.fromARGB(255, 49, 51, 56), fontSize: 20.0),
+              style: const TextStyle(color: Color.fromARGB(255, 49, 51, 56), fontSize: 16.0),
             ),
             TextField(
               style: const TextStyle(color: Colors.white),

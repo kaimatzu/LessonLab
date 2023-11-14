@@ -2,7 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 
-const List<String> list = <String>['Elementary', 'Junior High School', 'Senior High School', 'College'];
+const List<String> list = <String>[
+  'Elementary', 
+  'Junior High School', 
+  'Senior High School', 
+  'College',
+];
 
 class Dropdown extends StatefulWidget {
   const Dropdown({
@@ -18,13 +23,13 @@ class _DropdownState extends State<Dropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: const EdgeInsets.all(16.0),
+    return Padding(padding: const EdgeInsets.fromLTRB(0.0, 10.0, 16.0, 0.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
               'Grade Level',
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 16.0),
           ),
           SizedBox(
             width: 1440,
