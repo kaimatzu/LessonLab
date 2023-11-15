@@ -13,7 +13,7 @@ message CreateRequest {
 }
 
 message CreateResponse {
-    int32 status_code = 1; 
+    uint32 status_code = 1; 
 }
 
 message ReadRequest {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
 import 'package:provider/provider.dart';
 
+import 'dart:io';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/resources_container.dart';
@@ -107,18 +108,28 @@ class _UploadViewState extends State<UploadView> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                minimumSize: const Size(150.0, 50.0), // Set the desired size
+                minimumSize: const Size(150.0, 50.0), 
               ),
               child: const Text('Cancel'),
             ),
             const SizedBox(width: 30.0),
             ElevatedButton(
               onPressed: () { 
-                uploadViewModel.sendData(); 
-                uploadViewModel.getData();
+                if (uploadViewModel.files.isNotEmpty ||
+                    uploadViewModel.urlFiles.isNotEmpty ||
+                    uploadViewModel.textFiles.isNotEmpty ) {
+                      uploadViewModel.sendData(); 
+                      uploadViewModel.getData();
+                    }
+                else { null; }
               },
               style: ElevatedButton.styleFrom(
-                minimumSize: const Size(150.0, 50.0), // Set the desired size
+                backgroundColor: uploadViewModel.files.isNotEmpty ||
+                      uploadViewModel.urlFiles.isNotEmpty ||
+                      uploadViewModel.textFiles.isNotEmpty 
+                      ? Colors.amber
+                      : const Color.fromARGB(162, 164, 127, 14),
+                minimumSize: const Size(150.0, 50.0),
               ),
               child: const Text('Next'),
             ),

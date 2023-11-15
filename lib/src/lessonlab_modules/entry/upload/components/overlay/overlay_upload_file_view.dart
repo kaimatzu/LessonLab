@@ -9,7 +9,7 @@ import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
 
 /* 
-  TODO: 
+  TODO: Fix angy Flutter
   Flutter seems to be angry at something implemented here. Will check later. 
   Can't be fucking arsed to fix it right now. It seems to work just fine on the surface.
 */

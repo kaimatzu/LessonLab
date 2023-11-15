@@ -14,7 +14,6 @@ class UploadViewModel with ChangeNotifier {
 
   var status = 0;
 
-  // TODO: Implement RESTFUL connection to Rust here
   Future<void> sendData() async {
     final requestMessage = RinfInterface.CreateRequest(
       filePaths: files.map((file) => file.path).toList(),
@@ -39,6 +38,7 @@ class UploadViewModel with ChangeNotifier {
   }
 
   Future<void> getData() async {
+    // Debug purposes. Just to check if the uploaded files are stored in rust main().
     final requestMessage = RinfInterface.ReadRequest(
         req: true
     );

@@ -1,4 +1,4 @@
-use crate::bridge::send_rust_signal;
+use http::StatusCode;
 use crate::bridge::{RustOperation, RustRequest, RustResponse, RustSignal};
 use crate::messages::entry::upload::uploaded_content;
 use prost::Message;
@@ -33,13 +33,13 @@ pub async fn handle_uploaded_content(rust_request: RustRequest,
             if upload_model.file_paths.len() > 0 {
                 response_message = CreateResponse {
                     // Send the data back in a response
-                    status_code: 200
+                    status_code: StatusCode::OK.as_u16() as u32
                 };
             }
             else {
                 response_message = CreateResponse {
                     // Send the data back in a response
-                    status_code: 404
+                    status_code: StatusCode::NOT_FOUND.as_u16() as u32
                 };
             }
             
@@ -50,10 +50,10 @@ pub async fn handle_uploaded_content(rust_request: RustRequest,
             }
         },
         RustOperation::Read => {
+            // Debug purposes. Just to check if the uploaded files are stored in main().
             let message_bytes = rust_request.message.unwrap();
             let request_message = ReadRequest::decode(message_bytes.as_slice()).unwrap();
 
-            // let response_message;
             let _ = request_message;
 
             let response_message = ReadResponse {
@@ -67,16 +67,6 @@ pub async fn handle_uploaded_content(rust_request: RustRequest,
                     })
                     .collect()
             };
-            
-            // if request_message.req {
-            // }
-            // else {
-            //     response_message = ReadResponse {
-            //         file_paths: Vec::new(),
-            //         urls: Vec::new(),
-            //         texts: Vec::new()
-            //     };
-            // }
 
             RustResponse {
                 successful: true,
