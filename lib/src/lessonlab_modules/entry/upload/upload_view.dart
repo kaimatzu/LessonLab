@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/global_components/primary_button.dart';
+import 'package:lessonlab/src/global_components/secondary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
 import 'package:provider/provider.dart';
 import 'dart:developer' as developer;
@@ -24,13 +26,13 @@ class _UploadViewState extends State<UploadView> {
     final uploadViewModel = context.watch<UploadViewModel>();
     final overlayProvider = context.watch<OverlayViewModel>();
 
+    bool hasFiles = uploadViewModel.files.isNotEmpty ||
+        uploadViewModel.urlFiles.isNotEmpty ||
+        uploadViewModel.textFiles.isNotEmpty;
+
     const noFilesStyle = TextStyle(color: Colors.grey);
     const fileNameTextStyle =
         TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold);
-
-    void onBodyClick() {
-      if (overlayProvider.isOverlayVisible) overlayProvider.hideOverlay();
-    }
 
     return Scaffold(
       appBar: const LessonLabAppBar(),
@@ -107,48 +109,65 @@ class _UploadViewState extends State<UploadView> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            ElevatedButton(
-              onPressed: () {
+            SecondaryButton(
+              handlePress: () {
                 Navigator.restorablePushNamed(
                   context,
                   MenuView.routeName,
                 );
               },
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(150.0, 50.0),
-              ),
-              child: const Text('Cancel'),
+              text: 'Cancel',
             ),
-            // TODO(hans): change to new lesson and new quiz button that redirects to the corresponding page
             const SizedBox(width: 30.0),
-            ElevatedButton(
-              onPressed: () {
-                if (uploadViewModel.files.isNotEmpty ||
-                    uploadViewModel.urlFiles.isNotEmpty ||
-                    uploadViewModel.textFiles.isNotEmpty) {
+            PrimaryButton(
+              handlePress: () {
+                if (hasFiles) {
+                  // TODO(hans): go to lesson specs view
                   uploadViewModel.sendData();
                   uploadViewModel.getData();
                 } else {
                   null;
                 }
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: uploadViewModel.files.isNotEmpty ||
-                        uploadViewModel.urlFiles.isNotEmpty ||
-                        uploadViewModel.textFiles.isNotEmpty
-                    ? Colors.amber
-                    : const Color.fromARGB(162, 164, 127, 14),
-                minimumSize: const Size(150.0, 50.0),
-              ),
-              child: const Text('Next'),
+              text: 'New lesson',
+              enabled: hasFiles,
             ),
             const SizedBox(width: 30.0),
-            FloatingActionButton(
-              onPressed: () {
-                overlayProvider.showOverlay(context);
+            PrimaryButton(
+              handlePress: () {
+                if (hasFiles) {
+                  // TODO(hans): go to quiz specs view
+                  uploadViewModel.sendData();
+                  uploadViewModel.getData();
+                } else {
+                  null;
+                }
               },
-              tooltip: 'Add new document',
-              child: const Icon(Icons.add),
+              text: 'New quiz',
+              enabled: hasFiles,
+            ),
+            const SizedBox(width: 30.0),
+            Container(
+              decoration: BoxDecoration(
+                // borderRadius: BorderRadius.circular(50),
+                boxShadow: [
+                  BoxShadow(
+                    color:
+                        const Color.fromRGBO(241, 196, 27, 1).withOpacity(.3),
+                    spreadRadius: 3,
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: FloatingActionButton(
+                onPressed: () {
+                  overlayProvider.showOverlay(context);
+                },
+                elevation: 0,
+                tooltip: 'Add new document',
+                child: const Icon(Icons.add),
+              ),
             ),
             // Add more items as needed
           ],

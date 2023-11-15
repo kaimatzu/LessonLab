@@ -50,7 +50,7 @@ class OverlayViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void hideOverlay() { 
+  void hideOverlay() {
     if (_overlayEntry != null) {
       _overlayEntry!.remove();
       _overlayEntry = null;

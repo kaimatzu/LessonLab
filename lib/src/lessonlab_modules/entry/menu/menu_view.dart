@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/menu_card.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/new_material_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
 
 class MenuView extends StatelessWidget {
@@ -32,18 +33,15 @@ class MenuView extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // Navigator.of(context).push(fadeRouteBuilder(const UploadView()));
-                    Navigator.restorablePushNamed(
-                      context,
-                      UploadView.routeName,
-                    );
-                  },
-                  icon: const Icon(Icons.add),
-                  label: const Text('New Material'),
-                ),
-                // Add more items as needed
+                NewMaterialButton(
+                    onPressed: () {
+                      Navigator.restorablePushNamed(
+                        context,
+                        UploadView.routeName,
+                      );
+                    },
+                    icon: const Icon(Icons.add),
+                    text: 'New Material'),
               ],
             ),
             const SizedBox(height: 16.0),
