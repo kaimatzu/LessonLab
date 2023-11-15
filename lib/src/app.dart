@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/lessonlab_modules/results/results.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -75,6 +76,8 @@ class MyApp extends StatelessWidget {
             return FadePageRoute(
             builder: (BuildContext context) {
               switch (routeSettings.name) {
+                case '/Result':
+                  return const QuizResult();
                 case '/settings':
                   return SettingsView(controller: settingsController);
                 case '/menu':
