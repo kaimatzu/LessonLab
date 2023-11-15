@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 import 'package:provider/provider.dart';
 
 import 'dart:io';
@@ -7,8 +8,6 @@ import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/resources_container.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
-
-
 
 class UploadView extends StatefulWidget {
   const UploadView({Key? key}) : super(key: key);
@@ -120,6 +119,11 @@ class _UploadViewState extends State<UploadView> {
                     uploadViewModel.textFiles.isNotEmpty ) {
                       uploadViewModel.sendData(); 
                       uploadViewModel.getData();
+
+                      Navigator.restorablePushNamed(
+                        context,
+                        LessonResultView.routeName,
+                      );
                     }
                 else { null; }
               },
