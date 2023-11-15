@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view_model.dart';
 import 'package:provider/provider.dart';
 
 import 'src/app.dart';
@@ -26,6 +27,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => OverlayViewModel()),
         ChangeNotifierProvider(create: (context) => UploadViewModel()),
+      ChangeNotifierProvider(create: (context) => LessonResultViewModel()),
       ],
       child: MyApp(settingsController: settingsController),
     ),

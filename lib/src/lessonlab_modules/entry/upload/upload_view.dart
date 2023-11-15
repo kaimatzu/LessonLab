@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_components/secondary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 import 'package:provider/provider.dart';
 import 'dart:developer' as developer;
 
