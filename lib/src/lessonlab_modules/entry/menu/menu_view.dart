@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
-import 'package:lessonlab/src/global_components/route_animation.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/menu_card.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
 
