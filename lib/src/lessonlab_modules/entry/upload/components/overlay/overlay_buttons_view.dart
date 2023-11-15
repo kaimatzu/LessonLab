@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_upload_text.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_upload_url.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_upload_text_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_upload_url_view.dart';
 import 'package:provider/provider.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_provider.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_upload_file.dart';
-class OverlayButtons extends StatelessWidget {
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_upload_file_view.dart';
+class OverlayButtonsView extends StatelessWidget {
   
-  const OverlayButtons({
+  const OverlayButtonsView({
     Key? key,
     required this.containerWidth,
     required this.containerHeight,
@@ -17,7 +17,7 @@ class OverlayButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final overlayProvider = context.watch<OverlayProvider>();
+    final overlayProvider = context.watch<OverlayViewModel>();
 
     return Container(
       width: containerWidth,
@@ -32,7 +32,7 @@ class OverlayButtons extends StatelessWidget {
         children: [
           ElevatedButton(
             onPressed: () {
-              overlayProvider.changeContent(context, () => OverlayUploadFile(containerWidth: containerWidth, containerHeight: containerHeight), overlayProvider);
+              overlayProvider.changeContent(context, () => OverlayUploadFileView(containerWidth: containerWidth, containerHeight: containerHeight), overlayProvider);
             },
             style: ElevatedButton.styleFrom(
               minimumSize: const Size(300.0, 80.0),
@@ -47,7 +47,7 @@ class OverlayButtons extends StatelessWidget {
           const SizedBox(height: 30.0),
           ElevatedButton(
             onPressed: () {
-              overlayProvider.changeContent(context, () => OverlayUploadURL(containerWidth: containerWidth, containerHeight: containerHeight), overlayProvider);
+              overlayProvider.changeContent(context, () => OverlayUploadURLView(containerWidth: containerWidth, containerHeight: containerHeight), overlayProvider);
             },
             style: ElevatedButton.styleFrom(
               minimumSize: const Size(300.0, 80.0),
@@ -62,7 +62,7 @@ class OverlayButtons extends StatelessWidget {
           const SizedBox(height: 30.0),
           ElevatedButton(
             onPressed: () {
-              overlayProvider.changeContent(context, () => OverlayUploadText(containerWidth: containerWidth, containerHeight: containerHeight), overlayProvider);
+              overlayProvider.changeContent(context, () => OverlayUploadTextView(containerWidth: containerWidth, containerHeight: containerHeight), overlayProvider);
             },
             style: ElevatedButton.styleFrom(
               minimumSize: const Size(300.0, 80.0),

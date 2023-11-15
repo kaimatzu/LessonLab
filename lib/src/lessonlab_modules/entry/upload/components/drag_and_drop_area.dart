@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_upload_file.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_provider.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_upload_file_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
 
 class DragAndDropArea extends StatefulWidget {
   const DragAndDropArea({
@@ -19,7 +19,7 @@ class _DragAndDropArea extends State<DragAndDropArea> {
 
   @override
   Widget build(BuildContext context) {
-    final overlayProvider = context.watch<OverlayProvider>();
+    final overlayProvider = context.watch<OverlayViewModel>();
 
     return DropTarget(
       onDragDone: (detail) {
@@ -36,7 +36,7 @@ class _DragAndDropArea extends State<DragAndDropArea> {
         });
         overlayProvider.changeContent(
         context,
-        () => OverlayUploadFile(
+        () => OverlayUploadFileView(
             containerWidth: overlayProvider.containerWidth, containerHeight: overlayProvider.containerHeight),
         overlayProvider);
       },
