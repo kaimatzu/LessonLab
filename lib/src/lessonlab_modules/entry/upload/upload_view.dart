@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
 import 'package:provider/provider.dart';
+import 'dart:developer' as developer;
 
 import 'dart:io';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/resources_container.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
-
-
 
 class UploadView extends StatefulWidget {
   const UploadView({Key? key}) : super(key: key);
@@ -24,6 +23,14 @@ class _UploadViewState extends State<UploadView> {
   Widget build(BuildContext context) {
     final uploadViewModel = context.watch<UploadViewModel>();
     final overlayProvider = context.watch<OverlayViewModel>();
+
+    const noFilesStyle = TextStyle(color: Colors.grey);
+    const fileNameTextStyle =
+        TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold);
+
+    void onBodyClick() {
+      if (overlayProvider.isOverlayVisible) overlayProvider.hideOverlay();
+    }
 
     return Scaffold(
       appBar: const LessonLabAppBar(),
@@ -43,51 +50,51 @@ class _UploadViewState extends State<UploadView> {
                   ),
                 ),
               ),
-              ResourcesContainer(items: uploadViewModel.files, icon: const Icon(Icons.file_open, color: Colors.white)),
+              ResourcesContainer(
+                  items: uploadViewModel.files,
+                  icon: const Icon(Icons.file_open, color: Colors.white)),
               if (uploadViewModel.files.isEmpty)
                 const Padding(
                   padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
                   child: Text(
                     'No files available.',
-                    style: TextStyle(color: Colors.grey),
+                    style: noFilesStyle,
                   ),
                 ),
               const Padding(
                 padding: EdgeInsets.fromLTRB(14.0, 14.0, 14.0, 4.0),
                 child: Text(
                   'URL',
-                  style: TextStyle(
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: fileNameTextStyle,
                 ),
               ),
-              ResourcesContainer(items: uploadViewModel.urlFiles, icon: const Icon(Icons.link, color: Colors.white)),
+              ResourcesContainer(
+                  items: uploadViewModel.urlFiles,
+                  icon: const Icon(Icons.link, color: Colors.white)),
               if (uploadViewModel.urlFiles.isEmpty)
                 const Padding(
                   padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
                   child: Text(
                     'No URLs available.',
-                    style: TextStyle(color: Colors.grey),
+                    style: noFilesStyle,
                   ),
                 ),
               const Padding(
                 padding: EdgeInsets.fromLTRB(14.0, 14.0, 14.0, 4.0),
                 child: Text(
                   'Text',
-                  style: TextStyle(
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: fileNameTextStyle,
                 ),
               ),
-              ResourcesContainer(items: uploadViewModel.textFiles, icon: const Icon(Icons.description, color: Colors.white)),
+              ResourcesContainer(
+                  items: uploadViewModel.textFiles,
+                  icon: const Icon(Icons.description, color: Colors.white)),
               if (uploadViewModel.textFiles.isEmpty)
                 const Padding(
                   padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
                   child: Text(
                     'No text available.',
-                    style: TextStyle(color: Colors.grey),
+                    style: noFilesStyle,
                   ),
                 ),
               const SizedBox(height: 16.0),
@@ -108,27 +115,29 @@ class _UploadViewState extends State<UploadView> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                minimumSize: const Size(150.0, 50.0), 
+                minimumSize: const Size(150.0, 50.0),
               ),
               child: const Text('Cancel'),
             ),
+            // TODO(hans): change to new lesson and new quiz button that redirects to the corresponding page
             const SizedBox(width: 30.0),
             ElevatedButton(
-              onPressed: () { 
+              onPressed: () {
                 if (uploadViewModel.files.isNotEmpty ||
                     uploadViewModel.urlFiles.isNotEmpty ||
-                    uploadViewModel.textFiles.isNotEmpty ) {
-                      uploadViewModel.sendData(); 
-                      uploadViewModel.getData();
-                    }
-                else { null; }
+                    uploadViewModel.textFiles.isNotEmpty) {
+                  uploadViewModel.sendData();
+                  uploadViewModel.getData();
+                } else {
+                  null;
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: uploadViewModel.files.isNotEmpty ||
-                      uploadViewModel.urlFiles.isNotEmpty ||
-                      uploadViewModel.textFiles.isNotEmpty 
-                      ? Colors.amber
-                      : const Color.fromARGB(162, 164, 127, 14),
+                        uploadViewModel.urlFiles.isNotEmpty ||
+                        uploadViewModel.textFiles.isNotEmpty
+                    ? Colors.amber
+                    : const Color.fromARGB(162, 164, 127, 14),
                 minimumSize: const Size(150.0, 50.0),
               ),
               child: const Text('Next'),
@@ -140,7 +149,7 @@ class _UploadViewState extends State<UploadView> {
               },
               tooltip: 'Add new document',
               child: const Icon(Icons.add),
-            )
+            ),
             // Add more items as needed
           ],
         ),
