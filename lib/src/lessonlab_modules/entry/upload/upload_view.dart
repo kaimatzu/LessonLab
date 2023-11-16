@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_components/secondary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/specifications_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_components/secondary_button.dart';
@@ -126,9 +127,12 @@ class _UploadViewState extends State<UploadView> {
             PrimaryButton(
               handlePress: () {
                 if (hasFiles) {
-                  // TODO(hans): go to lesson specs view
                   uploadViewModel.sendData();
                   uploadViewModel.getData();
+                  Navigator.restorablePushNamed(
+                    context,
+                    SpecificationsView.routeName,
+                  );
                 } else {
                   null;
                 }

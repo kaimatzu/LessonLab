@@ -45,6 +45,7 @@ class SpecificationsView extends StatelessWidget {
                     PrimaryButton(
                       handlePress: () {},
                       text: 'Confirm',
+                      enabled: true,
                     ),
                   ],
                 ),
