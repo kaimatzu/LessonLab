@@ -23,13 +23,13 @@ void main() async {
   // SettingsController for changes, then passes it further down to the
   // SettingsView.
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => OverlayViewModel()),
-        ChangeNotifierProvider(create: (context) => UploadViewModel()),
+  MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => OverlayViewModel()),
+      ChangeNotifierProvider(create: (context) => UploadViewModel()),
       ChangeNotifierProvider(create: (context) => LessonResultViewModel()),
-      ],
-      child: MyApp(settingsController: settingsController),
-    ),
-  );
+    ],
+    child: MyApp(settingsController: settingsController),
+  ),
+);
 }

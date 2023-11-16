@@ -95,9 +95,7 @@ class MyApp extends StatelessWidget {
                   case '/quiztype':
                     return const QuizTypeView();
                   case '/specifications':
-                  return const SpecificationsView();
-                case '/specifications':
-                  return const SpecificationsView();
+                    return const SpecificationsView();
                 default:
                     return const MenuView();
                 }

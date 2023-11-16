@@ -144,9 +144,13 @@ class _UploadViewState extends State<UploadView> {
             PrimaryButton(
               handlePress: () {
                 if (hasFiles) {
-                  // TODO(hans): go to quiz specs view
                   uploadViewModel.sendData();
                   uploadViewModel.getData();
+
+                  Navigator.restorablePushNamed(
+                    context,
+                    LessonResultView.routeName,
+                  );
                 } else {
                   null;
                 }
