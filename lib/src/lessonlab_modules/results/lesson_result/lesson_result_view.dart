@@ -1,38 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/components/text_editor.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view_model.dart';
 import 'dart:developer' as developer;
 
-Future<String> loadFileContents(String filePath) async {
-  return await rootBundle.loadString(filePath);
-}
-
-class LessonResultView extends StatefulWidget {
+class LessonResultView extends StatelessWidget {
   const LessonResultView({Key? key}) : super(key: key);
 
   static const routeName = '/lesson_result';
 
   @override
-  State<LessonResultView> createState() => _LessonResultView();
-}
-
-class _LessonResultView extends State<LessonResultView> {
-  late Future<String> mdContents;
-  late Future<String> cssContent;
-
-  @override
-  void initState() {
-    super.initState();
-    mdContents = loadFileContents('assets/test.md');
-    cssContent = loadFileContents('assets/styles/markdown.css');
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final lessonResultViewModel = context.watch<LessonResultViewModel>;
+    final lessonResultViewModel = context.watch<LessonResultViewModel>();
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -55,7 +34,7 @@ class _LessonResultView extends State<LessonResultView> {
             Padding(
               padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 30.0),
               child: FutureBuilder<List<String>>(
-                future: Future.wait([mdContents, cssContent]), // Pass in css as well
+                future: Future.wait([lessonResultViewModel.mdContents, lessonResultViewModel.cssContents]), 
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
@@ -85,18 +64,15 @@ class _LessonResultView extends State<LessonResultView> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             ElevatedButton(
-              onPressed: () {
-
-              },
+              onPressed: () {},
               style: ElevatedButton.styleFrom(
-                minimumSize: const Size(150.0, 50.0), 
+                minimumSize: const Size(150.0, 50.0),
               ),
               child: const Text('Regenerate'),
             ),
             const SizedBox(width: 30.0),
             ElevatedButton(
-              onPressed: () { 
-              },
+              onPressed: () {},
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(150.0, 50.0),
               ),
