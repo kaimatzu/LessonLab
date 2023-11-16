@@ -21,6 +21,8 @@ dependencies:
   desktop_drop: ^0.4.4
   cross_file: ^0.3.3+6
   file_selector: ^1.0.1
+  flutter_html: ^3.0.0-beta.2
+  markdown: ^7.1.1
 
 dev_dependencies:
   flutter_test:
@@ -35,5 +37,6 @@ flutter:
   generate: true
 
   assets:
-    # Add assets from the images directory to the application.
     - assets/images/
+    - assets/styles/
+    - assets/test.md
