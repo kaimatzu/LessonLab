@@ -17,6 +17,7 @@ class OverlayUploadURLView extends StatefulWidget {
   @override
   State<OverlayUploadURLView> createState() => _OverlayUploadURLState();
 }
+
 class _OverlayUploadURLState extends State<OverlayUploadURLView> {
   late TextEditingController urlTextAreaController;
 
@@ -31,6 +32,7 @@ class _OverlayUploadURLState extends State<OverlayUploadURLView> {
     urlTextAreaController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final uploadViewModel = context.watch<UploadViewModel>();
@@ -91,10 +93,12 @@ class _OverlayUploadURLState extends State<OverlayUploadURLView> {
                             },
                           ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(8.0, 20.0, 8.0, 0),
+                            padding:
+                                const EdgeInsets.fromLTRB(8.0, 20.0, 8.0, 0),
                             child: Center(
                               child: SizedBox(
-                                width: widget.containerWidth - 20, // Adjust as needed
+                                width: widget.containerWidth -
+                                    20, // Adjust as needed
                                 height: 54, // Adjust as needed
                                 child: TextField(
                                     controller: urlTextAreaController,
@@ -177,9 +181,19 @@ class _OverlayUploadURLState extends State<OverlayUploadURLView> {
   void addURL(BuildContext context, OverlayViewModel overlayProvider) {
     final String url = urlTextAreaController.text;
 
-    overlayProvider.urlCache.add(url);
+    // NO DUPLICATE LOGIC
+    bool contains = false;
+    for (var cachedURL in overlayProvider.urlCache) {
+      if (cachedURL == url) {
+        contains = true;
+        break;
+      }
+    }
+
+    if (!contains) overlayProvider.urlCache.add(url);
+
     urlTextAreaController.text = '';
-    
+
     overlayProvider.changeContent(
         context,
         () => OverlayUploadURLView(
@@ -188,10 +202,23 @@ class _OverlayUploadURLState extends State<OverlayUploadURLView> {
         overlayProvider);
   }
 
-  void saveURLAndClose(BuildContext context, UploadViewModel uploadViewModel, OverlayViewModel overlayProvider) {
-    uploadViewModel.urlFiles.addAll(overlayProvider.urlCache);
+  // Closes the overlay and sends the url from overlay to the upload screen
+  void saveURLAndClose(BuildContext context, UploadViewModel uploadViewModel,
+      OverlayViewModel overlayProvider) {
+    // NO DUPLICATES LOGIC
+    for (var overlayURL in overlayProvider.urlCache) {
+      bool contains = false;
+      for (var uploadURL in uploadViewModel.urlFiles) {
+        if (uploadURL == overlayURL) {
+          contains = true;
+          break;
+        }
+      }
+      if (!contains) uploadViewModel.urlFiles.add(overlayURL);
+    }
+
     overlayProvider.urlCache.clear();
-    
+
     overlayProvider.hideOverlay();
   }
 }

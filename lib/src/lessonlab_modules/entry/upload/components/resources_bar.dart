@@ -23,8 +23,14 @@ class ResourcesBar extends StatelessWidget {
             icon,
             const SizedBox(width: 6),
             Expanded(
-              child: Text(item,
-                  style: const TextStyle(fontSize: 18, color: Colors.white)),
+              child: Text(
+                item,
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
             ),
             const Icon(Icons.more_vert, color: Colors.white)
             // icon

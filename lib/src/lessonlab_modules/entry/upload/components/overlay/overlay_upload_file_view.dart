@@ -8,6 +8,8 @@ import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/drag_and
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_buttons_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
 
+import 'dart:developer' as developer;
+
 /* 
   TODO: Fix angy Flutter
   Flutter seems to be angry at something implemented here. Will check later. 
@@ -192,7 +194,8 @@ class _OverlayUploadFile extends State<OverlayUploadFileView> {
                 child: FloatingActionButton(
                   onPressed: () {
                     if (overlayProvider.fileCache.isNotEmpty) {
-                      saveFilesAndClose(context, uploadViewModel, overlayProvider);
+                      saveFilesAndClose(
+                          context, uploadViewModel, overlayProvider);
                     } else {
                       null;
                     }
@@ -217,10 +220,23 @@ class _OverlayUploadFile extends State<OverlayUploadFileView> {
       extensions: <String>['pdf', 'txt', 'md', 'html', 'xml', 'json', 'csv'],
     );
 
-    final List<XFile> result =
+    // This is the actual function that open's an open file dialog and returns the results in `results` list
+    final List<XFile> results =
         await openFiles(acceptedTypeGroups: <XTypeGroup>[fileTypeGroup]);
 
-    overlayProvider.fileCache.addAll(result);
+    // NO DUPLICATES LOGIC
+    for (var newFile in results) {
+      bool contains = false;
+      for (var cachedFile in overlayProvider.fileCache) {
+        if (cachedFile.path + cachedFile.name == newFile.path + newFile.name) {
+          contains = true;
+          break;
+        }
+      }
+      if (!contains) overlayProvider.fileCache.add(newFile);
+    }
+
+    // overlayProvider.fileCache.addAll(results);
 
     // ignore: use_build_context_synchronously
     overlayProvider.changeContent(
@@ -231,10 +247,25 @@ class _OverlayUploadFile extends State<OverlayUploadFileView> {
         overlayProvider);
   }
 
-  void saveFilesAndClose(BuildContext context, UploadViewModel uploadViewModel, OverlayViewModel overlayProvider) {
-    uploadViewModel.files.addAll(overlayProvider.fileCache);
+  // Sends the list of files from overlay to upload screen
+  void saveFilesAndClose(BuildContext context, UploadViewModel uploadViewModel,
+      OverlayViewModel overlayProvider) {
+    // No DUPLICATES logic
+    for (var overlayFile in overlayProvider.fileCache) {
+      bool contains = false;
+      for (var uploadFile in uploadViewModel.files) {
+        if (uploadFile.path + uploadFile.name ==
+            overlayFile.path + overlayFile.name) {
+          contains = true;
+          break;
+        }
+      }
+      if (!contains) uploadViewModel.files.add(overlayFile);
+    }
+
+    // uploadViewModel.files.addAll(overlayProvider.fileCache);
     overlayProvider.fileCache.clear();
-    
+
     overlayProvider.hideOverlay();
   }
 }

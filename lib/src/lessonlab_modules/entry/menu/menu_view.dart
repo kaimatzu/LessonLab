@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/new_material_button.dart';
+import 'package:lessonlab/src/global_components/route_animation.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/menu_card.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/new_material_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
 
 class MenuView extends StatelessWidget {
@@ -9,6 +12,8 @@ class MenuView extends StatelessWidget {
   });
 
   static const routeName = '/';
+
+  final Color yellow = const Color.fromRGBO(241, 196, 27, 1);
 
   @override
   Widget build(BuildContext context) {
@@ -32,18 +37,16 @@ class MenuView extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                ElevatedButton.icon(
+                NewMaterialButton(
                   onPressed: () {
-                    // Navigator.of(context).push(fadeRouteBuilder(const UploadView()));
                     Navigator.restorablePushNamed(
                       context,
                       UploadView.routeName,
                     );
                   },
                   icon: const Icon(Icons.add),
-                  label: const Text('New Material'),
+                  text: 'New Material',
                 ),
-                // Add more items as needed
               ],
             ),
             const SizedBox(height: 16.0),
@@ -57,13 +60,17 @@ class MenuView extends StatelessWidget {
                 ),
                 itemCount: 4,
                 itemBuilder: (BuildContext context, int index) {
-                  return SizedBox(
-                    width: cardWidth,
-                    height: cardHeight,
-                    child: MenuCard(
-                      title: 'Item $index',
-                      content: 'Description for Item $index',
-                    ),
+                  // return SizedBox(
+                  //   width: cardWidth,
+                  //   height: cardHeight,
+                  //   child: MenuCard(
+                  //     title: 'Item $index',
+                  //     content: 'Description for Item $index',
+                  //   ),
+                  // );
+                  return MenuCard(
+                    title: 'Item $index',
+                    content: 'Description for Item $index',
                   );
                 },
               ),
