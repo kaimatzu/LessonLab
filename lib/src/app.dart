@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
                 case '/lesson_result':
                   return const LessonResultView();  
                 default:
-                  return const LessonResultView();
+                  return const MenuView();
               }
             },
             settings: routeSettings,
