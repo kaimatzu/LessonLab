@@ -1,15 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'dart:developer' as developer;
-
-import 'package:provider/provider.dart';
-import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
-
-Future<String> loadFileContents(String filePath) async {
-  return await rootBundle.loadString(filePath);
-}
 
 const List<Widget> icons = <Widget>[
   Icon(Icons.code),
@@ -150,6 +142,5 @@ class _TextEditor extends State<TextEditor> {
     setState(() {
       htmlContent = md.markdownToHtml(textController.text);
     });
-    
   }
 }
