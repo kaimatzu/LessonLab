@@ -30,6 +30,9 @@ pub async fn handle_request(request_unique: RustRequestUnique,
         messages::lesson::lesson_specifications::ID => {
             app::lesson::lesson_specifications_view_model::handle_lesson_specifications(rust_request, lesson_specifications_model).await
         }
+        messages::results::view_lesson_result::load_lesson::ID => {
+            app::results::lesson_result_view_model::handle_lesson_generation(rust_request, upload_model, lesson_specifications_model).await
+        }
         _ => RustResponse::default(),
     };
 
