@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_components/secondary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
-import 'package:provider/provider.dart';
-
-import 'dart:io';
-import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/resources_container.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
 
-class UploadView extends StatefulWidget {
+class UploadView extends StatelessWidget {
   const UploadView({Key? key}) : super(key: key);
 
   static const routeName = '/upload';
 
-  @override
-  State<UploadView> createState() => _UploadViewState();
-}
-
-class _UploadViewState extends State<UploadView> {
   @override
   Widget build(BuildContext context) {
     final uploadViewModel = context.watch<UploadViewModel>();
@@ -116,7 +111,16 @@ class _UploadViewState extends State<UploadView> {
             const SizedBox(width: 30.0),
             PrimaryButton(
               handlePress: () {
-                uploadViewModel.newLesson(context);
+                if (uploadViewModel.hasFiles) {
+                  uploadViewModel.sendData();
+                  uploadViewModel.getData();
+                  Navigator.restorablePushNamed(
+                    context,
+                    LessonSpecificationsView.routeName,
+                  );
+                } else {
+                  null;
+                }
               },
               text: 'New lesson',
               enabled: uploadViewModel.hasFiles,

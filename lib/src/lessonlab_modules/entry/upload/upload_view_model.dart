@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/specifications_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
-import 'package:provider/provider.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
 import 'package:cross_file/cross_file.dart';
 import 'dart:developer' as developer;
@@ -76,7 +75,7 @@ class UploadViewModel with ChangeNotifier {
       getData();
       Navigator.restorablePushNamed(
         context,
-        SpecificationsView.routeName,
+        LessonSpecificationsView.routeName,
       );
     } else {
       null;

@@ -1,15 +1,8 @@
-// import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:lessonlab/src/lessonlab_modules/material_selection/material_selection_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_type/quiz_type_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/specifications_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/specifications_view.dart';
-import 'package:provider/provider.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lessonlab/src/global_components/route_animation.dart';
-// import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_provider.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 
@@ -88,14 +81,10 @@ class MyApp extends StatelessWidget {
                     return const MenuView();
                   case '/upload':
                     return const UploadView();
-                  case '/materialselection':
-                    return const MaterialSelectionView();
                   case '/lesson_result':
-                    return const LessonResultView();
-                  case '/quiztype':
-                    return const QuizTypeView();
+                    return const LessonResultView();  
                   case '/specifications':
-                    return const SpecificationsView();
+                    return const LessonSpecificationsView();
                   default:
                     return const MenuView();
                 }

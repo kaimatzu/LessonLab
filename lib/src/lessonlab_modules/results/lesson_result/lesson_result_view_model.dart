@@ -23,6 +23,14 @@ class LessonResultViewModel with ChangeNotifier {
       developer.log('Error loading contents: $error');
     }
   }
+
+  Future<void> sendData() async {
+  
+  }
+
+  Future<void> getData() async {
+  
+  }
 }
 
 Future<String> loadFileContents(String filePath) async {

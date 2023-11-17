@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/components/text_editor.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view_model.dart';
-import 'dart:developer' as developer;
 
 class LessonResultView extends StatelessWidget {
   const LessonResultView({Key? key}) : super(key: key);

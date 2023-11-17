@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 
 const List<String> list = <String>[
   'Elementary', 
@@ -15,11 +14,16 @@ class Dropdown extends StatefulWidget {
     });
 
   @override
-  State<Dropdown> createState() => _DropdownState();
+  // ignore: library_private_types_in_public_api
+  _DropdownState createState() => _DropdownState();
+
+  // ignore: library_private_types_in_public_api
+  String get getSelectedValue => createState().selectedValue;
 }
 
 class _DropdownState extends State<Dropdown> {
   String selectedValue = list.first;
+
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +39,7 @@ class _DropdownState extends State<Dropdown> {
             width: 1440,
             child: DropdownButtonFormField<String>(
               isExpanded: true,
-              dropdownColor: Color.fromARGB(255, 49, 51, 56),
+              dropdownColor: const Color.fromARGB(255, 49, 51, 56),
               decoration: const InputDecoration(
                 filled: true,
                 fillColor: Color.fromARGB(255, 49, 51, 56),
@@ -62,7 +66,6 @@ class _DropdownState extends State<Dropdown> {
           )
         ]
       ),
-
     );
   }
 }

@@ -1,5 +1,4 @@
-use std::sync::{Arc, Mutex};
-
+#[derive(Default)]
 pub struct UploadModel {
     pub file_paths: Vec<String>,
     pub urls: Vec<String>,
