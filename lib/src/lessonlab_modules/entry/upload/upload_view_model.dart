@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/specifications_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 import 'package:provider/provider.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
 import 'package:cross_file/cross_file.dart';
@@ -15,6 +18,8 @@ class UploadViewModel with ChangeNotifier {
   var textFiles = <TextFile>[];
 
   var statusCode = 0;
+
+  bool hasFiles = false;
 
   Future<void> sendData() async {
     final requestMessage = RinfInterface.CreateRequest(
@@ -56,5 +61,38 @@ class UploadViewModel with ChangeNotifier {
     );
     var content = responseMessage.filePaths;
     developer.log(content.join(), name: 'rinf-info');
+  }
+
+  void cancelUpload(BuildContext context) {
+    Navigator.restorablePushNamed(
+      context,
+      MenuView.routeName,
+    );
+  }
+
+  void newLesson(BuildContext context) {
+    if (hasFiles) {
+      sendData();
+      getData();
+      Navigator.restorablePushNamed(
+        context,
+        SpecificationsView.routeName,
+      );
+    } else {
+      null;
+    }
+  }
+
+  void newQuiz(BuildContext context) {
+    if (hasFiles) {
+      sendData();
+      getData();
+      Navigator.restorablePushNamed(
+        context,
+        LessonResultView.routeName,
+      );
+    } else {
+      null;
+    }
   }
 }

@@ -91,12 +91,12 @@ class MyApp extends StatelessWidget {
                   case '/materialselection':
                     return const MaterialSelectionView();
                   case '/lesson_result':
-                  return const LessonResultView();  
+                    return const LessonResultView();
                   case '/quiztype':
                     return const QuizTypeView();
                   case '/specifications':
                     return const SpecificationsView();
-                default:
+                  default:
                     return const MenuView();
                 }
               },
