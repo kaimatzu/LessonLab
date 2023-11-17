@@ -4,7 +4,9 @@ import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/new_materi
 import 'package:lessonlab/src/global_components/route_animation.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/menu_card.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/new_material_button.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
+import 'package:provider/provider.dart';
 
 class MenuView extends StatelessWidget {
   const MenuView({
@@ -17,6 +19,7 @@ class MenuView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final menuViewModel = context.watch<MenuViewModel>();
     double cardWidth = MediaQuery.of(context).size.width * 0.25;
     double cardHeight = MediaQuery.of(context).size.height * 0.25;
 
@@ -39,10 +42,7 @@ class MenuView extends StatelessWidget {
                 ),
                 NewMaterialButton(
                   onPressed: () {
-                    Navigator.restorablePushNamed(
-                      context,
-                      UploadView.routeName,
-                    );
+                    menuViewModel.newMaterial(context);
                   },
                   icon: const Icon(Icons.add),
                   text: 'New Material',

@@ -2,17 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_components/secondary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/specifications_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
-import 'package:lessonlab/src/global_components/primary_button.dart';
-import 'package:lessonlab/src/global_components/secondary_button.dart';
-import 'package:lessonlab/src/lessonlab_modules/material_selection/material_selection_view.dart';
 import 'package:provider/provider.dart';
-import 'dart:developer' as developer;
 
 import 'dart:io';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/resources_container.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
 
@@ -31,7 +24,7 @@ class _UploadViewState extends State<UploadView> {
     final uploadViewModel = context.watch<UploadViewModel>();
     final overlayProvider = context.watch<OverlayViewModel>();
 
-    bool hasFiles = uploadViewModel.files.isNotEmpty ||
+    uploadViewModel.hasFiles = uploadViewModel.files.isNotEmpty ||
         uploadViewModel.urlFiles.isNotEmpty ||
         uploadViewModel.textFiles.isNotEmpty;
 
@@ -116,47 +109,25 @@ class _UploadViewState extends State<UploadView> {
           children: [
             SecondaryButton(
               handlePress: () {
-                Navigator.restorablePushNamed(
-                  context,
-                  MenuView.routeName,
-                );
+                uploadViewModel.cancelUpload(context);
               },
               text: 'Cancel',
             ),
             const SizedBox(width: 30.0),
             PrimaryButton(
               handlePress: () {
-                if (hasFiles) {
-                  uploadViewModel.sendData();
-                  uploadViewModel.getData();
-                  Navigator.restorablePushNamed(
-                    context,
-                    SpecificationsView.routeName,
-                  );
-                } else {
-                  null;
-                }
+                uploadViewModel.newLesson(context);
               },
               text: 'New lesson',
-              enabled: hasFiles,
+              enabled: uploadViewModel.hasFiles,
             ),
             const SizedBox(width: 30.0),
             PrimaryButton(
               handlePress: () {
-                if (hasFiles) {
-                  uploadViewModel.sendData();
-                  uploadViewModel.getData();
-
-                  Navigator.restorablePushNamed(
-                    context,
-                    LessonResultView.routeName,
-                  );
-                } else {
-                  null;
-                }
+                uploadViewModel.newQuiz(context);
               },
               text: 'New quiz',
-              enabled: hasFiles,
+              enabled: uploadViewModel.hasFiles,
             ),
             const SizedBox(width: 30.0),
             Container(
