@@ -19,12 +19,6 @@ class SecondaryButton extends StatelessWidget {
             blurRadius: 15,
             offset: const Offset(0, 2),
           ),
-          BoxShadow(
-            color: yellow.withOpacity(.3),
-            spreadRadius: 5,
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
         ],
       ),
       child: ElevatedButton(
@@ -34,7 +28,7 @@ class SecondaryButton extends StatelessWidget {
           shadowColor: MaterialStateProperty.all<Color>(yellow.withAlpha(0)),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(32.0, 12.0, 32.0, 12.0),
+          padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 16.0),
           child: Text(
             text,
             style: const TextStyle(
