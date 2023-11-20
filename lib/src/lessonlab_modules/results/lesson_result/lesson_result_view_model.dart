@@ -22,12 +22,13 @@ class LessonResultViewModel with ChangeNotifier {
     try {
       cssContents = loadFileContents('assets/styles/markdown.css');
       mdContents = getData();
-      
+
       // Notify listeners that the data has been loaded
+      // Notify (View)
       notifyListeners();
     } catch (error) {
       // Handle errors
-      developer.log('Error loading contents: $error');
+      developer.log('Error loading contents: $error', name: 'Error');
     }
   }
 
@@ -36,22 +37,23 @@ class LessonResultViewModel with ChangeNotifier {
   }
 
   Future<String> getData() async {
-    final requestMessage = RinfInterface.ReadRequest(
-      req: true
-    );
+    final requestMessage = RinfInterface.ReadRequest(req: true);
     final rustRequest = RustRequest(
       resource: RinfInterface.ID,
       operation: RustOperation.Read,
       message: requestMessage.writeToBuffer(),
       // blob: NO BLOB
     );
-    final rustResponse = await requestToRust(rustRequest);
+    final rustResponse =
+        await requestToRust(rustRequest, timeout: const Duration(minutes: 10));
     final responseMessage = RinfInterface.ReadResponse.fromBuffer(
       rustResponse.message!,
+      // TODO: handle this could be a null
     );
     statusCode = responseMessage.statusCode;
-    developer.log(statusCode.toString(), name: 'rinf-info');
-
+    developer.log(statusCode.toString(), name: 'status code');
+    developer.log(responseMessage.errorString.toString(),
+        name: 'error message');
     return responseMessage.mdContent;
   }
 }

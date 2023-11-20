@@ -24,24 +24,24 @@ class LessonSpecificationsView extends StatelessWidget {
     return Scaffold(
       appBar: const LessonLabAppBar(),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(180.0, 0.0, 180.0, 60.0),
+        padding: const EdgeInsets.fromLTRB(180.0, 32.0, 180.0, 32.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: lessonSpecificationsViewModel.formFields
-              .map<Widget?>((formField) {
-                if (formField.inputField != null) {
-                  return formField
-                      .inputField; 
-                } else if (formField.dropdown != null) {
-                  return formField
-                      .dropdown;
-                } else {
-                  return null;
-                }
-              })
-              .whereType<Widget>() // Filter out null values
-              .toList(),
+                .map<Widget?>((formField) {
+                  if (formField.inputField != null) {
+                    return formField.inputField;
+                  } else if (formField.textArea != null) {
+                    return formField.textArea;
+                  } else if (formField.dropdown != null) {
+                    return formField.dropdown;
+                  } else {
+                    return null;
+                  }
+                })
+                .whereType<Widget>() // Filter out null values
+                .toList(),
           ),
         ),
       ),
@@ -52,12 +52,17 @@ class LessonSpecificationsView extends StatelessWidget {
           children: [
             SecondaryButton(
               handlePress: () {
-                Navigator.restorablePushNamed(
-                  context,
-                  UploadView.routeName,
-                );
+                lessonSpecificationsViewModel.cancelLesson(context);
               },
               text: 'Cancel',
+            ),
+            const SizedBox(width: 30.0),
+            PrimaryButton(
+              handlePress: () {
+                lessonSpecificationsViewModel.addCustomSpecifications();
+              },
+              text: 'Add',
+              enabled: true,
             ),
             const SizedBox(width: 30.0),
             PrimaryButton(
@@ -65,12 +70,9 @@ class LessonSpecificationsView extends StatelessWidget {
                 lessonSpecificationsViewModel.collectFormTextValues();
                 lessonSpecificationsViewModel.sendData();
                 lessonSpecificationsViewModel.getData();
-                Navigator.restorablePushNamed(
-                  context,
-                  LessonResultView.routeName,
-                );
+                lessonSpecificationsViewModel.generateLesson(context);
               },
-              text: 'Confirm',
+              text: 'Generate',
               enabled: true,
             ),
           ],

@@ -8,8 +8,12 @@ const List<Widget> icons = <Widget>[
 ];
 
 class TextEditor extends StatefulWidget {
-  const TextEditor({Key? key, required this.title, required this.mdContents, required this.cssContents})
-      : super(key: key);
+  const TextEditor({
+    Key? key,
+    required this.title,
+    required this.mdContents,
+    required this.cssContents,
+  }) : super(key: key);
 
   final String title;
   final String mdContents;
@@ -20,7 +24,7 @@ class TextEditor extends StatefulWidget {
 }
 
 class _TextEditor extends State<TextEditor> {
-  final List<bool> _richView = <bool>[true, false];
+  final List<bool> _richView = <bool>[false, true];
   late String htmlContent;
   late TextEditingController textController;
 
@@ -30,23 +34,22 @@ class _TextEditor extends State<TextEditor> {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          Container(
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.0)),
-            child: TextFormField(
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20),
-              initialValue: widget.title,
-              decoration: const InputDecoration(
-                  hintText: 'Enter your title here...',
-                  hintStyle: TextStyle(
-                    color: Colors.grey,
-                    fontWeight: FontWeight.normal,
-                  ),
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 49, 51, 56),
-                  border: OutlineInputBorder()),
+          TextFormField(
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+            initialValue: widget.title,
+            decoration: const InputDecoration(
+              hintText: 'Enter your title here...',
+              hintStyle: TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.normal,
+              ),
+              filled: true,
+              fillColor: Color.fromARGB(255, 49, 51, 56),
+              border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 30.0),
@@ -57,8 +60,9 @@ class _TextEditor extends State<TextEditor> {
                 child: Container(
                   // Render Placeholder when _richview is set to [false, true]
                   decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 49, 51, 56),
-                      borderRadius: BorderRadius.circular(8.0)),
+                    color: const Color.fromARGB(255, 49, 51, 56),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                   child: TextFormField(
                     controller: textController,
                     onChanged: (_) => updateHtmlContent(),
@@ -67,34 +71,42 @@ class _TextEditor extends State<TextEditor> {
                     // initialValue: widget.mdContents,
                     maxLines: null,
                     decoration: const InputDecoration(
-                        hintText: 'Enter your text here...',
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                        ),
-                        filled: true,
-                        fillColor: Color.fromARGB(255, 49, 51, 56),
-                        border: OutlineInputBorder()),
+                      hintText: 'Enter your text here...',
+                      hintStyle: TextStyle(
+                        color: Colors.grey,
+                      ),
+                      filled: true,
+                      fillColor: Color.fromARGB(255, 49, 51, 56),
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                 ),
               ),
               Visibility(
-                  visible: _richView[1],
-                  child: Container(
-                    // Render Placeholder when _richview is set to [false, true]
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 49, 51, 56),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: Builder(
-                      builder: (context) {
-                        // developer.log(Style.fromCss(widget.cssContents, (css, errors) => null).keys.toString(), name: 'info-txe');
-                        return Html(
-                          data: '<div class="markdown-body">$htmlContent</div>',
-                          style: Style.fromCss(widget.cssContents, (css, errors) => null)
-                        );
-                      }
-                    ),
-                  )),
+                visible: _richView[1],
+                child: Container(
+                  // Render Placeholder when _richview is set to [false, true]
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 49, 51, 56),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Builder(
+                    builder: (context) {
+                      // developer.log(Style.fromCss(widget.cssContents, (css, errors) => null).keys.toString(), name: 'info-txe');
+                      // * Render HTML
+                      // TODO: use onLinkTap to enable hyperlinks
+                      // https://app.clickup.com/t/86ctyvdd2
+                      // regex the link then add an onLink tap
+                      // font-family not working in <code>
+                      return Html(
+                        data: '<div class="markdown-body">$htmlContent</div>',
+                        style: Style.fromCss(
+                            widget.cssContents, (css, errors) => null),
+                      );
+                    },
+                  ),
+                ),
+              ),
               Positioned(
                 top: 10,
                 right: 10,

@@ -8,4 +8,5 @@ message ReadRequest {
 message ReadResponse {
     uint32 status_code = 1; 
     string md_content = 2;
+	string error_string = 3;
 }

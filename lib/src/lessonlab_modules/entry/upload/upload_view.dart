@@ -27,6 +27,13 @@ class UploadView extends StatelessWidget {
     const fileNameTextStyle =
         TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold);
 
+    const txtFiles = Text('Files', style: fileNameTextStyle);
+    const txtNoFiles = Text('No files available', style: noFilesStyle);
+    const txtUrl = Text('URL', style: fileNameTextStyle);
+    const txtNoUrl = Text('No URLs available ', style: noFilesStyle);
+    const txtText = Text('Text', style: fileNameTextStyle);
+    const txtNoText = Text('No text available.', style: noFilesStyle);
+
     return Scaffold(
       appBar: const LessonLabAppBar(),
       body: Padding(
@@ -37,13 +44,7 @@ class UploadView extends StatelessWidget {
             children: [
               const Padding(
                 padding: EdgeInsets.fromLTRB(14.0, 0.0, 14.0, 4.0),
-                child: Text(
-                  'Files',
-                  style: TextStyle(
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: txtFiles,
               ),
               ResourcesContainer(
                   items: uploadViewModel.files,
@@ -51,35 +52,24 @@ class UploadView extends StatelessWidget {
               if (uploadViewModel.files.isEmpty)
                 const Padding(
                   padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
-                  child: Text(
-                    'No files available.',
-                    style: noFilesStyle,
-                  ),
+                  child: txtNoFiles,
                 ),
               const Padding(
                 padding: EdgeInsets.fromLTRB(14.0, 14.0, 14.0, 4.0),
-                child: Text(
-                  'URL',
-                  style: fileNameTextStyle,
-                ),
+                child: txtUrl,
               ),
               ResourcesContainer(
-                  items: uploadViewModel.urlFiles,
-                  icon: const Icon(Icons.link, color: Colors.white)),
+                items: uploadViewModel.urlFiles,
+                icon: const Icon(Icons.link, color: Colors.white),
+              ),
               if (uploadViewModel.urlFiles.isEmpty)
                 const Padding(
                   padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
-                  child: Text(
-                    'No URLs available.',
-                    style: noFilesStyle,
-                  ),
+                  child: txtNoUrl,
                 ),
               const Padding(
                 padding: EdgeInsets.fromLTRB(14.0, 14.0, 14.0, 4.0),
-                child: Text(
-                  'Text',
-                  style: fileNameTextStyle,
-                ),
+                child: txtText,
               ),
               ResourcesContainer(
                   items: uploadViewModel.textFiles,
@@ -87,10 +77,7 @@ class UploadView extends StatelessWidget {
               if (uploadViewModel.textFiles.isEmpty)
                 const Padding(
                   padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
-                  child: Text(
-                    'No text available.',
-                    style: noFilesStyle,
-                  ),
+                  child: txtNoText,
                 ),
               const SizedBox(height: 16.0),
             ],

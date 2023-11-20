@@ -24,7 +24,7 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
 
             let _ = request_message;
 
-            let response_message;
+			let response_message;
 
             let mut string_payload: String = String::new();
             
@@ -69,17 +69,19 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
                 string_payload.push_str("\n"); 
             }
 
-            match lesson_generator::generate(string_payload){
+            match lesson_generator::generate(string_payload) {
                 Ok(md_content) => {
                     response_message = ReadResponse {
                         status_code: StatusCode::OK.as_u16() as u32,
-                        md_content: md_content
+                        md_content: md_content,
+						error_string: String::from("No error")
                     };
                 }
-                Err(_) => {
+                Err(error) => {
                     response_message = ReadResponse {
                         status_code: StatusCode::NOT_FOUND.as_u16() as u32,
-                        md_content: String::from("No content")
+                        md_content: String::from("No content"),
+						error_string: error.to_string()
                     };
                 }
             }
