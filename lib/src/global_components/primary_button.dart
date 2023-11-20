@@ -12,8 +12,9 @@ class PrimaryButton extends StatelessWidget {
   final String text;
   final bool enabled;
 
-  static const yellow = Color.fromRGBO(241, 196, 27, 1);
-  static const disabled = Color.fromRGBO(204, 166, 24, .5);
+  static const yellow = Color.fromARGB(255, 241, 196, 27);
+  static const disabled =
+      Color.fromARGB(255, (241 + 255) ~/ 2, (196 + 255) ~/ 2, (27 + 255) ~/ 2);
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +25,8 @@ class PrimaryButton extends StatelessWidget {
                 BoxShadow(
                   color: yellow.withOpacity(.3),
                   spreadRadius: 3,
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
+                  blurRadius: 10,
+                  offset: const Offset(0, 10),
                 ),
               ]
             : [],

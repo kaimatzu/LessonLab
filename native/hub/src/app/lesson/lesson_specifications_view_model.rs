@@ -3,12 +3,12 @@ use crate::bridge::{RustOperation, RustRequest, RustResponse, RustSignal};
 use crate::messages::entry::upload::uploaded_content;
 use prost::Message;
 use tokio_with_wasm::tokio;
-use crate::app::entry::upload::upload_model::UploadModel;
+use crate::app::lesson::lesson_specifications_model::LessonSpecificationsModel;
 
 // Handler functions
-pub async fn handle_uploaded_content(rust_request: RustRequest,
-    upload_model: &mut tokio::sync::MutexGuard<'_, UploadModel>) -> RustResponse {
-    use crate::messages::entry::upload::uploaded_content::{CreateRequest, CreateResponse, ReadRequest, ReadResponse};
+pub async fn handle_lesson_specifications(rust_request: RustRequest,
+    lesson_specifications_model: &mut tokio::sync::MutexGuard<'_, LessonSpecificationsModel>) -> RustResponse {
+    use crate::messages::lesson::lesson_specifications::{CreateRequest, CreateResponse, ReadRequest, ReadResponse};
 
     match rust_request.operation {
         RustOperation::Create => {
@@ -16,18 +16,10 @@ pub async fn handle_uploaded_content(rust_request: RustRequest,
             let request_message = CreateRequest::decode(message_bytes.as_slice()).unwrap();
 
             // Do something with data
-            upload_model.file_paths = request_message.file_paths;
-            upload_model.urls = request_message.urls;
-            upload_model.text_files = request_message.texts
-                .into_iter()
-                .map(|prost_text_file| crate::app::entry::upload::upload_model::TextFile {
-                    title: prost_text_file.title,
-                    content: prost_text_file.content,
-                })
-                .collect();
+            lesson_specifications_model.lesson_specifications = request_message.lesson_specifications;
 
             let response_message;
-            if upload_model.file_paths.len() > 0 {
+            if lesson_specifications_model.lesson_specifications.len() > 0 {
                 response_message = CreateResponse {
                     // Send the data back in a response
                     status_code: StatusCode::OK.as_u16() as u32
@@ -54,15 +46,7 @@ pub async fn handle_uploaded_content(rust_request: RustRequest,
             let _ = request_message;
 
             let response_message = ReadResponse {
-                file_paths: upload_model.file_paths.clone(),
-                urls: upload_model.urls.clone(),
-                texts: upload_model.text_files.clone()
-                    .into_iter()
-                    .map(|prost_text_file| uploaded_content::TextFile {
-                        title: prost_text_file.title,
-                        content: prost_text_file.content,
-                    })
-                    .collect()
+                lesson_specifications: lesson_specifications_model.lesson_specifications.clone()
             };
 
             RustResponse {

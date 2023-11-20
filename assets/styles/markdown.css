@@ -1,16 +1,16 @@
 html {
-  font-size: 16px;
-  max-width: 100%;
+	font-size: 16px;
+	max-width: 100%;
 }
 
 body {
-  color: #ffffff;
-  font-family: Arimo, Helvetica, sans-serif;;
-  font-weight: 300;
-  margin: 0 auto;
-  max-width: 48rem;
-  line-height: 1.2;
-  padding: 3rem;
+	color: #ffffff;
+	font-family: sans-serif, Arimo, Helvetica, Arial;
+	font-weight: 300;
+	margin: 0 auto;
+	max-width: 48rem;
+	line-height: 1.2;
+	padding: 3rem;
 }
 
 h1,
@@ -19,25 +19,34 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: Arimo, Helvetica, sans-serif;
+	font-family: sans-serif, Arimo, Helvetica, Arial;
 }
 
 h1,
 h2,
 h3 {
-  border-bottom: 2px solid #fafafa;
-  margin-bottom: 1.15rem;
-  padding-bottom: .5rem;
-  text-align: center;
+	/* border-bottom: 2px solid #fafafa; */
+	margin-bottom: 1.15rem;
+	padding-bottom: 0.5rem;
+	text-align: left;
 }
 
 blockquote {
-  border-left: 8px solid #fafafa;
-  padding: 1rem;
+	border-left: 8px solid #fafafa;
+	padding: 1rem;
 }
 
 pre,
 code {
-  color: #000000;
-  background-color: #fafafa;
+	font-family: 'Courier New', monospace, consolas;
+	font-size: 14px;
+	color: #c0c0c0;
+	padding-left: 4px;
+	padding-right: 4px;
+	background-color: rgb(71, 74, 82);
+}
+
+hr {
+	border: 0.5px solid #ccc;
+	color: white;
 }

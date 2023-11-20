@@ -1,5 +1,5 @@
 pub mod entry;
-// pub mod lesson;
-// pub mod material_selection;
+pub mod lesson;
+pub mod utils;
 // pub mod quiz;
-// pub mod results;
+pub mod results;

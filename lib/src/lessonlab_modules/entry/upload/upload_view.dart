@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_components/secondary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
-import 'package:provider/provider.dart';
-
-import 'dart:io';
-import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/resources_container.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
 
-class UploadView extends StatefulWidget {
+class UploadView extends StatelessWidget {
   const UploadView({Key? key}) : super(key: key);
 
   static const routeName = '/upload';
 
-  @override
-  State<UploadView> createState() => _UploadViewState();
-}
-
-class _UploadViewState extends State<UploadView> {
   @override
   Widget build(BuildContext context) {
     final uploadViewModel = context.watch<UploadViewModel>();
@@ -31,6 +26,15 @@ class _UploadViewState extends State<UploadView> {
     const noFilesStyle = TextStyle(color: Colors.grey);
     const fileNameTextStyle =
         TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold);
+    const emptyPadding = EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0);
+    const filePadding = EdgeInsets.fromLTRB(14.0, 0.0, 14.0, 4.0);
+
+    const txtFiles = Text('Files', style: fileNameTextStyle);
+    const txtNoFiles = Text('No files available', style: noFilesStyle);
+    const txtUrl = Text('URL', style: fileNameTextStyle);
+    const txtNoUrl = Text('No URLs available ', style: noFilesStyle);
+    const txtText = Text('Text', style: fileNameTextStyle);
+    const txtNoText = Text('No text available.', style: noFilesStyle);
 
     return Scaffold(
       appBar: const LessonLabAppBar(),
@@ -41,61 +45,43 @@ class _UploadViewState extends State<UploadView> {
             crossAxisAlignment: CrossAxisAlignment.start, // Adjust as needed
             children: [
               const Padding(
-                padding: EdgeInsets.fromLTRB(14.0, 0.0, 14.0, 4.0),
-                child: Text(
-                  'Files',
-                  style: TextStyle(
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                padding: filePadding,
+                child: txtFiles,
               ),
               ResourcesContainer(
-                  items: uploadViewModel.files,
-                  icon: const Icon(Icons.file_open, color: Colors.white)),
+                items: uploadViewModel.files,
+                icon: const Icon(Icons.file_open, color: Colors.white),
+              ),
               if (uploadViewModel.files.isEmpty)
                 const Padding(
-                  padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
-                  child: Text(
-                    'No files available.',
-                    style: noFilesStyle,
-                  ),
+                  padding: emptyPadding,
+                  child: txtNoFiles,
                 ),
               const Padding(
-                padding: EdgeInsets.fromLTRB(14.0, 14.0, 14.0, 4.0),
-                child: Text(
-                  'URL',
-                  style: fileNameTextStyle,
-                ),
+                padding: filePadding,
+                child: txtUrl,
               ),
               ResourcesContainer(
-                  items: uploadViewModel.urlFiles,
-                  icon: const Icon(Icons.link, color: Colors.white)),
+                items: uploadViewModel.urlFiles,
+                icon: const Icon(Icons.link, color: Colors.white),
+              ),
               if (uploadViewModel.urlFiles.isEmpty)
                 const Padding(
-                  padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
-                  child: Text(
-                    'No URLs available.',
-                    style: noFilesStyle,
-                  ),
+                  padding: emptyPadding,
+                  child: txtNoUrl,
                 ),
               const Padding(
-                padding: EdgeInsets.fromLTRB(14.0, 14.0, 14.0, 4.0),
-                child: Text(
-                  'Text',
-                  style: fileNameTextStyle,
-                ),
+                padding: filePadding,
+                child: txtText,
               ),
               ResourcesContainer(
-                  items: uploadViewModel.textFiles,
-                  icon: const Icon(Icons.description, color: Colors.white)),
+                items: uploadViewModel.textFiles,
+                icon: const Icon(Icons.description, color: Colors.white),
+              ),
               if (uploadViewModel.textFiles.isEmpty)
                 const Padding(
-                  padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
-                  child: Text(
-                    'No text available.',
-                    style: noFilesStyle,
-                  ),
+                  padding: emptyPadding,
+                  child: txtNoText,
                 ),
               const SizedBox(height: 16.0),
             ],
@@ -116,7 +102,16 @@ class _UploadViewState extends State<UploadView> {
             const SizedBox(width: 30.0),
             PrimaryButton(
               handlePress: () {
-                uploadViewModel.newLesson(context);
+                if (uploadViewModel.hasFiles) {
+                  uploadViewModel.sendData();
+                  uploadViewModel.getData();
+                  Navigator.restorablePushNamed(
+                    context,
+                    LessonSpecificationsView.routeName,
+                  );
+                } else {
+                  null;
+                }
               },
               text: 'New lesson',
               enabled: uploadViewModel.hasFiles,

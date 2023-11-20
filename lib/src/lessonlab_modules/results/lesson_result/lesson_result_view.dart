@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:provider/provider.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/components/text_editor.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view_model.dart';
-import 'dart:developer' as developer;
 
 class LessonResultView extends StatelessWidget {
   const LessonResultView({Key? key}) : super(key: key);
@@ -34,7 +34,12 @@ class LessonResultView extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 30.0),
               child: FutureBuilder<List<String>>(
-                future: Future.wait([lessonResultViewModel.mdContents, lessonResultViewModel.cssContents]), 
+                future: Future.wait(
+                  [
+                    lessonResultViewModel.mdContents,
+                    lessonResultViewModel.cssContents,
+                  ],
+                ),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
@@ -47,10 +52,9 @@ class LessonResultView extends StatelessWidget {
 
                     // developer.log(cssContent, name: 'info');
                     return TextEditor(
-                      title: 'Title',
-                      mdContents: mdContent,
-                      cssContents: cssContent
-                    );
+                        title: 'Title',
+                        mdContents: mdContent,
+                        cssContents: cssContent);
                   }
                 },
               ),
@@ -62,21 +66,20 @@ class LessonResultView extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(0.0, 30.0, 180.0, 60.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
+          // TODO: add functionality to buttons
           children: [
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(150.0, 50.0),
-              ),
-              child: const Text('Regenerate'),
+            PrimaryButton(
+              handlePress: () {
+                // if generation done then enable regenerate
+              },
+              text: 'Regenerate',
+              enabled: true,
             ),
             const SizedBox(width: 30.0),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(150.0, 50.0),
-              ),
-              child: const Text('Finish'),
+            PrimaryButton(
+              handlePress: () {},
+              text: 'Finish',
+              enabled: true,
             ),
           ],
         ),

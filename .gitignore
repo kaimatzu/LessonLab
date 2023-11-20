@@ -52,3 +52,5 @@ target/
 
 # Generated messages
 */**/messages/
+
+.env

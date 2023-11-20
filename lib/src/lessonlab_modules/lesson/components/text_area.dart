@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
 
-class InputField extends StatefulWidget {
-  InputField({
+class TextArea extends StatefulWidget {
+  TextArea({
     Key? key,
     required this.label,
     required this.hintLabel,
@@ -15,10 +15,10 @@ class InputField extends StatefulWidget {
 
   @override
   // ignore: library_private_types_in_public_api
-  _InputFieldState createState() => _InputFieldState();
+  _TextAreaState createState() => _TextAreaState();
 }
 
-class _InputFieldState extends State<InputField> {
+class _TextAreaState extends State<TextArea> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -35,16 +35,22 @@ class _InputFieldState extends State<InputField> {
               fontWeight: FontWeight.w600,
             ),
           ),
+          const SizedBox(height: 8.0),
           TextField(
             controller: widget.controller,
-            style: const TextStyle(color: Colors.white),
+            keyboardType: TextInputType.multiline,
+            maxLines: 12,
+            style: const TextStyle(
+              fontFamily: 'Roboto, Inter, Arial',
+              color: Colors.white,
+            ),
             decoration: InputDecoration(
+              contentPadding: const EdgeInsets.all(16.0),
               filled: true,
               fillColor: const Color.fromARGB(255, 49, 51, 56),
               border: const OutlineInputBorder(),
               labelText: widget.hintLabel,
               labelStyle: const TextStyle(
-                fontFamily: 'Roboto, Inter, Arial',
                 color: Colors.grey,
               ),
               floatingLabelBehavior: FloatingLabelBehavior.never,
