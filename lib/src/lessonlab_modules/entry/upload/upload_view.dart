@@ -26,6 +26,8 @@ class UploadView extends StatelessWidget {
     const noFilesStyle = TextStyle(color: Colors.grey);
     const fileNameTextStyle =
         TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold);
+    const emptyPadding = EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0);
+    const filePadding = EdgeInsets.fromLTRB(14.0, 0.0, 14.0, 4.0);
 
     const txtFiles = Text('Files', style: fileNameTextStyle);
     const txtNoFiles = Text('No files available', style: noFilesStyle);
@@ -43,19 +45,20 @@ class UploadView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start, // Adjust as needed
             children: [
               const Padding(
-                padding: EdgeInsets.fromLTRB(14.0, 0.0, 14.0, 4.0),
+                padding: filePadding,
                 child: txtFiles,
               ),
               ResourcesContainer(
-                  items: uploadViewModel.files,
-                  icon: const Icon(Icons.file_open, color: Colors.white)),
+                items: uploadViewModel.files,
+                icon: const Icon(Icons.file_open, color: Colors.white),
+              ),
               if (uploadViewModel.files.isEmpty)
                 const Padding(
-                  padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
+                  padding: emptyPadding,
                   child: txtNoFiles,
                 ),
               const Padding(
-                padding: EdgeInsets.fromLTRB(14.0, 14.0, 14.0, 4.0),
+                padding: filePadding,
                 child: txtUrl,
               ),
               ResourcesContainer(
@@ -64,19 +67,20 @@ class UploadView extends StatelessWidget {
               ),
               if (uploadViewModel.urlFiles.isEmpty)
                 const Padding(
-                  padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
+                  padding: emptyPadding,
                   child: txtNoUrl,
                 ),
               const Padding(
-                padding: EdgeInsets.fromLTRB(14.0, 14.0, 14.0, 4.0),
+                padding: filePadding,
                 child: txtText,
               ),
               ResourcesContainer(
-                  items: uploadViewModel.textFiles,
-                  icon: const Icon(Icons.description, color: Colors.white)),
+                items: uploadViewModel.textFiles,
+                icon: const Icon(Icons.description, color: Colors.white),
+              ),
               if (uploadViewModel.textFiles.isEmpty)
                 const Padding(
-                  padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
+                  padding: emptyPadding,
                   child: txtNoText,
                 ),
               const SizedBox(height: 16.0),

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 class SecondaryButton extends StatelessWidget {
-  const SecondaryButton(
-      {super.key, required this.handlePress, required this.text});
+  const SecondaryButton({
+    super.key,
+    required this.handlePress,
+    required this.text,
+  });
 
   final void Function() handlePress;
   final String text;
@@ -17,12 +20,6 @@ class SecondaryButton extends StatelessWidget {
             color: yellow.withOpacity(.3),
             spreadRadius: 3,
             blurRadius: 10,
-            offset: const Offset(0, 10),
-          ),
-          BoxShadow(
-            color: yellow.withOpacity(.3),
-            spreadRadius: 3,
-            blurRadius: 20,
             offset: const Offset(0, 10),
           ),
         ],

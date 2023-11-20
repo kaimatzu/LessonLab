@@ -28,12 +28,6 @@ class PrimaryButton extends StatelessWidget {
                   blurRadius: 10,
                   offset: const Offset(0, 10),
                 ),
-                BoxShadow(
-                  color: yellow.withOpacity(.3),
-                  spreadRadius: 3,
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
               ]
             : [],
       ),
