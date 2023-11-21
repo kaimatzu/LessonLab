@@ -15,8 +15,6 @@ class MenuView extends StatelessWidget {
 
   static const routeName = '/';
 
-  final Color yellow = const Color.fromRGBO(241, 196, 27, 1);
-
   @override
   Widget build(BuildContext context) {
     final menuViewModel = context.watch<MenuViewModel>();

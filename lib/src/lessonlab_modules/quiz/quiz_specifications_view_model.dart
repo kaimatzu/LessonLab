@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/components/dropdown_menu.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/components/input_field.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/components/dropdown_menu.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/components/input_field.dart';
 import 'dart:developer' as developer;
 
 import 'package:lessonlab/messages/lesson/lesson_specifications.pb.dart'
     // ignore: library_prefixes
     as RinfInterface;
-import 'package:lessonlab/src/lessonlab_modules/lesson/components/text_area.dart';
-import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/components/text_area.dart';
+// import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 import 'package:rinf/rinf.dart';
 
 // This class holds all the input fields in the view
@@ -26,20 +26,20 @@ class FormField {
            'Either provide an InputField or a Dropdown or a TextArea.');
 }
 
-class LessonSpecificationsViewModel extends ChangeNotifier {
-  LessonSpecificationsViewModel() {
+class QuizSpecificationsViewModel extends ChangeNotifier {
+  QuizSpecificationsViewModel() {
     final initializeFields = [
-      InputField(label: 'Title', hintLabel: 'Enter lesson title'),
-      InputField(label: 'Focus Topic', hintLabel: 'Enter focus of the lesson'),
-      InputField(label: 'Timeframe', hintLabel: 'Enter timeframe'),
-      TextArea(
-          label: 'Learning Outcomes', hintLabel: 'Enter learning outcomes'),
-      const Dropdown(label: "Grade Level", list: <String>[
-        'Elementary',
-        'Junior High School',
-        'Senior High School',
-        'College',
+      InputField(label: 'Title', hintLabel: 'Enter quiz title'),
+      const Dropdown(label: "Quiz Level", list: <String>[
+        'Simple',
+        'Comprehensive',
       ]),
+      const Dropdown(label: "Quiz Length", list: <String>[
+        'Short (5 items)',
+        'Medium (10 items)',
+        'Long (20 items)'
+      ]),
+      InputField(label: 'Timeframe', hintLabel: 'Enter timeframe'),
     ];
 
     for (var formField in initializeFields) {
@@ -125,11 +125,11 @@ class LessonSpecificationsViewModel extends ChangeNotifier {
     developer.log('Added new custom spec', name: 'custom specs');
   }
 
-  void cancelLesson(BuildContext context) {
+  void cancelQuiz(BuildContext context) {
     Navigator.restorablePushNamed(context, UploadView.routeName);
   }
 
-  void generateLesson(BuildContext context) {
-    Navigator.restorablePushNamed(context, LessonResultView.routeName);
+  void generateQuiz(BuildContext context) {
+    // Navigator.restorablePushNamed(context, LessonResultView.routeName);
   }
 }
