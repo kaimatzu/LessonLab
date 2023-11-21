@@ -51,9 +51,9 @@ class SettingsViewModel with ChangeNotifier{
   String get saveFilePath => _saveFilePath;
 
   Future<void> sendData() async{
-    // final requestMessage = RinfInterface.CreateRequest(
+    final requestMessage = RinfInterface.CreateRequest(
       
-    // );
+    );
   }
 
   
