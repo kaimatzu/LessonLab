@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_upload_file_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_upload_file.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
 
 class DragAndDropArea extends StatefulWidget {
   const DragAndDropArea({
@@ -19,7 +19,7 @@ class _DragAndDropArea extends State<DragAndDropArea> {
 
   @override
   Widget build(BuildContext context) {
-    final overlayProvider = context.watch<OverlayViewModel>();
+    final overlayProvider = context.watch<OverlayController>();
 
     return DropTarget(
       onDragDone: (detail) {
@@ -35,10 +35,11 @@ class _DragAndDropArea extends State<DragAndDropArea> {
           _dragging = false;
         });
         overlayProvider.changeContent(
-        context,
-        () => OverlayUploadFileView(
-            containerWidth: overlayProvider.containerWidth, containerHeight: overlayProvider.containerHeight),
-        overlayProvider);
+            context,
+            () => OverlayUploadFile(
+                containerWidth: overlayProvider.containerWidth,
+                containerHeight: overlayProvider.containerHeight),
+            overlayProvider);
       },
       child: Container(
           width: 300,
@@ -53,8 +54,7 @@ class _DragAndDropArea extends State<DragAndDropArea> {
           ),
           child: const Center(
               child: Text("Drop files here.",
-                  style: TextStyle(color: Colors.white)))
-          ),
+                  style: TextStyle(color: Colors.white)))),
     );
   }
 }

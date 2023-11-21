@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
 import 'package:provider/provider.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_buttons_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_navigation.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
 
-class OverlayUploadURLView extends StatefulWidget {
-  const OverlayUploadURLView({
+class OverlayUploadURL extends StatefulWidget {
+  const OverlayUploadURL({
     Key? key,
     required this.containerWidth,
     required this.containerHeight,
@@ -15,10 +15,10 @@ class OverlayUploadURLView extends StatefulWidget {
   final double containerHeight;
 
   @override
-  State<OverlayUploadURLView> createState() => _OverlayUploadURLState();
+  State<OverlayUploadURL> createState() => _OverlayUploadURLState();
 }
 
-class _OverlayUploadURLState extends State<OverlayUploadURLView> {
+class _OverlayUploadURLState extends State<OverlayUploadURL> {
   late TextEditingController urlTextAreaController;
 
   @override
@@ -36,7 +36,7 @@ class _OverlayUploadURLState extends State<OverlayUploadURLView> {
   @override
   Widget build(BuildContext context) {
     final uploadViewModel = context.watch<UploadViewModel>();
-    final overlayProvider = context.watch<OverlayViewModel>();
+    final overlayProvider = context.watch<OverlayController>();
 
     return Container(
       width: widget.containerWidth,
@@ -127,7 +127,7 @@ class _OverlayUploadURLState extends State<OverlayUploadURLView> {
               onPressed: () {
                 overlayProvider.changeContent(
                     context,
-                    () => OverlayButtonsView(
+                    () => OverlayNavigation(
                         containerWidth: widget.containerWidth,
                         containerHeight: widget.containerHeight),
                     overlayProvider);
@@ -178,7 +178,7 @@ class _OverlayUploadURLState extends State<OverlayUploadURLView> {
     );
   }
 
-  void addURL(BuildContext context, OverlayViewModel overlayProvider) {
+  void addURL(BuildContext context, OverlayController overlayProvider) {
     final String url = urlTextAreaController.text;
 
     // NO DUPLICATE LOGIC
@@ -196,7 +196,7 @@ class _OverlayUploadURLState extends State<OverlayUploadURLView> {
 
     overlayProvider.changeContent(
         context,
-        () => OverlayUploadURLView(
+        () => OverlayUploadURL(
             containerWidth: widget.containerWidth,
             containerHeight: widget.containerHeight),
         overlayProvider);
@@ -204,17 +204,17 @@ class _OverlayUploadURLState extends State<OverlayUploadURLView> {
 
   // Closes the overlay and sends the url from overlay to the upload screen
   void saveURLAndClose(BuildContext context, UploadViewModel uploadViewModel,
-      OverlayViewModel overlayProvider) {
+      OverlayController overlayProvider) {
     // NO DUPLICATES LOGIC
     for (var overlayURL in overlayProvider.urlCache) {
       bool contains = false;
-      for (var uploadURL in uploadViewModel.urlFiles) {
+      for (var uploadURL in uploadViewModel.urls) {
         if (uploadURL == overlayURL) {
           contains = true;
           break;
         }
       }
-      if (!contains) uploadViewModel.urlFiles.add(overlayURL);
+      if (!contains) uploadViewModel.urls.add(overlayURL);
     }
 
     overlayProvider.urlCache.clear();
