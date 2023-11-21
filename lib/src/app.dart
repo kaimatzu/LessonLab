@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
               builder: (BuildContext context) {
                 switch (routeSettings.name) {
                   case '/settings':
-                    return SettingsView(controller: settingsController);
+                    return SettingsView(settingsViewModel: settingsController);
                   case '/menu':
                     return const MenuView();
                   case '/upload':

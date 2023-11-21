@@ -1,2 +1,0 @@
-syntax = "proto3";
-package save_file_path;
