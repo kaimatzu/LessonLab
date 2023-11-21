@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
 import 'package:provider/provider.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_buttons_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_navigation.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
 
-class OverlayUploadTextView extends StatefulWidget {
-  const OverlayUploadTextView({
+class OverlayUploadText extends StatefulWidget {
+  const OverlayUploadText({
     Key? key,
     required this.containerWidth,
     required this.containerHeight,
@@ -15,10 +15,10 @@ class OverlayUploadTextView extends StatefulWidget {
   final double containerHeight;
 
   @override
-  State<OverlayUploadTextView> createState() => _OverlayUploadTextState();
+  State<OverlayUploadText> createState() => _OverlayUploadTextState();
 }
 
-class _OverlayUploadTextState extends State<OverlayUploadTextView> {
+class _OverlayUploadTextState extends State<OverlayUploadText> {
   late TextEditingController titleController;
   late TextEditingController contentController;
 
@@ -44,7 +44,7 @@ class _OverlayUploadTextState extends State<OverlayUploadTextView> {
   @override
   Widget build(BuildContext context) {
     final uploadViewModel = context.watch<UploadViewModel>();
-    final overlayProvider = context.watch<OverlayViewModel>();
+    final overlayProvider = context.watch<OverlayController>();
 
     return Container(
       width: widget.containerWidth,
@@ -65,15 +65,14 @@ class _OverlayUploadTextState extends State<OverlayUploadTextView> {
                     width: widget.containerWidth - 20, // Adjust as needed
                     height: 54, // Adjust as needed
                     child: TextField(
-                      controller: titleController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Enter your title here...',
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                      maxLines: 1
-                    ),
+                        controller: titleController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Enter your title here...',
+                          filled: true,
+                          fillColor: Colors.white,
+                        ),
+                        maxLines: 1),
                   ),
                 ),
               ),
@@ -93,7 +92,7 @@ class _OverlayUploadTextState extends State<OverlayUploadTextView> {
                         fillColor: Colors.white,
                       ),
                       maxLines: null,
-                      minLines: null, 
+                      minLines: null,
                       expands: true,
                     ),
                   ),
@@ -108,7 +107,7 @@ class _OverlayUploadTextState extends State<OverlayUploadTextView> {
               onPressed: () {
                 overlayProvider.changeContent(
                     context,
-                    () => OverlayButtonsView(
+                    () => OverlayNavigation(
                         containerWidth: widget.containerWidth,
                         containerHeight: widget.containerHeight),
                     overlayProvider);
@@ -154,7 +153,8 @@ class _OverlayUploadTextState extends State<OverlayUploadTextView> {
     });
   }
 
-  void saveText(BuildContext context, UploadViewModel uploadViewModel, OverlayViewModel overlayProvider) {
+  void saveText(BuildContext context, UploadViewModel uploadViewModel,
+      OverlayController overlayProvider) {
     final String title = titleController.text;
     final String content = contentController.text;
 
@@ -162,7 +162,7 @@ class _OverlayUploadTextState extends State<OverlayUploadTextView> {
 
     overlayProvider.changeContent(
         context,
-        () => OverlayUploadTextView(
+        () => OverlayUploadText(
             containerWidth: widget.containerWidth,
             containerHeight: widget.containerHeight),
         overlayProvider);

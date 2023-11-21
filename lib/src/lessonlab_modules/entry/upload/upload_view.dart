@@ -7,7 +7,7 @@ import 'package:lessonlab/src/global_components/secondary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/resources_container.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
 
 class UploadView extends StatelessWidget {
   const UploadView({Key? key}) : super(key: key);
@@ -17,10 +17,10 @@ class UploadView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final uploadViewModel = context.watch<UploadViewModel>();
-    final overlayProvider = context.watch<OverlayViewModel>();
+    final overlayProvider = context.watch<OverlayController>();
 
     uploadViewModel.hasFiles = uploadViewModel.files.isNotEmpty ||
-        uploadViewModel.urlFiles.isNotEmpty ||
+        uploadViewModel.urls.isNotEmpty ||
         uploadViewModel.textFiles.isNotEmpty;
 
     const noFilesStyle = TextStyle(color: Colors.grey);
@@ -62,10 +62,10 @@ class UploadView extends StatelessWidget {
                 child: txtUrl,
               ),
               ResourcesContainer(
-                items: uploadViewModel.urlFiles,
+                items: uploadViewModel.urls,
                 icon: const Icon(Icons.link, color: Colors.white),
               ),
-              if (uploadViewModel.urlFiles.isEmpty)
+              if (uploadViewModel.urls.isEmpty)
                 const Padding(
                   padding: emptyPadding,
                   child: txtNoUrl,

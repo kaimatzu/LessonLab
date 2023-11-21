@@ -1,24 +1,25 @@
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_buttons_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_navigation.dart';
 
-class OverlayViewModel extends ChangeNotifier {
+class OverlayController extends ChangeNotifier {
   OverlayEntry? _overlayEntry;
   Widget _currentContent =
-      const OverlayButtonsView(containerWidth: 480, containerHeight: 400);
+      const OverlayNavigation(containerWidth: 480, containerHeight: 400);
 
   bool get isOverlayVisible => _overlayEntry != null;
 
-  final double containerWidth = 480;
-  final double containerHeight = 400;
+  final double _containerWidth = 480;
+  double get containerWidth => _containerWidth;
 
-  // File
-  var fileCache = <XFile>[];
+  final double _containerHeight = 400;
+  double get containerHeight => _containerHeight;
 
-  // URL
-  var urlCache = <String>[];
+  final List<XFile> _fileCache = <XFile>[];
+  List<XFile> get fileCache => _fileCache;
 
-  // Text needs no cache.
+  final List<String> _urlCache = <String>[];
+  List<String> get urlCache => _urlCache;
 
   void showOverlay(BuildContext context) {
     _overlayEntry = OverlayEntry(
@@ -58,14 +59,14 @@ class OverlayViewModel extends ChangeNotifier {
       fileCache.clear();
       urlCache.clear();
 
-      _currentContent = OverlayButtonsView(
+      _currentContent = OverlayNavigation(
           containerWidth: containerWidth, containerHeight: containerHeight);
       notifyListeners();
     }
   }
 
   void changeContent(BuildContext context, Widget Function() newContent,
-      OverlayViewModel overlayProvider) {
+      OverlayController overlayProvider) {
     _currentContent = newContent();
     if (overlayProvider.isOverlayVisible) {
       _overlayEntry!.remove();

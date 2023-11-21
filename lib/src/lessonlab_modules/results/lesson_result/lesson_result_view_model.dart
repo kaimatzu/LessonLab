@@ -8,10 +8,19 @@ import 'package:lessonlab/messages/results/view_lesson_result/load_lesson.pb.dar
 import 'package:rinf/rinf.dart';
 
 class LessonResultViewModel with ChangeNotifier {
-  late Future<String> mdContents;
-  late Future<String> cssContents;
+  late Future<String> _mdContents;
+  Future<String> get mdContents => _mdContents;
+  set mdContents(value) {
+    _mdContents = value;
+  }
 
-  var statusCode = 0;
+  late Future<String> _cssContents;
+  Future<String> get cssContents => _cssContents;
+  set cssContents(value) {
+    _cssContents = value;
+  }
+
+  var _statusCode = 0;
 
   LessonResultViewModel() {
     // Load data when the view model is created
@@ -20,7 +29,7 @@ class LessonResultViewModel with ChangeNotifier {
 
   Future<void> loadContents() async {
     try {
-      cssContents = loadFileContents('assets/styles/markdown.css');
+      cssContents = _loadFileContents('assets/styles/markdown.css');
       mdContents = getData();
 
       // Notify listeners that the data has been loaded
@@ -50,14 +59,14 @@ class LessonResultViewModel with ChangeNotifier {
       rustResponse.message!,
       // TODO: handle this could be a null
     );
-    statusCode = responseMessage.statusCode;
-    developer.log(statusCode.toString(), name: 'status code');
+    _statusCode = responseMessage.statusCode;
+    developer.log(_statusCode.toString(), name: 'status code');
     developer.log(responseMessage.errorString.toString(),
         name: 'error message');
     return responseMessage.mdContent;
   }
 }
 
-Future<String> loadFileContents(String filePath) async {
+Future<String> _loadFileContents(String filePath) async {
   return await rootBundle.loadString(filePath);
 }

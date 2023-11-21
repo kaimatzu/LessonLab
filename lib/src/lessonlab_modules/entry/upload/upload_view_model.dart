@@ -1,9 +1,11 @@
+// ignore_for_file: unnecessary_getters_setters
+
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
 import 'package:cross_file/cross_file.dart';
 import 'dart:developer' as developer;
 
@@ -13,19 +15,28 @@ import 'package:lessonlab/messages/entry/upload/uploaded_content.pb.dart'
 import 'package:rinf/rinf.dart';
 
 class UploadViewModel with ChangeNotifier {
-  var files = <XFile>[];
-  var urlFiles = <String>[];
-  var textFiles = <TextFile>[];
+  final _files = <XFile>[];
+  List<XFile> get files => _files;
 
-  var statusCode = 0;
+  final _urls = <String>[];
+  List<String> get urls => _urls;
 
-  bool hasFiles = false;
+  final _textFiles = <TextFile>[];
+  List<TextFile> get textFiles => _textFiles;
+
+  var _statusCode = 0;
+
+  bool _hasFiles = false;
+  bool get hasFiles => _hasFiles;
+  set hasFiles(bool value) {
+    _hasFiles = value;
+  }
 
   Future<void> sendData() async {
     final requestMessage = RinfInterface.CreateRequest(
-      filePaths: files.map((file) => file.path).toList(),
-      urls: urlFiles,
-      texts: textFiles
+      filePaths: _files.map((file) => file.path).toList(),
+      urls: _urls,
+      texts: _textFiles
           .map((textFile) => RinfInterface.TextFile(
                 title: textFile.title,
                 content: textFile.content,
@@ -42,8 +53,8 @@ class UploadViewModel with ChangeNotifier {
     final responseMessage = RinfInterface.CreateResponse.fromBuffer(
       rustResponse.message!,
     );
-    statusCode = responseMessage.statusCode;
-    developer.log(statusCode.toString(), name: 'rinf-info');
+    _statusCode = responseMessage.statusCode;
+    developer.log(_statusCode.toString(), name: 'rinf-info');
   }
 
   Future<void> getData() async {
@@ -71,7 +82,7 @@ class UploadViewModel with ChangeNotifier {
   }
 
   void newLesson(BuildContext context) {
-    if (hasFiles) {
+    if (_hasFiles) {
       sendData();
       getData();
       Navigator.restorablePushNamed(
@@ -84,7 +95,7 @@ class UploadViewModel with ChangeNotifier {
   }
 
   void newQuiz(BuildContext context) {
-    if (hasFiles) {
+    if (_hasFiles) {
       sendData();
       getData();
       Navigator.restorablePushNamed(

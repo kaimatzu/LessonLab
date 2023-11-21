@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications_view_model.dart';
@@ -28,10 +28,10 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => OverlayViewModel()),
+        ChangeNotifierProvider(create: (context) => OverlayController()),
         ChangeNotifierProvider(create: (context) => UploadViewModel()),
-        ChangeNotifierProvider(create: (context) => LessonSpecificationsViewModel()),
-        ChangeNotifierProvider(create: (context) => QuizSpecificationsViewModel()),
+        ChangeNotifierProvider(
+            create: (context) => LessonSpecificationsViewModel()),
         ChangeNotifierProvider(create: (context) => LessonResultViewModel()),
         ChangeNotifierProvider(create: (context) => MenuViewModel()),
       ],

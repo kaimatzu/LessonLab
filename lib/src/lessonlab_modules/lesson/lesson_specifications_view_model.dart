@@ -19,11 +19,11 @@ class FormField {
   // final String? dropdownValue;
 
   FormField({this.inputField, this.dropdown, this.textArea})
-     : assert(
-           (inputField != null && dropdown == null && textArea == null) 
-           || (inputField == null && dropdown != null && textArea == null)
-           || (inputField == null && dropdown == null && textArea != null),
-           'Either provide an InputField or a Dropdown or a TextArea.');
+      : assert(
+            (inputField != null && dropdown == null && textArea == null) ||
+                (inputField == null && dropdown != null && textArea == null) ||
+                (inputField == null && dropdown == null && textArea != null),
+            'Either provide an InputField or a Dropdown or a TextArea.');
 }
 
 class LessonSpecificationsViewModel extends ChangeNotifier {
@@ -34,7 +34,7 @@ class LessonSpecificationsViewModel extends ChangeNotifier {
       InputField(label: 'Timeframe', hintLabel: 'Enter timeframe'),
       TextArea(
           label: 'Learning Outcomes', hintLabel: 'Enter learning outcomes'),
-      const Dropdown(label: "Grade Level", list: <String>[
+      const Dropdown(label: 'Grade Level', list: <String>[
         'Elementary',
         'Junior High School',
         'Senior High School',
@@ -53,13 +53,17 @@ class LessonSpecificationsViewModel extends ChangeNotifier {
     }
   }
 
-  var formFields = <FormField>[];
-  var lessonSpecifications = <String>[];
-  var statusCode = 0;
+  final _formFields = <FormField>[];
+  get formFields => _formFields;
+
+  final _lessonSpecifications = <String>[];
+  get lessonSpecifications => _lessonSpecifications;
+
+  var _statusCode = 0;
 
   Future<void> sendData() async {
-    final requestMessage =
-        RinfInterface.CreateRequest(lessonSpecifications: lessonSpecifications);
+    final requestMessage = RinfInterface.CreateRequest(
+        lessonSpecifications: _lessonSpecifications);
     final rustRequest = RustRequest(
       resource: RinfInterface.ID,
       operation: RustOperation.Create,
@@ -70,8 +74,8 @@ class LessonSpecificationsViewModel extends ChangeNotifier {
     final responseMessage = RinfInterface.CreateResponse.fromBuffer(
       rustResponse.message!,
     );
-    statusCode = responseMessage.statusCode;
-    developer.log(statusCode.toString(), name: 'response-code');
+    _statusCode = responseMessage.statusCode;
+    developer.log(_statusCode.toString(), name: 'response-code');
   }
 
   Future<void> getData() async {
@@ -92,15 +96,15 @@ class LessonSpecificationsViewModel extends ChangeNotifier {
   }
 
   void collectFormTextValues() {
-    lessonSpecifications.clear();
+    _lessonSpecifications.clear();
 
     for (var formField in formFields) {
       if (formField.inputField != null) {
-        lessonSpecifications.add(formField.inputField!.controller.text);
+        _lessonSpecifications.add(formField.inputField!.controller.text);
       } else if (formField.textArea != null) {
-        lessonSpecifications.add(formField.textArea!.controller.text);
+        _lessonSpecifications.add(formField.textArea!.controller.text);
       } else if (formField.dropdown != null) {
-        lessonSpecifications.add(formField.dropdown!.getSelectedValue);
+        _lessonSpecifications.add(formField.dropdown!.getSelectedValue);
       } else {
         developer.log('Null error', name: 'generate-lesson');
         // TODO: Handle uninitialized null values, just in case.
@@ -109,7 +113,7 @@ class LessonSpecificationsViewModel extends ChangeNotifier {
 
     notifyListeners();
 
-    developer.log(lessonSpecifications.toString(), name: 'collect');
+    developer.log(_lessonSpecifications.toString(), name: 'collect');
   }
 
   void addCustomSpecifications() {

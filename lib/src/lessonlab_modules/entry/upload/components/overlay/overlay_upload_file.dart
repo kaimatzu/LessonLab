@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:file_selector/file_selector.dart';
 
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/drag_and_drop_area.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_buttons_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_navigation.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
 
 import 'dart:developer' as developer;
 
@@ -15,8 +15,8 @@ import 'dart:developer' as developer;
   Flutter seems to be angry at something implemented here. Will check later. 
   Can't be fucking arsed to fix it right now. It seems to work just fine on the surface.
 */
-class OverlayUploadFileView extends StatefulWidget {
-  const OverlayUploadFileView({
+class OverlayUploadFile extends StatefulWidget {
+  const OverlayUploadFile({
     Key? key,
     required this.containerWidth,
     required this.containerHeight,
@@ -26,16 +26,16 @@ class OverlayUploadFileView extends StatefulWidget {
   final double containerHeight;
 
   @override
-  State<OverlayUploadFileView> createState() => _OverlayUploadFile();
+  State<OverlayUploadFile> createState() => _OverlayUploadFile();
 }
 
-class _OverlayUploadFile extends State<OverlayUploadFileView> {
+class _OverlayUploadFile extends State<OverlayUploadFile> {
   bool _dragging = false;
 
   @override
   Widget build(BuildContext context) {
     final uploadViewModel = context.watch<UploadViewModel>();
-    final overlayProvider = context.watch<OverlayViewModel>();
+    final overlayProvider = context.watch<OverlayController>();
 
     return Container(
       width: widget.containerWidth,
@@ -60,9 +60,10 @@ class _OverlayUploadFile extends State<OverlayUploadFileView> {
                         const Text(
                           "No files uploaded...",
                           style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 20),
                         const DragAndDropArea(),
@@ -104,7 +105,7 @@ class _OverlayUploadFile extends State<OverlayUploadFileView> {
                         });
                         overlayProvider.changeContent(
                             context,
-                            () => OverlayButtonsView(
+                            () => OverlayNavigation(
                                 containerWidth: overlayProvider.containerWidth,
                                 containerHeight:
                                     overlayProvider.containerHeight),
@@ -157,7 +158,7 @@ class _OverlayUploadFile extends State<OverlayUploadFileView> {
               onPressed: () {
                 overlayProvider.changeContent(
                     context,
-                    () => OverlayButtonsView(
+                    () => OverlayNavigation(
                         containerWidth: widget.containerWidth,
                         containerHeight: widget.containerHeight),
                     overlayProvider);
@@ -214,7 +215,7 @@ class _OverlayUploadFile extends State<OverlayUploadFileView> {
     );
   }
 
-  void pickFile(BuildContext context, OverlayViewModel overlayProvider) async {
+  void pickFile(BuildContext context, OverlayController overlayProvider) async {
     const XTypeGroup fileTypeGroup = XTypeGroup(
       label: 'Files',
       extensions: <String>['pdf', 'txt', 'md', 'html', 'xml', 'json', 'csv'],
@@ -241,7 +242,7 @@ class _OverlayUploadFile extends State<OverlayUploadFileView> {
     // ignore: use_build_context_synchronously
     overlayProvider.changeContent(
         context,
-        () => OverlayUploadFileView(
+        () => OverlayUploadFile(
             containerWidth: widget.containerWidth,
             containerHeight: widget.containerHeight),
         overlayProvider);
@@ -249,7 +250,7 @@ class _OverlayUploadFile extends State<OverlayUploadFileView> {
 
   // Sends the list of files from overlay to upload screen
   void saveFilesAndClose(BuildContext context, UploadViewModel uploadViewModel,
-      OverlayViewModel overlayProvider) {
+      OverlayController overlayProvider) {
     // No DUPLICATES logic
     for (var overlayFile in overlayProvider.fileCache) {
       bool contains = false;
