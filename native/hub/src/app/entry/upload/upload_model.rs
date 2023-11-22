@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 #[derive(Default)]
 pub struct UploadModel {
     pub file_paths: Vec<String>,
@@ -5,7 +7,7 @@ pub struct UploadModel {
     pub text_files: Vec<TextFile>
 }
 
-#[derive(Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TextFile {
     pub title: String,
     pub content: String

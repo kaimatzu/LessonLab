@@ -1,6 +1,7 @@
 use std::fs::{OpenOptions, File};
 
 use http::StatusCode;
+use crate::app::results::lesson_result_model::{write_lessons_to_file, Lessons};
 use crate::bridge::{RustOperation, RustRequest, RustResponse, RustSignal};
 use crate::messages::entry::upload::uploaded_content;
 use prost::Message;
@@ -24,20 +25,17 @@ pub async fn handle_choose_directory(rust_request: RustRequest,
 
             let response_message;
             if settings_save_directory_model.save_directory.len() > 0 {
-                let mut file = OpenOptions::new()
-                    .write(true)
-                    .create(true)
-                    .append(true)  // Append mode to preserve existing content
-                    .open(file_path);
-                match file {
-                    Ok(file) => {
-                        crate::debug_print!("Config file at: {file:?}");
-                    }
-                    Err(err) => {
-                        crate::debug_print!("{err:?}");
+                let lessons = Lessons::default();
+                let result = write_lessons_to_file(&lessons, file_path.as_str());
+                match result {
+                    Ok(_) => {
+                        crate::debug_print!("Success in creating/opening config file!");
+                        crate::debug_print!("At: {}", settings_save_directory_model.save_directory);
+                    },
+                    Err(error) => {
+                        crate::debug_print!("Failed to write to/load file: {}", error);
                     }
                 }
-
                 response_message = CreateResponse {
                     // Send the data back in a response
                     status_code: StatusCode::OK.as_u16() as u32

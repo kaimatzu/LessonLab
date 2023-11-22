@@ -33,7 +33,7 @@ pub async fn handle_request(request_unique: RustRequestUnique,
             app::lesson::lesson_specifications_view_model::handle_lesson_specifications(rust_request, lesson_specifications_model).await
         }
         messages::results::view_lesson_result::load_lesson::ID => {
-            app::results::lesson_result_view_model::handle_lesson_generation(rust_request, upload_model, lesson_specifications_model).await
+            app::results::lesson_result_view_model::handle_lesson_generation(rust_request, upload_model, lesson_specifications_model, save_directory_model).await
         }
         messages::settings::save_directory::ID =>{
             app::settings::settings_view_model::handle_choose_directory(rust_request, save_directory_model).await
