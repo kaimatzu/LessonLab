@@ -55,6 +55,7 @@ class SettingsViewModel with ChangeNotifier{
 
   void loadPreferences(TextEditingController? directoryController) async{
     _configPath = SettingsPreferences.getDirectory() ?? await getDefaultConfigPath();
+    developer.log("Loaded config path: $_configPath");
     if(directoryController != null) {
       directoryController.text = _configPath;
     }
@@ -70,6 +71,8 @@ class SettingsViewModel with ChangeNotifier{
     else
     {
       directoryController.text = directoryPath;
+      developer.log("Flutter Shared Preference: $directoryPath");
+      _configPath = directoryPath;
       await SettingsPreferences.setDirectory(directoryPath);
       await sendData();
     }

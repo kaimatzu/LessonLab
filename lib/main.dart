@@ -19,10 +19,8 @@ void main() async {
 
   final settingsViewModel = SettingsViewModel(SettingsService());
 
-  await settingsViewModel.loadSettings();
-
   await SettingsPreferences.init();
-
+  await settingsViewModel.loadSettings();
   await settingsViewModel.sendData();
   
   runApp(

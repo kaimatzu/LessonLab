@@ -77,7 +77,6 @@ class _SettingsViewState extends State<SettingsView> {
             PrimaryButton(
               handlePress:  () async {
                 widget.settingsViewModel.selectDirectory(context, directoryController);
-                
               },
               text: "Use another folder", 
             enabled: true
