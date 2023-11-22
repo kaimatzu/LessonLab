@@ -1,3 +1,5 @@
+use std::fs::File;
+
 use http::StatusCode;
 use crate::bridge::{RustOperation, RustRequest, RustResponse, RustSignal};
 use crate::messages::entry::upload::uploaded_content;
@@ -17,8 +19,12 @@ pub async fn handle_choose_directory(rust_request: RustRequest,
             // Do something with data
             settings_save_directory_model.save_directory = request_message.save_directory;
 
+            let mut file_path = settings_save_directory_model.save_directory.clone();
+            file_path.push_str("\\config.json");
+
             let response_message;
             if settings_save_directory_model.save_directory.len() > 0 {
+                let mut file = File::create(file_path);
                 response_message = CreateResponse {
                     // Send the data back in a response
                     status_code: StatusCode::OK.as_u16() as u32
