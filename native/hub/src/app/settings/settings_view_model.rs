@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::fs::{OpenOptions, File};
 
 use http::StatusCode;
 use crate::bridge::{RustOperation, RustRequest, RustResponse, RustSignal};
@@ -24,7 +24,20 @@ pub async fn handle_choose_directory(rust_request: RustRequest,
 
             let response_message;
             if settings_save_directory_model.save_directory.len() > 0 {
-                let mut file = File::create(file_path);
+                let mut file = OpenOptions::new()
+                    .write(true)
+                    .create(true)
+                    .append(true)  // Append mode to preserve existing content
+                    .open(file_path);
+                match file {
+                    Ok(file) => {
+                        crate::debug_print!("Config file at: {file:?}");
+                    }
+                    Err(err) => {
+                        crate::debug_print!("{err:?}");
+                    }
+                }
+
                 response_message = CreateResponse {
                     // Send the data back in a response
                     status_code: StatusCode::OK.as_u16() as u32
