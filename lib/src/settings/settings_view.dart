@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
+import 'package:lessonlab/src/settings/shared_preferences.dart';
 import 'settings_view_model.dart';
-import 'package:file_selector/file_selector.dart';
+import 'package:path_provider/path_provider.dart';
 /// Displays the various settings that can be customized by the user.
 ///
 /// When a user changes a setting, the SettingsController is updated and
@@ -20,11 +23,18 @@ class SettingsView extends StatefulWidget {
 
 class _SettingsViewState extends State<SettingsView> {
   late TextEditingController directoryController;
+  String _configPath = '';
 
-    @override
+  @override
   void initState() {
     super.initState();
     directoryController = TextEditingController();
+    _loadPreferences();
+  }
+
+  void _loadPreferences() async{
+    _configPath = SettingsPreferences.getDirectory() ?? await _getDefaultConfigPath();
+    directoryController.text = _configPath;
   }
 
   @override
@@ -44,7 +54,7 @@ class _SettingsViewState extends State<SettingsView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Save Directory",
+            const Text("Settings Directory",
               style: TextStyle(
                 fontFamily: 'Roboto, Inter, Arial',
                 color: Color.fromARGB(255, 49, 51, 56),
@@ -70,10 +80,18 @@ class _SettingsViewState extends State<SettingsView> {
             ),
             const SizedBox(height: 8.0,),
             PrimaryButton(
-              handlePress:  (){
+              handlePress:  () async {
                 selectDirectory(context);
+                
               },
               text: "Use another folder", 
+            enabled: true
+            ),
+            const SizedBox(height: 8.0,),
+            PrimaryButton(handlePress: () {
+              _resetConfigPath();
+            }, 
+            text: "Reset", 
             enabled: true
             )
           ],
@@ -93,6 +111,19 @@ class _SettingsViewState extends State<SettingsView> {
     else
     {
       directoryController.text = directoryPath;
+      await SettingsPreferences.setDirectory(directoryPath);
     }
+  }
+
+  Future<String> _getDefaultConfigPath() async {
+    String username = Platform.environment['USERNAME'] ?? 'default';
+    Directory appDataDir = await getApplicationSupportDirectory();
+    return "${appDataDir.path}\\LessonLab\\$username";
+  }
+
+  void _resetConfigPath()async {
+    _configPath = await _getDefaultConfigPath();
+    directoryController.text = _configPath;
+    SettingsPreferences.setDirectory(_configPath);
   }
 }

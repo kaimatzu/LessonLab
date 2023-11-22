@@ -6,6 +6,7 @@ import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications_vie
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view_model.dart';
 import 'package:lessonlab/src/settings/settings_view_model.dart';
+import 'package:lessonlab/src/settings/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
 import 'src/app.dart';
@@ -14,6 +15,7 @@ import 'package:rinf/rinf.dart';
 
 void main() async {
   await Rinf.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.
   final settingsViewModel = SettingsViewModel(SettingsService());
@@ -22,6 +24,7 @@ void main() async {
   // This prevents a sudden theme change when the app is first displayed.
   await settingsViewModel.loadSettings();
 
+  await SettingsPreferences.init();
   // Run the app and pass in the SettingsController. The app listens to the
   // SettingsController for changes, then passes it further down to the
   // SettingsView.
