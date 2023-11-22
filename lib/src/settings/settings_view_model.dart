@@ -78,13 +78,14 @@ class SettingsViewModel with ChangeNotifier{
   Future<String> getDefaultConfigPath() async {
     String username = Platform.environment['USERNAME'] ?? 'default';
     Directory appDataDir = await getApplicationSupportDirectory();
-    return "${appDataDir.path}\\LessonLab\\$username";
+    return "${appDataDir.path}";
   }
 
   void resetConfigPath(TextEditingController directoryController) async {
     _configPath = await getDefaultConfigPath();
     directoryController.text = _configPath;
     SettingsPreferences.setDirectory(_configPath);
+    await sendData();
   }
 
   Future<void> sendData() async{
