@@ -23,18 +23,12 @@ class SettingsView extends StatefulWidget {
 
 class _SettingsViewState extends State<SettingsView> {
   late TextEditingController directoryController;
-  String _configPath = '';
-
+  
   @override
   void initState() {
     super.initState();
     directoryController = TextEditingController();
-    _loadPreferences();
-  }
-
-  void _loadPreferences() async{
-    _configPath = SettingsPreferences.getDirectory() ?? await _getDefaultConfigPath();
-    directoryController.text = _configPath;
+    widget.settingsViewModel.loadPreferences(directoryController);
   }
 
   @override
@@ -45,6 +39,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -81,7 +76,7 @@ class _SettingsViewState extends State<SettingsView> {
             const SizedBox(height: 8.0,),
             PrimaryButton(
               handlePress:  () async {
-                selectDirectory(context);
+                widget.settingsViewModel.selectDirectory(context, directoryController);
                 
               },
               text: "Use another folder", 
@@ -89,7 +84,7 @@ class _SettingsViewState extends State<SettingsView> {
             ),
             const SizedBox(height: 8.0,),
             PrimaryButton(handlePress: () {
-              _resetConfigPath();
+              widget.settingsViewModel.resetConfigPath(directoryController);
             }, 
             text: "Reset", 
             enabled: true
@@ -98,32 +93,5 @@ class _SettingsViewState extends State<SettingsView> {
         ) 
       ),
     );
-  }
-
-  void selectDirectory(BuildContext context) async{
-    final String? directoryPath = await getDirectoryPath();
-
-    if (directoryPath == null) {
-      // Operation was canceled by the user.
-    
-      return;
-    }
-    else
-    {
-      directoryController.text = directoryPath;
-      await SettingsPreferences.setDirectory(directoryPath);
-    }
-  }
-
-  Future<String> _getDefaultConfigPath() async {
-    String username = Platform.environment['USERNAME'] ?? 'default';
-    Directory appDataDir = await getApplicationSupportDirectory();
-    return "${appDataDir.path}\\LessonLab\\$username";
-  }
-
-  void _resetConfigPath()async {
-    _configPath = await _getDefaultConfigPath();
-    directoryController.text = _configPath;
-    SettingsPreferences.setDirectory(_configPath);
   }
 }

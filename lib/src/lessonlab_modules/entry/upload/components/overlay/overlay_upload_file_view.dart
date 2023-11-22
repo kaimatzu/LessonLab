@@ -8,7 +8,6 @@ import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/drag_and
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_buttons_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_view_model.dart';
 
-import 'dart:developer' as developer;
 
 /* 
   TODO: Fix angy Flutter

@@ -1,61 +1,106 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:lessonlab/messages/entry/upload/uploaded_content.pb.dart'
+// import 'package:lessonlab/messages/entry/upload/uploaded_content.pb.dart'
+//     // ignore: library_prefixes
+//     as RinfInterface;
+import 'package:lessonlab/messages/settings/save_directory.pb.dart'
     // ignore: library_prefixes
     as RinfInterface;
-import 'package:rinf/rinf.dart';
 import 'settings_service.dart';
-
+import 'package:file_selector/file_selector.dart';
+import 'package:lessonlab/src/settings/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:rinf/rinf.dart';
+import 'dart:developer' as developer;
 
 class SettingsViewModel with ChangeNotifier{
   SettingsViewModel(this._settingsService);
 
-  // Make SettingsService a private variable so it is not used directly.
   final SettingsService _settingsService;
 
-  // Make ThemeMode a private variable so it is not updated directly without
-  // also persisting the changes with the SettingsService.
   late ThemeMode _themeMode;
 
-  // Allow Widgets to read the user's preferred ThemeMode.
   ThemeMode get themeMode => _themeMode;
 
-  /// Load the user's settings from the SettingsService. It may load from a
-  /// local database or the internet. The controller only knows it can load the
-  /// settings from the service.
   Future<void> loadSettings() async {
     _themeMode = await _settingsService.themeMode();
-
-    // Important! Inform listeners a change has occurred.
+    loadPreferences(null);
     notifyListeners();
   }
 
-  /// Update and persist the ThemeMode based on the user's selection.
   Future<void> updateThemeMode(ThemeMode? newThemeMode) async {
     if (newThemeMode == null) return;
 
-    // Do not perform any work if new and old ThemeMode are identical
     if (newThemeMode == _themeMode) return;
 
-    // Otherwise, store the new ThemeMode in memory
     _themeMode = newThemeMode;
 
-    // Important! Inform listeners a change has occurred.
     notifyListeners();
 
-    // Persist the changes to a local database or the internet using the
-    // SettingService.
     await _settingsService.updateThemeMode(newThemeMode);
   }
 
-  String _saveFilePath = '';
+  final String _saveFilePath = '';
   String get saveFilePath => _saveFilePath;
 
-  Future<void> sendData() async{
-    final requestMessage = RinfInterface.CreateRequest(
-      
-    );
+  String _configPath = '';
+  // ignore: unnecessary_getters_setters
+  String get configPath => _configPath;
+  set configPath (String value){
+    _configPath = value;
   }
 
-  
+  var statusCode = 0;
 
+  void loadPreferences(TextEditingController? directoryController) async{
+    _configPath = SettingsPreferences.getDirectory() ?? await getDefaultConfigPath();
+    if(directoryController != null) {
+      directoryController.text = _configPath;
+    }
+  }
+
+  void selectDirectory(BuildContext context, TextEditingController directoryController) async{
+    final String? directoryPath = await getDirectoryPath();
+
+    if (directoryPath == null) {
+      // Operation was canceled by the user.
+      return;
+    }
+    else
+    {
+      directoryController.text = directoryPath;
+      await SettingsPreferences.setDirectory(directoryPath);
+      await sendData();
+    }
+  }
+
+  Future<String> getDefaultConfigPath() async {
+    String username = Platform.environment['USERNAME'] ?? 'default';
+    Directory appDataDir = await getApplicationSupportDirectory();
+    return "${appDataDir.path}\\LessonLab\\$username";
+  }
+
+  void resetConfigPath(TextEditingController directoryController) async {
+    _configPath = await getDefaultConfigPath();
+    directoryController.text = _configPath;
+    SettingsPreferences.setDirectory(_configPath);
+  }
+
+  Future<void> sendData() async{
+    final requestMessage =
+        RinfInterface.CreateRequest(saveDirectory: _configPath);
+    final rustRequest = RustRequest(
+      resource: RinfInterface.ID,
+      operation: RustOperation.Create,
+      message: requestMessage.writeToBuffer(),
+      // blob: NO BLOB
+    );
+    final rustResponse = await requestToRust(rustRequest);
+    final responseMessage = RinfInterface.CreateResponse.fromBuffer(
+      rustResponse.message!,
+    );
+    statusCode = responseMessage.statusCode;
+    developer.log(statusCode.toString(), name: 'response-code');
+  }
 }

@@ -36,10 +36,6 @@ async fn main() {
             let mut upload_model_guard = upload_model_clone.lock().await; 
             let mut lesson_specifications_guard = lesson_specifications_model_clone.lock().await;
             let mut save_directory_guard = save_directory_model_clone.lock().await;
-            // let mut mutex_guards: Vec<Box<dyn Any + Send>> = Vec::new();
-
-            // mutex_guards.push(Box::new(upload_model_guard) as Box<dyn Any + Send>);
-            // mutex_guards.push(Box::new(lesson_specifications_guard) as Box<dyn Any + Send>);
 
             let response_unique = handle_request(
                 request_unique, 
