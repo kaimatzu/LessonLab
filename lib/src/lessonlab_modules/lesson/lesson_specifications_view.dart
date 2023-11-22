@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_components/secondary_button.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/components/dropdown_menu.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/components/input_field.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications_view_model.dart';
-import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 import 'package:provider/provider.dart';
 
 class LessonSpecificationsView extends StatelessWidget {

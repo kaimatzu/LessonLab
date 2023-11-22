@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
 
   final SettingsViewModel settingsViewModel;
 
+  
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
