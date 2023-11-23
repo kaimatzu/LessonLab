@@ -43,7 +43,8 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
     settings_save_directory_model: &mut tokio::sync::MutexGuard<'_, SaveDirectoryModel>) -> RustResponse {
     use crate::messages::results::view_lesson_result::load_lesson::{ReadRequest, ReadResponse};
     
-    let release = false;
+    // TODO: MAKE THIS GLOBAL
+    let release = true; // DEBUG MODE
 
     match rust_request.operation {
         RustOperation::Create => RustResponse::default(),
@@ -66,6 +67,7 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
             for lesson_specification in &lesson_specifications_model.lesson_specifications {
                 string_payload.push_str(&lesson_specification);
                 string_payload.push_str("\n"); 
+                crate::debug_print!("Lesson Spec: {}", &lesson_specification);
             }
 
             string_payload.push_str("------------------------------- \n");
@@ -110,6 +112,7 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
                     Ok(md_content) => {
                         response_message = ReadResponse {
                             status_code: StatusCode::OK.as_u16() as u32,
+                            title: lesson_specifications_model.lesson_specifications.get(0).unwrap().clone(),
                             md_content,
                             error_string: String::from("No error")
                         };
@@ -117,6 +120,7 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
                     Err(error) => {
                         response_message = ReadResponse {
                             status_code: StatusCode::NOT_FOUND.as_u16() as u32,
+                            title: lesson_specifications_model.lesson_specifications.get(0).unwrap().clone(),
                             md_content: String::from("No content"),
                             error_string: error.to_string()
                         };
@@ -126,20 +130,28 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
             else {
                 response_message = ReadResponse {
                     status_code: StatusCode::OK.as_u16() as u32,
+                    title: lesson_specifications_model.lesson_specifications.get(0).unwrap().clone(),
                     md_content: "Debug Mode: Dummy Content".to_string(),
                     error_string: String::from("No error")
                 };
             }
             
-            let lesson = Lesson{
-                sources,
-                target_path: String::from("Test/Path"),
-                title: String::from("TitleTest")
-            };
-
-            // lessons_json.create_lesson(lesson);
+            let sanitized_title = lesson_specifications_model.lesson_specifications.get(0).unwrap().clone().replace(" ", "_");
 
             let mut file_path = settings_save_directory_model.save_directory.clone();
+            
+            let target_folder_path = format!("{}\\{}", &file_path, &sanitized_title);
+
+            if let Err(error) = std::fs::create_dir_all(&target_folder_path) {
+                crate::debug_print!("Failed to create folder: {}", error);
+            }
+
+            let lesson = Lesson{
+                sources,
+                target_path: target_folder_path,
+                title: lesson_specifications_model.lesson_specifications.get(0).unwrap().clone()
+            };
+            
             file_path.push_str("\\config.json");
 
             if let Err(error) = write_lesson_to_config_file(&lesson, &file_path) {

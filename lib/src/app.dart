@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lessonlab/src/global_components/route_animation.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 import 'package:lessonlab/src/settings/settings_view_model.dart';
@@ -19,7 +20,6 @@ class MyApp extends StatelessWidget {
   });
 
   final SettingsViewModel settingsViewModel;
-
   
   @override
   Widget build(BuildContext context) {

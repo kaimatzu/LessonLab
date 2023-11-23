@@ -46,6 +46,34 @@ class LessonSpecificationsView extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            PrimaryButton(
+              handlePress:  () async {
+                lessonSpecificationsViewModel.selectLessonSavePath(context, lessonSpecificationsViewModel.saveTargetController);
+              },
+              text: "Save Path  ", 
+            enabled: true
+            ),
+            const SizedBox(width: 8.0),
+            SizedBox(
+              width: 300,
+              height: 50,
+              child: TextField(
+                controller: lessonSpecificationsViewModel.saveTargetController,
+                style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                filled: true,
+                fillColor: Color.fromARGB(255, 49, 51, 56),
+                border: OutlineInputBorder(),
+                hintText: "no save directory",
+                hintStyle: TextStyle(
+                    fontFamily: 'Roboto, Inter, Arial',
+                    color: Colors.grey,
+                  ),
+                ),
+                enabled: false, 
+              ),
+            ),
+            const SizedBox(width: 60.0),
             SecondaryButton(
               handlePress: () {
                 lessonSpecificationsViewModel.cancelLesson(context);
