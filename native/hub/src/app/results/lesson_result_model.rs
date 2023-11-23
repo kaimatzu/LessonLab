@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::fs::{OpenOptions, File};
+use std::fs::{OpenOptions, create_dir_all, File};
 use std::io::{self, Write};
 use crate::app::entry::upload::upload_model::TextFile;
 
@@ -33,7 +33,7 @@ pub fn write_lessons_to_file(lessons: &Lessons, file_path: &str) -> std::io::Res
                     .read(true)
                     .write(true)
                     .create(true)
-                    .append(true)  // Append mode to preserve existing content
+                    .truncate(true)  // Append mode to preserve existing content
                     .open(file_path);
     match file {
         Ok(mut file) => {
