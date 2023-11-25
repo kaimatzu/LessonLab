@@ -36,6 +36,7 @@ class LessonResultView extends StatelessWidget {
               child: FutureBuilder<List<String>>(
                 future: Future.wait(
                   [
+                    lessonResultViewModel.lessonTitle,
                     lessonResultViewModel.mdContents,
                     lessonResultViewModel.cssContents,
                   ],
@@ -47,12 +48,13 @@ class LessonResultView extends StatelessWidget {
                     return const Text('Error loading lesson content');
                   } else {
                     final List<String> contents = snapshot.data!;
-                    final String mdContent = contents[0];
-                    final String cssContent = contents[1];
+                    final String title = contents[0];
+                    final String mdContent = contents[1];
+                    final String cssContent = contents[2];
 
                     // developer.log(cssContent, name: 'info');
                     return TextEditor(
-                        title: 'Title',
+                        title: title,
                         mdContents: mdContent,
                         cssContents: cssContent);
                   }

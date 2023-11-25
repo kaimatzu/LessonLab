@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/new_material_button.dart';
-import 'package:lessonlab/src/global_components/route_animation.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/menu_card.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/menu/components/new_material_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
 import 'package:provider/provider.dart';
 
 class MenuView extends StatelessWidget {

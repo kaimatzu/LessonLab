@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_components/secondary_button.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/components/dropdown_menu.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/components/input_field.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications_view_model.dart';
-import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 import 'package:provider/provider.dart';
 
 class LessonSpecificationsView extends StatelessWidget {
@@ -50,6 +46,34 @@ class LessonSpecificationsView extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            PrimaryButton(
+              handlePress:  () async {
+                lessonSpecificationsViewModel.selectLessonSavePath(context, lessonSpecificationsViewModel.saveTargetController);
+              },
+              text: "Save Path  ", 
+            enabled: true
+            ),
+            const SizedBox(width: 8.0),
+            SizedBox(
+              width: 300,
+              height: 50,
+              child: TextField(
+                controller: lessonSpecificationsViewModel.saveTargetController,
+                style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                filled: true,
+                fillColor: Color.fromARGB(255, 49, 51, 56),
+                border: OutlineInputBorder(),
+                hintText: "no save directory",
+                hintStyle: TextStyle(
+                    fontFamily: 'Roboto, Inter, Arial',
+                    color: Colors.grey,
+                  ),
+                ),
+                enabled: false, 
+              ),
+            ),
+            const SizedBox(width: 60.0),
             SecondaryButton(
               handlePress: () {
                 lessonSpecificationsViewModel.cancelLesson(context);

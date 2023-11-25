@@ -8,6 +8,12 @@ import 'package:lessonlab/messages/results/view_lesson_result/load_lesson.pb.dar
 import 'package:rinf/rinf.dart';
 
 class LessonResultViewModel with ChangeNotifier {
+  late Future<String> _lessonTitle;
+  Future<String> get lessonTitle => _lessonTitle;
+  set lessonTitle(value) {
+    _lessonTitle = value;
+  }
+
   late Future<String> _mdContents;
   Future<String> get mdContents => _mdContents;
   set mdContents(value) {
@@ -30,6 +36,11 @@ class LessonResultViewModel with ChangeNotifier {
   Future<void> loadContents() async {
     try {
       cssContents = _loadFileContents('assets/styles/markdown.css');
+
+      // await getData();
+      // final data = await getData();
+      // mdContents = data[0];
+      lessonTitle = getTitleData();
       mdContents = getData();
 
       // Notify listeners that the data has been loaded
@@ -64,6 +75,27 @@ class LessonResultViewModel with ChangeNotifier {
     developer.log(responseMessage.errorString.toString(),
         name: 'error message');
     return responseMessage.mdContent;
+  }
+
+  Future<String> getTitleData() async {
+    final requestMessage = RinfInterface.ReadRequest(req: true);
+    final rustRequest = RustRequest(
+      resource: RinfInterface.ID,
+      operation: RustOperation.Read,
+      message: requestMessage.writeToBuffer(),
+      // blob: NO BLOB
+    );
+    final rustResponse =
+        await requestToRust(rustRequest, timeout: const Duration(minutes: 10));
+    final responseMessage = RinfInterface.ReadResponse.fromBuffer(
+      rustResponse.message!,
+      // TODO: handle this could be a null
+    );
+    _statusCode = responseMessage.statusCode;
+    developer.log(_statusCode.toString(), name: 'status code');
+    developer.log(responseMessage.errorString.toString(),
+        name: 'error message');
+    return responseMessage.title;
   }
 }
 

@@ -1,3 +1,4 @@
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/components/dropdown_menu.dart';
@@ -9,6 +10,7 @@ import 'package:lessonlab/messages/lesson/lesson_specifications.pb.dart'
     as RinfInterface;
 import 'package:lessonlab/src/lessonlab_modules/lesson/components/text_area.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
+import 'package:lessonlab/src/settings/shared_preferences.dart';
 import 'package:rinf/rinf.dart';
 
 // This class holds all the input fields in the view
@@ -54,10 +56,16 @@ class LessonSpecificationsViewModel extends ChangeNotifier {
   }
 
   final _formFields = <FormField>[];
-  get formFields => _formFields;
+  List<FormField> get formFields => _formFields;
 
   final _lessonSpecifications = <String>[];
-  get lessonSpecifications => _lessonSpecifications;
+  List<String> get lessonSpecifications => _lessonSpecifications;
+
+  var _targetPath = SettingsPreferences.getDirectory();
+  String? get targetPath => _targetPath;
+
+  final TextEditingController _saveTargetController = TextEditingController(text: SettingsPreferences.getDirectory());
+  TextEditingController get saveTargetController => _saveTargetController;
 
   var _statusCode = 0;
 
@@ -135,5 +143,19 @@ class LessonSpecificationsViewModel extends ChangeNotifier {
 
   void generateLesson(BuildContext context) {
     Navigator.restorablePushNamed(context, LessonResultView.routeName);
+  }
+
+  void selectLessonSavePath(BuildContext context, TextEditingController controller) async {
+    final String? directoryPath = await getDirectoryPath();
+
+    if (directoryPath == null) {
+      // Operation was canceled by the user.
+      return;
+    }
+    else
+    {
+      controller.text = directoryPath;
+      _targetPath = directoryPath;
+    }
   }
 }

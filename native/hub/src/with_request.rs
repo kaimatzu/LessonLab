@@ -3,6 +3,7 @@
 //! and returns a `RustResponse`.
 
 use crate::app::lesson::lesson_specifications_model::LessonSpecificationsModel;
+use crate::app::settings::settings_save_directory_model::SaveDirectoryModel;
 use crate::bridge::{RustRequestUnique, RustResponse, RustResponseUnique};
 use crate::messages;
 use crate::app;
@@ -16,7 +17,8 @@ use app::entry::upload::upload_model::{UploadModel, TextFile};
 
 pub async fn handle_request(request_unique: RustRequestUnique,
     upload_model: &mut tokio::sync::MutexGuard<'_, UploadModel>,
-    lesson_specifications_model: &mut tokio::sync::MutexGuard<'_, LessonSpecificationsModel>) -> RustResponseUnique {
+    lesson_specifications_model: &mut tokio::sync::MutexGuard<'_, LessonSpecificationsModel>,
+    save_directory_model: &mut tokio::sync::MutexGuard<'_, SaveDirectoryModel>) -> RustResponseUnique {
     // Get the request data from Dart.
     let rust_request = request_unique.request;
     let interaction_id = request_unique.id;
@@ -31,7 +33,10 @@ pub async fn handle_request(request_unique: RustRequestUnique,
             app::lesson::lesson_specifications_view_model::handle_lesson_specifications(rust_request, lesson_specifications_model).await
         }
         messages::results::view_lesson_result::load_lesson::ID => {
-            app::results::lesson_result_view_model::handle_lesson_generation(rust_request, upload_model, lesson_specifications_model).await
+            app::results::lesson_result_view_model::handle_lesson_generation(rust_request, upload_model, lesson_specifications_model, save_directory_model).await
+        }
+        messages::settings::save_directory::ID =>{
+            app::settings::settings_view_model::handle_choose_directory(rust_request, save_directory_model).await
         }
         _ => RustResponse::default(),
     };

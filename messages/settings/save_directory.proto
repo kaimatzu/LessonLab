@@ -1,0 +1,10 @@
+syntax = "proto3";
+package save_directory;
+
+message CreateRequest {
+    string save_directory = 1;
+}
+
+message CreateResponse {
+    uint32 status_code = 1; 
+}
