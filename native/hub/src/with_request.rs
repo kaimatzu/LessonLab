@@ -4,9 +4,17 @@
 
 use crate::bridge::{RustRequestUnique, RustResponse, RustResponseUnique};
 use crate::messages;
-use crate::sample_functions;
+use crate::app;
 
-pub async fn handle_request(request_unique: RustRequestUnique) -> RustResponseUnique {
+// use std::sync::{Arc, Mutex};
+use tokio_with_wasm::tokio;
+// use tokio::sync::Mutex;
+use tokio_with_wasm::tokio::sync::{Mutex};
+use std::sync::{Arc};
+use app::entry::upload::upload_model::{UploadModel, TextFile};
+
+pub async fn handle_request(request_unique: RustRequestUnique,
+    upload_model: &mut tokio::sync::MutexGuard<'_, UploadModel>) -> RustResponseUnique {
     // Get the request data from Dart.
     let rust_request = request_unique.request;
     let interaction_id = request_unique.id;
@@ -14,12 +22,8 @@ pub async fn handle_request(request_unique: RustRequestUnique) -> RustResponseUn
     // Run the function that handles the Rust resource.
     let rust_resource = rust_request.resource;
     let rust_response = match rust_resource {
-        messages::counter_number::ID => sample_functions::handle_counter_number(rust_request).await,
-        messages::sample_folder::sample_resource::ID => {
-            sample_functions::handle_sample_resource(rust_request).await
-        }
-        messages::sample_folder::deeper_folder::deeper_resource::ID => {
-            sample_functions::handle_deeper_resource(rust_request).await
+        messages::entry::upload::uploaded_content::ID => { // Handle Uploaded File content
+            app::entry::upload::upload_view_model::handle_uploaded_content(rust_request, upload_model).await
         }
         _ => RustResponse::default(),
     };

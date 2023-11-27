@@ -4,9 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lessonlab/src/global_components/route_animation.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay_provider.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
-
+import 'package:lessonlab/src/lessonlab_modules/results/results.dart';
 import 'lessonlab_modules/entry/menu/menu_view.dart';
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
@@ -22,9 +21,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    final OverlayProvider overlayProvider = OverlayProvider();
-
     // Glue the SettingsController to the MaterialApp.
     //
     // The ListenableBuilder Widget listens to the SettingsController for changes.
@@ -77,7 +73,7 @@ class MyApp extends StatelessWidget {
             builder: (BuildContext context) {
               switch (routeSettings.name) {
                 case '/Result':
-                  return const QuizResult();
+                  return QuizResult();
                 case '/settings':
                   return SettingsView(controller: settingsController);
                 case '/menu':
@@ -85,7 +81,7 @@ class MyApp extends StatelessWidget {
                 case '/upload':
                   return const UploadView();
                 default:
-                  return const MenuView();
+                  return MenuView();
               }
             },
             settings: routeSettings,
