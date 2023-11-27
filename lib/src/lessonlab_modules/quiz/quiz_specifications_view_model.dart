@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/components/dropdown_menu.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/components/input_field.dart';
 import 'dart:developer' as developer;
@@ -19,11 +19,11 @@ class FormField {
   // final String? dropdownValue;
 
   FormField({this.inputField, this.dropdown, this.textArea})
-     : assert(
-           (inputField != null && dropdown == null && textArea == null) 
-           || (inputField == null && dropdown != null && textArea == null)
-           || (inputField == null && dropdown == null && textArea != null),
-           'Either provide an InputField or a Dropdown or a TextArea.');
+      : assert(
+            (inputField != null && dropdown == null && textArea == null) ||
+                (inputField == null && dropdown != null && textArea == null) ||
+                (inputField == null && dropdown == null && textArea != null),
+            'Either provide an InputField or a Dropdown or a TextArea.');
 }
 
 class QuizSpecificationsViewModel extends ChangeNotifier {
@@ -126,7 +126,7 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
   }
 
   void cancelQuiz(BuildContext context) {
-    Navigator.restorablePushNamed(context, UploadView.routeName);
+    Navigator.restorablePushNamed(context, UploadSourcesView.routeName);
   }
 
   void generateQuiz(BuildContext context) {

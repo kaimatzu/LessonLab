@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_navigation.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
@@ -43,7 +43,7 @@ class _OverlayUploadTextState extends State<OverlayUploadText> {
 
   @override
   Widget build(BuildContext context) {
-    final uploadViewModel = context.watch<UploadViewModel>();
+    final uploadViewModel = context.watch<UploadSourcesViewModel>();
     final overlayProvider = context.watch<OverlayController>();
 
     return Container(
@@ -153,12 +153,13 @@ class _OverlayUploadTextState extends State<OverlayUploadText> {
     });
   }
 
-  void saveText(BuildContext context, UploadViewModel uploadViewModel,
+  void saveText(BuildContext context, UploadSourcesViewModel uploadViewModel,
       OverlayController overlayProvider) {
     final String title = titleController.text;
     final String content = contentController.text;
 
-    uploadViewModel.textFiles.add(TextFile(title: title, content: content));
+    uploadViewModel.uploadModel.texts
+        .add(TextFile(title: title, content: content));
 
     overlayProvider.changeContent(
         context,

@@ -14,7 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:rinf/rinf.dart';
 import 'dart:developer' as developer;
 
-class SettingsViewModel with ChangeNotifier{
+class SettingsViewModel with ChangeNotifier {
   SettingsViewModel(this._settingsService);
 
   final SettingsService _settingsService;
@@ -47,29 +47,29 @@ class SettingsViewModel with ChangeNotifier{
   String _configPath = '';
   // ignore: unnecessary_getters_setters
   String get configPath => _configPath;
-  set configPath (String value){
+  set configPath(String value) {
     _configPath = value;
   }
 
   var statusCode = 0;
 
-  void loadPreferences(TextEditingController? directoryController) async{
-    _configPath = SettingsPreferences.getDirectory() ?? await getDefaultConfigPath();
+  void loadPreferences(TextEditingController? directoryController) async {
+    _configPath =
+        SettingsPreferences.getDirectory() ?? await getDefaultConfigPath();
     developer.log("Loaded config path: $_configPath");
-    if(directoryController != null) {
+    if (directoryController != null) {
       directoryController.text = _configPath;
     }
   }
 
-  void selectDirectory(BuildContext context, TextEditingController directoryController) async{
+  void selectDirectory(
+      BuildContext context, TextEditingController directoryController) async {
     final String? directoryPath = await getDirectoryPath();
 
     if (directoryPath == null) {
       // Operation was canceled by the user.
       return;
-    }
-    else
-    {
+    } else {
       directoryController.text = directoryPath;
       developer.log("Flutter Shared Preference: $directoryPath");
       _configPath = directoryPath;
@@ -81,7 +81,7 @@ class SettingsViewModel with ChangeNotifier{
   Future<String> getDefaultConfigPath() async {
     String username = Platform.environment['USERNAME'] ?? 'default';
     Directory appDataDir = await getApplicationSupportDirectory();
-    return "${appDataDir.path}";
+    return appDataDir.path;
   }
 
   void resetConfigPath(TextEditingController directoryController) async {
@@ -91,7 +91,7 @@ class SettingsViewModel with ChangeNotifier{
     await sendData();
   }
 
-  Future<void> sendData() async{
+  Future<void> sendData() async {
     final requestMessage =
         RinfInterface.CreateRequest(saveDirectory: _configPath);
     final rustRequest = RustRequest(

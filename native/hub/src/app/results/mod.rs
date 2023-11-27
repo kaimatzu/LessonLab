@@ -1,2 +1,2 @@
-pub mod lesson_result_model;
-pub mod lesson_result_view_model;
+pub mod lesson_result_data_object;
+pub mod lesson_result_data_handlers;

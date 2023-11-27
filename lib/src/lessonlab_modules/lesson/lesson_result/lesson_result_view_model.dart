@@ -2,30 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:developer' as developer;
 
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_model.dart';
 import 'package:lessonlab/messages/results/view_lesson_result/load_lesson.pb.dart'
     // ignore: library_prefixes
     as RinfInterface;
 import 'package:rinf/rinf.dart';
 
 class LessonResultViewModel with ChangeNotifier {
-  late Future<String> _lessonTitle;
-  Future<String> get lessonTitle => _lessonTitle;
-  set lessonTitle(value) {
-    _lessonTitle = value;
-  }
-
-  late Future<String> _mdContents;
-  Future<String> get mdContents => _mdContents;
-  set mdContents(value) {
-    _mdContents = value;
-  }
-
-  late Future<String> _cssContents;
-  Future<String> get cssContents => _cssContents;
-  set cssContents(value) {
-    _cssContents = value;
-  }
-
+  final lessonResultModel = LessonResultModel();
   var _statusCode = 0;
 
   LessonResultViewModel() {
@@ -35,13 +19,14 @@ class LessonResultViewModel with ChangeNotifier {
 
   Future<void> loadContents() async {
     try {
-      cssContents = _loadFileContents('assets/styles/markdown.css');
+      lessonResultModel.cssContents =
+          _loadFileContents('assets/styles/markdown.css');
 
       // await getData();
       // final data = await getData();
       // mdContents = data[0];
-      lessonTitle = getTitleData();
-      mdContents = getData();
+      lessonResultModel.lesson.title = getTitleData();
+      lessonResultModel.lesson.content = getData();
 
       // Notify listeners that the data has been loaded
       // Notify (View)
