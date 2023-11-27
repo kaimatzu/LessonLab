@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lessonlab/src/global_components/route_animation.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 import 'package:lessonlab/src/settings/settings_view_model.dart';
 
 import 'lessonlab_modules/entry/menu/menu_view.dart';
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   });
 
   final SettingsViewModel settingsViewModel;
-  
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -62,17 +62,17 @@ class MyApp extends StatelessWidget {
                   case '/settings':
                     return SettingsView(settingsViewModel: settingsViewModel);
                   case '/menu':
-                    return const MenuView();
+                    return MenuView();
                   case '/upload':
-                    return const UploadView();
+                    return const UploadSourcesView();
                   case '/lesson_result':
-                    return const LessonResultView();  
+                    return const LessonResultView();
                   case '/specifications':
                     return const LessonSpecificationsView();
                   case '/quiz_specifications':
                     return const QuizSpecificationsView();
                   default:
-                    return const MenuView();
+                    return MenuView();
                 }
               },
               settings: routeSettings,

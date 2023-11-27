@@ -1,13 +1,12 @@
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:file_selector/file_selector.dart';
 
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/drag_and_drop_area.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_navigation.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
-
 
 /* 
   TODO: Fix angy Flutter
@@ -33,7 +32,7 @@ class _OverlayUploadFile extends State<OverlayUploadFile> {
 
   @override
   Widget build(BuildContext context) {
-    final uploadViewModel = context.watch<UploadViewModel>();
+    final uploadViewModel = context.watch<UploadSourcesViewModel>();
     final overlayProvider = context.watch<OverlayController>();
 
     return Container(
@@ -248,19 +247,21 @@ class _OverlayUploadFile extends State<OverlayUploadFile> {
   }
 
   // Sends the list of files from overlay to upload screen
-  void saveFilesAndClose(BuildContext context, UploadViewModel uploadViewModel,
+  void saveFilesAndClose(
+      BuildContext context,
+      UploadSourcesViewModel uploadViewModel,
       OverlayController overlayProvider) {
     // No DUPLICATES logic
     for (var overlayFile in overlayProvider.fileCache) {
       bool contains = false;
-      for (var uploadFile in uploadViewModel.files) {
+      for (var uploadFile in uploadViewModel.uploadModel.pdfFilePaths) {
         if (uploadFile.path + uploadFile.name ==
             overlayFile.path + overlayFile.name) {
           contains = true;
           break;
         }
       }
-      if (!contains) uploadViewModel.files.add(overlayFile);
+      if (!contains) uploadViewModel.uploadModel.pdfFilePaths.add(overlayFile);
     }
 
     // uploadViewModel.files.addAll(overlayProvider.fileCache);

@@ -1,30 +1,39 @@
 import 'package:flutter/material.dart';
+import 'dart:developer' as developer;
+
+class DropdownStateNotifier extends ChangeNotifier {
+  String _selectedValue = '';
+
+  String get selectedValue => _selectedValue;
+
+  void setSelectedValue(String value) {
+    _selectedValue = value;
+    notifyListeners();
+  }
+}
 
 class Dropdown extends StatefulWidget {
-  const Dropdown({
-    Key? key,
-    required this.label,
-    required this.list,
-  }) : super(key: key);
+  const Dropdown(
+      {Key? key,
+      required this.label,
+      required this.list,
+      required this.stateNotifier})
+      : super(key: key);
 
   final String label;
   final List<String> list;
+  final DropdownStateNotifier stateNotifier;
 
   @override
-  // ignore: library_private_types_in_public_api
-  _DropdownState createState() => _DropdownState();
-
-  // ignore: library_private_types_in_public_api
-  String get getSelectedValue => createState().selectedValue;
+  State<Dropdown> createState() => _DropdownState();
 }
 
 class _DropdownState extends State<Dropdown> {
-  String selectedValue = "";
-
   @override
   void initState() {
     super.initState();
-    selectedValue = widget.list.first;
+    widget.stateNotifier.setSelectedValue(widget.list.first);
+    developer.log(widget.stateNotifier.selectedValue, name: "Dropdown trace");
   }
 
   @override
@@ -53,16 +62,14 @@ class _DropdownState extends State<Dropdown> {
                   borderSide: BorderSide(
                       width: 2, color: Color.fromARGB(255, 49, 51, 56))),
             ),
-            value: selectedValue,
+            value: widget.stateNotifier.selectedValue,
             style: const TextStyle(
               fontFamily: 'Roboto, Inter, Arial',
               color: Colors.white,
             ),
             onChanged: (String? value) {
               // This is called when the user selects an item.
-              setState(() {
-                selectedValue = value!;
-              });
+              widget.stateNotifier.setSelectedValue(value!);
             },
             items: widget.list.map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(

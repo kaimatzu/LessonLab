@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_components/secondary_button.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view_model.dart';
 import 'package:provider/provider.dart';
 
 class LessonSpecificationsView extends StatelessWidget {
@@ -47,12 +47,12 @@ class LessonSpecificationsView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             PrimaryButton(
-              handlePress:  () async {
-                lessonSpecificationsViewModel.selectLessonSavePath(context, lessonSpecificationsViewModel.saveTargetController);
-              },
-              text: "Save Path  ", 
-            enabled: true
-            ),
+                handlePress: () async {
+                  lessonSpecificationsViewModel.selectLessonSavePath(context,
+                      lessonSpecificationsViewModel.saveTargetController);
+                },
+                text: 'Save Path',
+                enabled: true),
             const SizedBox(width: 8.0),
             SizedBox(
               width: 300,
@@ -60,17 +60,17 @@ class LessonSpecificationsView extends StatelessWidget {
               child: TextField(
                 controller: lessonSpecificationsViewModel.saveTargetController,
                 style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Color.fromARGB(255, 49, 51, 56),
-                border: OutlineInputBorder(),
-                hintText: "no save directory",
-                hintStyle: TextStyle(
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: Color.fromARGB(255, 49, 51, 56),
+                  border: OutlineInputBorder(),
+                  hintText: 'No save directory',
+                  hintStyle: TextStyle(
                     fontFamily: 'Roboto, Inter, Arial',
                     color: Colors.grey,
                   ),
                 ),
-                enabled: false, 
+                enabled: false,
               ),
             ),
             const SizedBox(width: 60.0),
@@ -94,7 +94,8 @@ class LessonSpecificationsView extends StatelessWidget {
                 lessonSpecificationsViewModel.collectFormTextValues();
                 lessonSpecificationsViewModel.sendData();
                 lessonSpecificationsViewModel.getData();
-                lessonSpecificationsViewModel.generateLesson(context);
+                lessonSpecificationsViewModel
+                    .navigateToLessonGeneration(context);
               },
               text: 'Generate',
               enabled: true,

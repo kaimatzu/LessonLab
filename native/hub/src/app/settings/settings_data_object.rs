@@ -1,5 +1,5 @@
 #[derive(Default)]
-pub struct SaveDirectoryModel {
+pub struct SettingsDataObject {
     pub save_directory: String
 }
 

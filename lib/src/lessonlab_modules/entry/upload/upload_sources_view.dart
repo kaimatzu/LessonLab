@@ -1,93 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/upload_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_components/secondary_button.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/resources_container.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
 
-class UploadView extends StatelessWidget {
-  const UploadView({Key? key}) : super(key: key);
+class UploadSourcesView extends StatelessWidget {
+  const UploadSourcesView({Key? key}) : super(key: key);
 
   static const routeName = '/upload';
 
   @override
   Widget build(BuildContext context) {
-    final uploadViewModel = context.watch<UploadViewModel>();
+    final uploadViewModel = context.watch<UploadSourcesViewModel>();
     final overlayProvider = context.watch<OverlayController>();
-
-    uploadViewModel.hasFiles = uploadViewModel.files.isNotEmpty ||
-        uploadViewModel.urls.isNotEmpty ||
-        uploadViewModel.textFiles.isNotEmpty;
-
-    const noFilesStyle = TextStyle(color: Colors.grey);
-    const fileNameTextStyle =
-        TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold);
-    const emptyPadding = EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0);
-    const filePadding = EdgeInsets.fromLTRB(14.0, 0.0, 14.0, 4.0);
-
-    const txtFiles = Text('Files', style: fileNameTextStyle);
-    const txtNoFiles = Text('No files available', style: noFilesStyle);
-    const txtUrl = Text('URL', style: fileNameTextStyle);
-    const txtNoUrl = Text('No URLs available ', style: noFilesStyle);
-    const txtText = Text('Text', style: fileNameTextStyle);
-    const txtNoText = Text('No text available.', style: noFilesStyle);
 
     return Scaffold(
       appBar: const LessonLabAppBar(),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(180.0, 30.0, 180.0, 60.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, // Adjust as needed
-            children: [
-              const Padding(
-                padding: filePadding,
-                child: txtFiles,
-              ),
-              ResourcesContainer(
-                items: uploadViewModel.files,
-                icon: const Icon(Icons.file_open, color: Colors.white),
-              ),
-              if (uploadViewModel.files.isEmpty)
-                const Padding(
-                  padding: emptyPadding,
-                  child: txtNoFiles,
-                ),
-              const Padding(
-                padding: filePadding,
-                child: txtUrl,
-              ),
-              ResourcesContainer(
-                items: uploadViewModel.urls,
-                icon: const Icon(Icons.link, color: Colors.white),
-              ),
-              if (uploadViewModel.urls.isEmpty)
-                const Padding(
-                  padding: emptyPadding,
-                  child: txtNoUrl,
-                ),
-              const Padding(
-                padding: filePadding,
-                child: txtText,
-              ),
-              ResourcesContainer(
-                items: uploadViewModel.textFiles,
-                icon: const Icon(Icons.description, color: Colors.white),
-              ),
-              if (uploadViewModel.textFiles.isEmpty)
-                const Padding(
-                  padding: emptyPadding,
-                  child: txtNoText,
-                ),
-              const SizedBox(height: 16.0),
-            ],
-          ),
-        ),
-      ),
+          padding: const EdgeInsets.fromLTRB(180.0, 30.0, 180.0, 60.0),
+          child: UploadScreen()),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(0.0, 0.0, 180.0, 60.0),
         child: Row(
@@ -103,12 +40,13 @@ class UploadView extends StatelessWidget {
             PrimaryButton(
               handlePress: () {
                 if (uploadViewModel.hasFiles) {
-                  uploadViewModel.sendData();
-                  uploadViewModel.getData();
-                  Navigator.restorablePushNamed(
-                    context,
-                    LessonSpecificationsView.routeName,
-                  );
+                  // uploadViewModel.sendData();
+                  // uploadViewModel.getData();
+                  // Navigator.restorablePushNamed(
+                  //   context,
+                  //   LessonSpecificationsView.routeName,
+                  // );
+                  uploadViewModel.newLesson(context);
                 } else {
                   null;
                 }

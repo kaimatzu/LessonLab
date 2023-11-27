@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_navigation.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
@@ -35,7 +35,7 @@ class _OverlayUploadURLState extends State<OverlayUploadURL> {
 
   @override
   Widget build(BuildContext context) {
-    final uploadViewModel = context.watch<UploadViewModel>();
+    final uploadViewModel = context.watch<UploadSourcesViewModel>();
     final overlayProvider = context.watch<OverlayController>();
 
     return Container(
@@ -203,18 +203,20 @@ class _OverlayUploadURLState extends State<OverlayUploadURL> {
   }
 
   // Closes the overlay and sends the url from overlay to the upload screen
-  void saveURLAndClose(BuildContext context, UploadViewModel uploadViewModel,
+  void saveURLAndClose(
+      BuildContext context,
+      UploadSourcesViewModel uploadViewModel,
       OverlayController overlayProvider) {
     // NO DUPLICATES LOGIC
     for (var overlayURL in overlayProvider.urlCache) {
       bool contains = false;
-      for (var uploadURL in uploadViewModel.urls) {
+      for (var uploadURL in uploadViewModel.uploadModel.urls) {
         if (uploadURL == overlayURL) {
           contains = true;
           break;
         }
       }
-      if (!contains) uploadViewModel.urls.add(overlayURL);
+      if (!contains) uploadViewModel.uploadModel.urls.add(overlayURL);
     }
 
     overlayProvider.urlCache.clear();
