@@ -5,7 +5,11 @@ class MenuModel {
   late Future<List<LessonModel>> _lessons;
   late Future<List<QuizModel>> _quizzes;
 
-  // MenuModel(this._lessons, this._quizzes);
+  MenuModel();
+
+  MenuModel.initialize() 
+    : _lessons = Future.value([]),
+      _quizzes = Future.value([]);
 
   Future<List<LessonModel>> get lessons => _lessons;
   set lessons(Future<List<LessonModel>> value) {

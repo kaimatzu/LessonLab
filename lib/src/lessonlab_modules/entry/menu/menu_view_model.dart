@@ -14,6 +14,8 @@ class MenuViewModel with ChangeNotifier {
   MenuModel get menuModel => _menuModel;
 
   MenuViewModel() {
+    _menuModel = MenuModel.initialize();
+    _menuConnectionOrchestrator = MenuConnectionOrchestrator();
     loadViewContent();
     // for (int i = 0; i < 4; i++) {
     //   lesson.add(LessonModel(i, 'Title $i', 'Content $i'));
@@ -33,21 +35,13 @@ class MenuViewModel with ChangeNotifier {
   }
 
   Future<void> loadViewContent() async {
-    _menuConnectionOrchestrator = MenuConnectionOrchestrator();
+    final result = await _menuConnectionOrchestrator.getMenuModel();
 
-    _menuModel = MenuModel();
+    // _menuModel = MenuModel();
 
-    _menuModel.lessons = loadMenuModelLessons();
-    _menuModel.quizzes = loadMenuModelQuizzes();
-  }
+    _menuModel.lessons = result.lessons;
+    _menuModel.quizzes = result.quizzes;
 
-  Future<List<LessonModel>> loadMenuModelLessons() async {
-    final result = await _menuConnectionOrchestrator.getData();
-    return result.lessons;
-  }
-
-  Future<List<QuizModel>> loadMenuModelQuizzes() async {
-    final result = await _menuConnectionOrchestrator.getData();
-    return result.quizzes;
+    notifyListeners();
   }
 }

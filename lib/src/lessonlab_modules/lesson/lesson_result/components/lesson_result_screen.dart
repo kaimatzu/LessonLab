@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 class LessonResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // TODO: Make the same as Menu.
     final lessonResultViewModel = context.watch<LessonResultViewModel>();
 
     return SingleChildScrollView(
