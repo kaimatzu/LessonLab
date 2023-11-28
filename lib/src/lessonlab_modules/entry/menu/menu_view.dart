@@ -35,40 +35,67 @@ class MenuView extends StatelessWidget {
     );
 
     var grid = FutureBuilder<List<Object>>(
-        future: Future.wait([
-          _menuViewModel.menuModel.lessons,
-          _menuViewModel.menuModel.quizzes,
-        ]),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return const Text('Error loading lesson content');
-          } else {
-            final List<Object> contents = snapshot.data!;
-            final List<LessonModel> lessons = contents[0] as List<LessonModel>;
-            final List<QuizModel> quizzes = contents[1] as List<QuizModel>;
+      future: Future.wait([
+        _menuViewModel.menuModel.lessons,
+        _menuViewModel.menuModel.quizzes,
+      ]),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return const Text('Error loading lesson content');
+        } else {
+          final List<Object> contents = snapshot.data!;
+          final List<LessonModel> lessons = contents[0] as List<LessonModel>;
+          final List<QuizModel> quizzes = contents[1] as List<QuizModel>;
 
-            return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12.0,
-                mainAxisSpacing: 24.0,
-                childAspectRatio: cardWidth / cardHeight,
-              ),
-              itemCount: quizzes.length + lessons.length,
-              // itemCount: 4,
-              itemBuilder: (BuildContext context, int index) {
-                return MenuCard(
-                  // title: _menuViewModel.menuModel.lessons[index].title,
-                  // content: _menuViewModel.menuModel.lessons[index].content,
-                  title: 'Item $index',
-                  content: 'Content $index',
+          return GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12.0,
+              mainAxisSpacing: 24.0,
+              childAspectRatio: cardWidth / cardHeight,
+            ),
+            itemCount: quizzes.length + lessons.length,
+            itemBuilder: (BuildContext context, int index) {
+              if (index < lessons.length) {
+                return FutureBuilder<String>(
+                  future: lessons[index].title,
+                  builder: (context, titleSnapshot) {
+                    if (titleSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (titleSnapshot.hasError) {
+                      return Text('Error loading lesson title');
+                    } else {
+                      return FutureBuilder<String>(
+                        future: lessons[index].content,
+                        builder: (context, contentSnapshot) {
+                          if (contentSnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          } else if (contentSnapshot.hasError) {
+                            return Text('Error loading lesson content');
+                          } else {
+                            return MenuCard(
+                              title: titleSnapshot.data!,
+                              content: contentSnapshot.data!,
+                            );
+                          }
+                        },
+                      );
+                    }
+                  },
                 );
-              },
-            );
-          }
-        });
+              } else {
+                // Handle quizzes similarly if needed
+                return Container(); // Placeholder for now
+              }
+            },
+          );
+        }
+      },
+    );
 
     return Scaffold(
       appBar: const LessonLabAppBar(),
