@@ -14,9 +14,9 @@ pub mod lesson_result_data_handlers {
     use crate::app::lesson::lesson_specifications_data_object::LessonSpecificationsDataObject;
     use crate::app::results::lesson_result_data_object::{LessonResultDataObject, Sources};
     
-    use crate::app::global_objects::lessons_data_object::{Lesson, Lessons};
+    use crate::app::global_objects::lessons_data_object::{Lesson, LessonsDataObject};
     
-    impl Lessons{
+    impl LessonsDataObject{
         fn create_lesson(&mut self, new_lesson: Lesson) {
             // Check for duplicate target_path before adding
             if !self.lessons.iter().any(|lesson| lesson.target_path == new_lesson.target_path) {
@@ -60,7 +60,7 @@ pub mod lesson_result_data_handlers {
     
                 let mut string_payload: String = String::new();
                 
-                let mut lessons_json = Lessons { lessons: Vec::new() };
+                let mut lessons_json = LessonsDataObject { lessons: Vec::new() };
                 let mut sources = Sources::default();
                 
                 string_payload.push_str("Lesson Specifications \n");
@@ -187,7 +187,7 @@ pub mod lesson_result_data_handlers {
         crate::debug_print!("Deserializing...");
     
         // Load all lessons in the config file and Deserialize the JSON string
-        let mut existing_lessons: Lessons = {
+        let mut existing_lessons: LessonsDataObject = {
             crate::debug_print!("Reading File: {}", file_path);
             let mut file = File::open(file_path)?;
             let mut contents = String::new();

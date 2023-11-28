@@ -9,6 +9,6 @@ pub struct Lesson{
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
-pub struct Lessons{
+pub struct LessonsDataObject{
     pub lessons: Vec<Lesson>
 }

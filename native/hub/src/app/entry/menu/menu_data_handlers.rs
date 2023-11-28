@@ -1,6 +1,6 @@
 pub mod menu_data_handlers {
     use http::StatusCode;
-    use crate::app::global_objects::lessons_data_object::Lessons;
+    use crate::app::global_objects::lessons_data_object::LessonsDataObject;
     use crate::app::settings::settings_data_object::SettingsDataObject;
     use crate::bridge::{RustOperation, RustRequest, RustResponse, RustSignal};
     use crate::messages::entry::menu::menu::{MenuModel, LessonModel, QuizModel, QuestionModel};
@@ -10,7 +10,7 @@ pub mod menu_data_handlers {
     use prost::Message;
 
     use tokio_with_wasm::tokio;
-    use crate::app::entry::menu::menu_data_object::MenuDataObject;
+    use crate::app::entry::menu::menu_data_object::{MenuDataObject, Root};
 
     pub async fn handle_menu_content_loading(rust_request: RustRequest,
         menu_data_object: &mut tokio::sync::MutexGuard<'_, MenuDataObject>,
@@ -30,8 +30,8 @@ pub mod menu_data_handlers {
                 file_path.push_str("\\config.json");
 
                 let temp_menu_data_object = load_menu_data_from_file(file_path.as_str());
-                menu_data_object.lessons = temp_menu_data_object.lessons;
-                menu_data_object.quizzes = temp_menu_data_object.quizzes; 
+                menu_data_object.lessons_data_object = temp_menu_data_object.lessons_data_object;
+                menu_data_object.quizzes_data_object = temp_menu_data_object.quizzes_data_object; 
 
                 let response_message = ReadResponse {
                     menu_model: serialize_menu_model(menu_data_object)
@@ -51,7 +51,7 @@ pub mod menu_data_handlers {
     fn serialize_menu_model(menu_data_object: &mut tokio::sync::MutexGuard<'_, MenuDataObject>) -> Option<MenuModel> {
         // Your logic to create a MenuModel
         let mut lessons: Vec<LessonModel> = Vec::new();
-        for lesson in menu_data_object.lessons.lessons.clone() {
+        for lesson in menu_data_object.lessons_data_object.lessons.clone() {
             let mut lesson_model: LessonModel = LessonModel::default();
             lesson_model.title = lesson.title;
             // Need to load content form target. Use a file opener
@@ -60,7 +60,7 @@ pub mod menu_data_handlers {
         }
 
 		let mut quizzes: Vec<QuizModel> = Vec::new();
-		for quiz in menu_data_object.quizzes.quizzes.clone() {
+		for quiz in menu_data_object.quizzes_data_object.quizzes.clone() {
 			let mut quiz_model: QuizModel = QuizModel::default();
 			quiz_model.title = quiz.title;
 			quiz_model.location = quiz.target_path;
@@ -90,8 +90,9 @@ pub mod menu_data_handlers {
             .expect("Failed to read file content");
     
         // Deserialize the JSON content into a MenuDataObject
-        let menu_data: MenuDataObject =
-            serde_json::from_str(&json_content).expect("Failed to deserialize JSON");
+        let root: Root = serde_json::from_str(&json_content).expect("Failed to deserialize JSON");
+
+        let menu_data: MenuDataObject = root.menu_data_object;
     
         menu_data
     }
