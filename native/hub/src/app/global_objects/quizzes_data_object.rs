@@ -20,6 +20,6 @@ pub struct Choice{
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
-pub struct Quizzes{
+pub struct QuizzesDataObject{
     pub quizzes: Vec<Quiz>
 }

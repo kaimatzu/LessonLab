@@ -5,7 +5,7 @@ pub mod settings_data_handlers {
     use std::io::{self, Write};
     
     use http::StatusCode;
-    use crate::app::global_objects::lessons_data_object::Lessons;
+    use crate::app::global_objects::lessons_data_object::LessonsDataObject;
     use crate::bridge::{RustOperation, RustRequest, RustResponse, RustSignal};
     use prost::Message;
     use tokio_with_wasm::tokio;
@@ -30,7 +30,7 @@ pub mod settings_data_handlers {
                 if settings_save_directory_data_object.save_directory.len() > 0 {
                     if !file_exists(&file_path) || file_is_empty(&file_path) {
                         // If the file doesn't exist or is empty, create it
-                        let lessons = Lessons::default();
+                        let lessons = LessonsDataObject::default();
                         let result = generate_config_file(&lessons, file_path.as_str());
                         match result {
                             Ok(_) => {
@@ -71,7 +71,7 @@ pub mod settings_data_handlers {
     
     /* Creates a new config file
      */
-    pub fn generate_config_file(lessons: &Lessons, file_path: &str) -> std::io::Result<()> {
+    pub fn generate_config_file(lessons: &LessonsDataObject, file_path: &str) -> std::io::Result<()> {
         let json_string = serde_json::to_string_pretty(lessons)?;
         let file = OpenOptions::new()
                         .read(true)
