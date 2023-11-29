@@ -1,5 +1,6 @@
 pub mod lesson_result_data_handlers {
     use http::StatusCode;
+    use crate::bridge::send_rust_signal;
     use crate::app::entry::menu::menu_data_object::Root;
     use crate::app::settings::settings_data_object::SettingsDataObject;
     use crate::bridge::{RustOperation, RustRequest, RustResponse, RustSignal};
@@ -135,29 +136,35 @@ pub mod lesson_result_data_handlers {
                 }
 
                 if release {
-                    match lesson_generator::generate(string_payload) {
-                        Ok(md_content) => {
-                            // write to file here
-                            if let Err(error) = write_lesson_to_target_path(&md_content, &target_folder_path) {
-                                crate::debug_print!("Failed to write to target file: {}", error);
-                            }
+                    // match lesson_generator::generate(string_payload) {
+                    //     Ok(md_content) => {
+                    //         // write to file here
+                    //         if let Err(error) = write_lesson_to_target_path(&md_content, &target_folder_path) {
+                    //             crate::debug_print!("Failed to write to target file: {}", error);
+                    //         }
 
-                            response_message = ReadResponse {
-                                status_code: StatusCode::OK.as_u16() as u32,
-                                title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                                md_content,
-                                error_string: String::from("No error")
-                            };
-                        }
-                        Err(error) => {
-                            response_message = ReadResponse {
-                                status_code: StatusCode::NOT_FOUND.as_u16() as u32,
-                                title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                                md_content: String::from("No content"),
-                                error_string: error.to_string()
-                            };
-                        }
-                    }
+                    //         response_message = ReadResponse {
+                    //             status_code: StatusCode::OK.as_u16() as u32,
+                    //             title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+                    //             md_content,
+                    //             error_string: String::from("No error")
+                    //         };
+                    //     }
+                    //     Err(error) => {
+                    //         response_message = ReadResponse {
+                    //             status_code: StatusCode::NOT_FOUND.as_u16() as u32,
+                    //             title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+                    //             md_content: String::from("No content"),
+                    //             error_string: error.to_string()
+                    //         };
+                    //     }
+                    // }
+                    response_message = ReadResponse {
+                        status_code: StatusCode::OK.as_u16() as u32,
+                        title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+                        md_content: "MOVED LESSON GENERATION".to_string(),
+                        error_string: String::from("No error")
+                    };
                 }
                 else {
                     // write to file here
@@ -194,13 +201,92 @@ pub mod lesson_result_data_handlers {
             RustOperation::Delete => RustResponse::default(),
         }
     }
+
+    pub fn read_tcp_stream() -> Result<(), Box<dyn std::error::Error>> {
+        use crate::messages::results::view_lesson_result::load_lesson::{StateSignal, ID};
+
+        println!("Reading from tcp stream:");
+        // Create a new ZeroMQ context
+        let mut ctx = zmq::Context::new();
     
+        // Create a REP socket and bind to the inproc endpoint
+        let socket = ctx.socket(zmq::REP)?;
+        
+        if let Err(bind_err) = socket.bind("tcp://127.0.0.1:5555") {
+            // Log the binding error
+            crate::debug_print!("Error binding to socket: {}", bind_err);
+            return Err(Box::new(bind_err) as Box<dyn std::error::Error>);
+        }
+        
+        println!("Socket bound!");
+
+        // Define a closure to receive messages
+        let receive_message = || {
+            socket.recv_bytes(0).map(|bytes| String::from_utf8(bytes))
+        };
+    
+        
+        loop {
+            // Receive a message
+            let message = receive_message()??;
+            
+            crate::debug_print!("{}", message);
+
+            // Do something with the message here 
+            let signal_message = StateSignal { stream_message: message.to_owned()};
+            let rust_signal = RustSignal {
+                resource: ID,
+                message: Some(signal_message.encode_to_vec()),
+                blob: None,
+            };
+            send_rust_signal(rust_signal);
+
+            if message == "[LL_END_STREAM]" {
+                // socket.send("EXIT_ACK", 0).unwrap();
+                break;
+            } 
+    
+            socket.send("ACK", 0).unwrap();
+        }
+        
+        crate::debug_print!("loop broken");
+        
+        // Just to make sure that the socket is unbound for future operations.
+        let _ = socket.unbind("tcp://127.0.0.1:5555");
+        let _ = ctx.destroy();
+    
+        Ok(())
+    }
+
+    pub async fn create_thread_handles() {
+        // Create a thread for reading inproc stream concurrently
+        let stream_handle = std::thread::spawn(move || {
+            let _ = read_tcp_stream();
+            println!("Finished server thread.");
+        });
+    
+        // Create a thread for generating the lesson
+        let generation_handle = std::thread::spawn(move || {
+            if let Err(err) = lesson_generator::generate_lesson_stream() {
+                eprintln!("Error generating lesson stream: {}", err);
+                // Handle the error as needed
+            }
+            println!("Finished generation thread.");
+        });
+    
+        // Wait for the generation thread to finish
+        generation_handle.join().unwrap();
+        stream_handle.join().unwrap();
+    
+        println!("Finished.");
+    }
+
     pub fn write_lesson_to_config_file(current_lesson: &Lesson, file_path: &str) -> std::io::Result<()> {
-        crate::debug_print!("Deserializing...");
+        // crate::debug_print!("Deserializing...");
     
         // Load all lessons in the config file and Deserialize the JSON string
         let mut root: Root = {
-            crate::debug_print!("Reading File: {}", file_path);
+            // crate::debug_print!("Reading File: {}", file_path);
             let mut file = File::open(file_path)?;
             let mut contents = String::new();
             file.read_to_string(&mut contents)?;
@@ -216,10 +302,10 @@ pub mod lesson_result_data_handlers {
         // Append the current lesson to the lessons in the root
         root.menu_data_object.lessons_data_object.lessons.push(current_lesson.to_owned());
     
-        crate::debug_print!("Deserialized:");
-        for lesson in &root.menu_data_object.lessons_data_object.lessons {
-            crate::debug_print!("{:#?}", lesson);
-        }
+        // crate::debug_print!("Deserialized:");
+        // for lesson in &root.menu_data_object.lessons_data_object.lessons {
+        //     crate::debug_print!("{:#?}", lesson);
+        // }
     
         // Serialize the root into JSON again
         let updated_json_string = serde_json::to_string_pretty(&root)?;

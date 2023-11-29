@@ -39,6 +39,7 @@ pub async fn handle_request(request_unique: RustRequestUnique,
             handle_lesson_specifications(rust_request, lesson_specifications_model).await
         }
         messages::results::view_lesson_result::load_lesson::ID => {
+            tokio::spawn(create_thread_handles());
             handle_lesson_generation(rust_request, upload_sources_data_object, lesson_specifications_model, save_directory_model).await
         }
         messages::settings::save_directory::ID =>{
