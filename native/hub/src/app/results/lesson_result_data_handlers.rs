@@ -10,6 +10,7 @@ pub mod lesson_result_data_handlers {
     
     use std::fs::{OpenOptions, create_dir_all, File};
     use std::io::{self, Write, Read};
+    use std::thread::sleep;
     
     use crate::app::utils::{scrapers, lesson_generator};
     use crate::app::entry::upload::upload_sources_data_object::UploadSourcesDataObject;
@@ -227,6 +228,7 @@ pub mod lesson_result_data_handlers {
     
         
         loop {
+            sleep(std::time::Duration::from_millis(50));
             // Receive a message
             let message = receive_message()??;
             
@@ -245,7 +247,7 @@ pub mod lesson_result_data_handlers {
                 // socket.send("EXIT_ACK", 0).unwrap();
                 break;
             } 
-    
+            
             socket.send("ACK", 0).unwrap();
         }
         
