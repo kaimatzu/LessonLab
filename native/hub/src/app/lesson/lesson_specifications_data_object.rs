@@ -1,4 +1,4 @@
 #[derive(Default)]
-pub struct LessonSpecificationsModel {
+pub struct LessonSpecificationsDataObject {
     pub lesson_specifications: Vec<String>
 }

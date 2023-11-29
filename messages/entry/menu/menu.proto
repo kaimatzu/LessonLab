@@ -1,2 +1,37 @@
 syntax = "proto3";
 package menu;
+
+message LessonModel {
+	string title = 1;
+	string content = 2;
+	string location = 3;
+}
+
+message QuizModel {
+	string title = 1;
+	repeated QuestionModel questions = 2;
+	string location = 3;
+}
+
+message QuestionModel {
+	string question = 1;
+	repeated ChoiceModel choices = 2;
+}
+
+message ChoiceModel {
+	string content = 1;
+	bool is_correct = 2;
+}
+
+message MenuModel {
+	repeated LessonModel lessons = 1;
+	repeated QuizModel quizzes = 2;
+}
+
+message ReadRequest {
+	bool req = 1;
+}
+
+message ReadResponse {
+	MenuModel menuModel = 1;
+}

@@ -1,2 +1,2 @@
-pub mod lesson_specifications_model;
-pub mod lesson_specifications_view_model;
+pub mod lesson_specifications_data_object;
+pub mod lesson_specifications_data_handlers;
