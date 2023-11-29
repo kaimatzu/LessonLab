@@ -9,14 +9,15 @@ pub fn scrape_pdf(file: String) -> PyResult<String> {
         let scraper = PyModule::from_code(
             py,
             include_str!("python/scraper.py"),
-            "Scraper",
+            "scraper.py",
             "scrapers",
         )?;
-
+        
         let lesson_source: String = scraper
         .getattr("scrape_pdf")?
         .call((file,), None)?
         .extract()?;
+
         Ok(lesson_source)
     })
 }
@@ -27,7 +28,7 @@ pub fn scrape_url(url: String) -> PyResult<String> {
         let scraper = PyModule::from_code(
             py,
             include_str!("python/scraper.py"),
-            "Scraper",
+            "scraper.py",
             "scrapers",
         )?;
 
@@ -46,7 +47,7 @@ pub fn validate_url(scraped_url: String) -> PyResult<bool> {
         let check = PyModule::from_code(
             py,
             include_str!("python/validate_url.py"),
-            "scraper.py",
+            "validate_url.py",
             "scrapers",
         )?;
 
@@ -65,7 +66,7 @@ pub fn scrape_txt(file: String) -> PyResult<String> {
         let check = PyModule::from_code(
             py,
             include_str!("python/scraper.py"),
-            "Scraper",
+            "scraper.py",
             "scrapers",
         )?;
 
@@ -84,7 +85,7 @@ pub fn scrape_docx(file: String) -> PyResult<String> {
         let check = PyModule::from_code(
             py,
             include_str!("python/scraper.py"),
-            "Scraper",
+            "scraper.py",
             "scrapers",
         )?;
 
@@ -103,7 +104,7 @@ pub fn scrape_pptx(file: String) -> PyResult<String> {
         let check = PyModule::from_code(
             py,
             include_str!("python/scraper.py"),
-            "Scraper",
+            "scraper.py",
             "scrapers",
         )?;
 
@@ -122,7 +123,7 @@ pub fn scrape_csv(file: String) -> PyResult<String> {
         let check = PyModule::from_code(
             py,
             include_str!("python/scraper.py"),
-            "Scraper",
+            "scraper.py",
             "scrapers",
         )?;
 
@@ -141,7 +142,7 @@ pub fn scrape_xlsx(file: String) -> PyResult<String> {
         let check = PyModule::from_code(
             py,
             include_str!("python/scraper.py"),
-            "Scraper",
+            "scraper.py",
             "scrapers",
         )?;
 
