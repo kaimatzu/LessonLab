@@ -54,3 +54,4 @@ target/
 */**/messages/
 
 .env
+.venv

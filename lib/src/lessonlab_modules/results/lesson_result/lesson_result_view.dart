@@ -3,6 +3,7 @@ import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:provider/provider.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/components/text_editor.dart';
 import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view_model.dart';
+import 'package:lottie/lottie.dart';
 
 class LessonResultView extends StatelessWidget {
   const LessonResultView({Key? key}) : super(key: key);
@@ -43,7 +44,8 @@ class LessonResultView extends StatelessWidget {
                 ),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
+                    // return const CircularProgressIndicator();    
+                    return Lottie.asset('assets/json/lessonlab_loading_final.json', width: 150, height: 150);              
                   } else if (snapshot.hasError) {
                     return const Text('Error loading lesson content');
                   } else {
