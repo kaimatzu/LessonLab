@@ -11,3 +11,5 @@ message ReadResponse {
     string md_content = 3;
 	string error_string = 4;
 }
+
+message StateSignal { string stream_message = 1; }
