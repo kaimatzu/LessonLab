@@ -9,9 +9,7 @@ import 'package:lessonlab/messages/results/view_lesson_result/load_lesson.pb.dar
 class LessonResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TODO: Make the same as Menu.
     final lessonResultViewModel = context.watch<LessonResultViewModel>();
-    var message = "";
     
     return SingleChildScrollView(
       child: Column(
@@ -53,35 +51,40 @@ class LessonResultScreen extends StatelessWidget {
                   // developer.log(cssContent, name: 'info');
                   return TextEditor(
                       title: title,
-                      mdContents: mdContent,
+                      mdContents: "",
                       cssContents: cssContent);
                 }
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 30.0),
-            child: StreamBuilder<RustSignal>(
-              stream: rustBroadcaster.stream.where((rustSignal) {
-                return rustSignal.resource == streamMessage.ID;
-              }),
-              builder: (context, snapshot) {
-                final rustSignal = snapshot.data;
-                if (rustSignal == null) {
-                  return Text("Nothing received yet");
-                } else {
-                  final signal = streamMessage.StateSignal.fromBuffer(
-                    rustSignal.message!,
-                  );
-                  final rinfMessage = signal.streamMessage;
-                  message += rinfMessage;
-                  return Text(message);
-                }
-              },
-            ),
-          )
+          // Padding(
+          //   padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 30.0),
+          //   child: StreamBuilder<RustSignal>(
+          //     stream: rustBroadcaster.stream.where((rustSignal) {
+          //       return rustSignal.resource == streamMessage.ID;
+          //     }),
+          //     builder: (context, snapshot) {
+          //       final rustSignal = snapshot.data;
+          //       if (rustSignal == null) {
+          //         return Text("Nothing received yet");
+          //       } else {
+          //         final signal = streamMessage.StateSignal.fromBuffer(
+          //           rustSignal.message!,
+          //         );
+          //         final rinfMessage = signal.streamMessage;
+          //         message += rinfMessage;
+          //         return Text(message);
+          //       }
+          //     },
+          //   ),
+          // )
         ],
       ),
     );
   }
 }
+
+// return TextEditor(
+//                       title: title,
+//                       mdContents: message,
+//                       cssContents: cssContent);

@@ -66,6 +66,15 @@ def generate_lesson_stream(source):
             print(f"Received ACK from Rust: {ack}")
         except Exception as e:
             print(f"Error processing chunk: {e}")
+    
+    # for i in range(25):
+    #     time.sleep(0.25)
+    #     socket.send_string("e")
+    #     print(f"Sent to Rust: e")
+
+    #     # Wait for acknowledgment from Rust
+    #     ack = socket.recv_string()
+    #     print(f"Received ACK from Rust: {ack}")
         
     print(f"Finished generation.")
      
