@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/components/text_area.dart';
 import 'package:markdown/markdown.dart' as md;
+import 'package:rinf/rinf.dart';
+import 'package:lessonlab/messages/results/view_lesson_result/load_lesson.pb.dart'
+    as streamMessage;
 
 const List<Widget> icons = <Widget>[
   Icon(Icons.code),
@@ -24,8 +28,11 @@ class TextEditor extends StatefulWidget {
 }
 
 class _TextEditor extends State<TextEditor> {
-  final List<bool> _richView = <bool>[false, true];
-  late String htmlContent;
+  final List<bool> _richView = <bool>[true, false];
+  var _doneGenerating = false;
+  var mdContentFinal = "";
+  var htmlContent = "";
+  // var noStreamValue = 0;
   late TextEditingController textController;
 
   @override
@@ -58,29 +65,51 @@ class _TextEditor extends State<TextEditor> {
               Visibility(
                 visible: _richView[0],
                 child: Container(
-                  // Render Placeholder when _richview is set to [false, true]
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 49, 51, 56),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: TextFormField(
-                    controller: textController,
-                    onChanged: (_) => updateHtmlContent(),
-                    style: const TextStyle(
-                        color: Colors.white, fontSize: 16, height: 1.6),
-                    // initialValue: widget.mdContents,
-                    maxLines: null,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter your text here...',
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                      ),
-                      filled: true,
-                      fillColor: Color.fromARGB(255, 49, 51, 56),
-                      border: OutlineInputBorder(),
+                    // Render Placeholder when _richview is set to [false, true]
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 49, 51, 56),
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
-                  ),
-                ),
+                    child: StreamBuilder<RustSignal>(
+                      stream: rustBroadcaster.stream.where((rustSignal) {
+                        return rustSignal.resource == streamMessage.ID;
+                      }),
+                      builder: (context, snapshot) {
+                        final rustSignal = snapshot.data;
+                        if (rustSignal != null) {
+                          final signal = streamMessage.StateSignal.fromBuffer(
+                            rustSignal.message!,
+                          );
+                          final rinfMessage = signal.streamMessage;
+                          if (rinfMessage == "[LL_END_STREAM]") {
+                            _doneGenerating = true;
+                            // setState(() {});
+                          } else {
+                            textController.text += rinfMessage;
+                            htmlContent =
+                                md.markdownToHtml(textController.text);
+                          }
+                          // mdContentFinal += rinfMessage;
+                        }
+                        return TextFormField(
+                          controller: textController,
+                          onChanged: (_) => updateHtmlContent(),
+                          readOnly: !_doneGenerating,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 16, height: 1.6),
+                          maxLines: null,
+                          decoration: const InputDecoration(
+                            hintText: 'Enter your text here...',
+                            hintStyle: TextStyle(
+                              color: Colors.grey,
+                            ),
+                            filled: true,
+                            fillColor: Color.fromARGB(255, 49, 51, 56),
+                            border: OutlineInputBorder(),
+                          ),
+                        );
+                      },
+                    )),
               ),
               Visibility(
                 visible: _richView[1],
@@ -92,16 +121,13 @@ class _TextEditor extends State<TextEditor> {
                   ),
                   child: Builder(
                     builder: (context) {
-                      // developer.log(Style.fromCss(widget.cssContents, (css, errors) => null).keys.toString(), name: 'info-txe');
-                      // * Render HTML
-                      // TODO: use onLinkTap to enable hyperlinks
-                      // https://app.clickup.com/t/86ctyvdd2
-                      // regex the link then add an onLink tap
-                      // font-family not working in <code>
-                      return Html(
-                        data: '<div class="markdown-body">$htmlContent</div>',
-                        style: Style.fromCss(
-                            widget.cssContents, (css, errors) => null),
+                      // SelectableText.rich()
+                      return SelectionArea(
+                        child: Html(
+                          data: '<div class="markdown-body">$htmlContent</div>',
+                          style: Style.fromCss(
+                              widget.cssContents, (css, errors) => null),
+                        ),
                       );
                     },
                   ),
@@ -113,12 +139,15 @@ class _TextEditor extends State<TextEditor> {
                 child: ToggleButtons(
                   direction: Axis.horizontal,
                   onPressed: (int index) {
-                    setState(() {
-                      // The button that is tapped is set to true, and the others to false.
-                      for (int i = 0; i < _richView.length; i++) {
-                        _richView[i] = i == index;
-                      }
-                    });
+                    if (_doneGenerating) {
+                      updateHtmlContent();
+                      setState(() {
+                        // The button that is tapped is set to true, and the others to false.
+                        for (int i = 0; i < _richView.length; i++) {
+                          _richView[i] = i == index;
+                        }
+                      });
+                    }
                   },
                   constraints: const BoxConstraints(
                     minHeight: 20.0,

@@ -222,11 +222,12 @@ pub mod lesson_result_data_handlers {
         println!("Socket bound!");
 
         // Define a closure to receive messages
+        // receives from lesson_generator.py
         let receive_message = || {
             socket.recv_bytes(0).map(|bytes| String::from_utf8(bytes))
         };
     
-        
+        // receive message from python loop
         loop {
             sleep(std::time::Duration::from_millis(50));
             // Receive a message
@@ -234,6 +235,7 @@ pub mod lesson_result_data_handlers {
             
             crate::debug_print!("{}", message);
 
+            
             // Do something with the message here 
             let signal_message = StateSignal { stream_message: message.to_owned()};
             let rust_signal = RustSignal {
@@ -241,14 +243,15 @@ pub mod lesson_result_data_handlers {
                 message: Some(signal_message.encode_to_vec()),
                 blob: None,
             };
-            send_rust_signal(rust_signal);
-
+            send_rust_signal(rust_signal); // Send to flutter
+            
             if message == "[LL_END_STREAM]" {
                 // socket.send("EXIT_ACK", 0).unwrap();
                 break;
             } 
             
             socket.send("ACK", 0).unwrap();
+            // sends to lesson_generator.py
         }
         
         crate::debug_print!("loop broken");
@@ -260,6 +263,8 @@ pub mod lesson_result_data_handlers {
         Ok(())
     }
 
+    // runs the lesson_generation in python using a thread
+    // runs streaming in different thread
     pub async fn create_thread_handles() {
         // Create a thread for reading inproc stream concurrently
         let stream_handle = std::thread::spawn(move || {
