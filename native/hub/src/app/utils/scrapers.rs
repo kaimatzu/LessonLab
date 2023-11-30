@@ -41,24 +41,24 @@ pub fn scrape_url(url: String) -> PyResult<String> {
     })
 }
 
-pub fn validate_url(scraped_url: String) -> PyResult<bool> {
-    pyo3::prepare_freethreaded_python();
-    Python::with_gil(|py| {
-        let check = PyModule::from_code(
-            py,
-            include_str!("python/validate_url.py"),
-            "validate_url.py",
-            "scrapers",
-        )?;
+// pub fn validate_url(scraped_url: String) -> PyResult<bool> {
+//     pyo3::prepare_freethreaded_python();
+//     Python::with_gil(|py| {
+//         let check = PyModule::from_code(
+//             py,
+//             include_str!("python/validate_url.py"),
+//             "validate_url.py",
+//             "scrapers",
+//         )?;
 
-        let protection: bool = check
-            .getattr("check_availability")?
-            .call((scraped_url,), None)?
-            .extract()?;
+//         let protection: bool = check
+//             .getattr("check_availability")?
+//             .call((scraped_url,), None)?
+//             .extract()?;
 
-        Ok(protection)
-    })
-}
+//         Ok(protection)
+//     })
+// }
 
 pub fn scrape_txt(file: String) -> PyResult<String> {
     pyo3::prepare_freethreaded_python();
