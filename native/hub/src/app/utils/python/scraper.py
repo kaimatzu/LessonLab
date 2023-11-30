@@ -14,6 +14,7 @@ def scrape_txt(path: str):
 
 def scrape_pdf(path: str):
     pdf_document = fitz.open(path)
+    text_data = ""
     for page_number in range(pdf_document.page_count):
         page = pdf_document[page_number]
         page_text = page.get_text()
