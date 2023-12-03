@@ -207,6 +207,7 @@ class _OverlayUploadURLState extends State<OverlayUploadURL> {
       BuildContext context,
       UploadSourcesViewModel uploadViewModel,
       OverlayController overlayProvider) {
+
     // NO DUPLICATES LOGIC
     for (var overlayURL in overlayProvider.urlCache) {
       bool contains = false;

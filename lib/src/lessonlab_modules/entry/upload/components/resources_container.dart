@@ -34,7 +34,7 @@ class ResourcesContainer extends StatelessWidget {
                   title: currentItem.name,
                   icon: icon,
                   // items: ItemListWrapper(items),
-                  items: items,
+                  // items: items,
                   object: currentItem),
             );
           } else if (currentItem is TextFile) {
@@ -44,7 +44,7 @@ class ResourcesContainer extends StatelessWidget {
                   title: currentItem.title,
                   icon: icon,
                   // items: ItemListWrapper(items),
-                  items: items,
+                  // items: items,
                   object: currentItem),
             );
           } else if (currentItem is String) {
@@ -54,7 +54,7 @@ class ResourcesContainer extends StatelessWidget {
                   title: currentItem,
                   icon: icon,
                   // items: ItemListWrapper(items),
-                  items: items,
+                  // items: items,
                   object: currentItem),
             );
           }

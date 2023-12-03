@@ -15,12 +15,12 @@ class ResourcesBar extends StatelessWidget {
     required this.viewModel,
     required this.title,
     required this.icon,
-    required this.items,
+    // required this.items,
     required this.object,
   });
 
   final UploadSourcesViewModel viewModel;
-  final List<Object> items;
+  // final List<Object> items;
   final String title;
   final Icon icon;
   final Object object;
@@ -66,8 +66,7 @@ class ResourcesBar extends StatelessWidget {
                   viewModel.removeText(object as TextFile);
                 }
 
-                items.remove(object);
-                // notifyListeners();
+                // items.remove(object);
 
                 developer.log('${viewModel.getFilePaths().length}',
                     name: 'model 2');
