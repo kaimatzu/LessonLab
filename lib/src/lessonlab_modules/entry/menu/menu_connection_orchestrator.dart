@@ -8,7 +8,7 @@ import 'package:lessonlab/src/global_models/lesson_model.dart';
 import 'package:lessonlab/src/global_models/quiz_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_model.dart';
 
-import 'dart:developer' as developer;
+// import 'dart:developer' as developer;
 
 import 'package:lessonlab/messages/entry/menu/menu.pb.dart'
     // ignore: library_prefixes
