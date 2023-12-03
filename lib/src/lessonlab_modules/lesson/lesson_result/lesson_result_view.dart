@@ -14,6 +14,20 @@ class LessonResultView extends StatelessWidget {
   Widget build(BuildContext context) {
     final lessonResultViewModel = context.watch<LessonResultViewModel>();
 
+    var regenerate = PrimaryButton(
+      handlePress: () {
+        // if generation done then enable regenerate
+      },
+      text: 'Regenerate',
+      enabled: true,
+    );
+
+    var finish = PrimaryButton(
+      handlePress: () {},
+      text: 'Finish',
+      enabled: true,
+    );
+
     return Scaffold(
       body: LessonResultScreen(),
       bottomNavigationBar: Padding(
@@ -22,19 +36,9 @@ class LessonResultView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           // TODO: add functionality to buttons
           children: [
-            PrimaryButton(
-              handlePress: () {
-                // if generation done then enable regenerate
-              },
-              text: 'Regenerate',
-              enabled: true,
-            ),
+            regenerate,
             const SizedBox(width: 30.0),
-            PrimaryButton(
-              handlePress: () {},
-              text: 'Finish',
-              enabled: true,
-            ),
+            finish,
           ],
         ),
       ),

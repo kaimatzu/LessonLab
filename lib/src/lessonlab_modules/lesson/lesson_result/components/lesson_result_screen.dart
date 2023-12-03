@@ -10,53 +10,58 @@ class LessonResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lessonResultViewModel = context.watch<LessonResultViewModel>();
-    
+
+    // This is the "Lesson" text at the top left of the screen
+    const header = Padding(
+      padding: EdgeInsets.fromLTRB(90.0, 45.0, 45.0, 45.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Lesson',
+            style: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+
+    // This is the div for holding the title bar and the text box
+    var textEditorContainer = Padding(
+      padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 30.0),
+      child: FutureBuilder<List<String>>(
+        // The data sent from rust
+        future: Future.wait(
+          [
+            lessonResultViewModel.lessonResultModel.lesson.title,
+            lessonResultViewModel.lessonResultModel.lesson.content,
+            lessonResultViewModel.lessonResultModel.cssContents,
+          ],
+        ),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return const Text('Error loading lesson content');
+          } else {
+            final List<String> contents = snapshot.data!;
+            final String title = contents[0];
+            final String mdContent = contents[1];
+            final String cssContent = contents[2];
+
+            // developer.log(cssContent, name: 'info');
+            return TextEditor(
+                title: title, mdContents: "", cssContents: cssContent);
+          }
+        },
+      ),
+    );
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(90.0, 45.0, 45.0, 45.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Lesson',
-                  style: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 30.0),
-            child: FutureBuilder<List<String>>(
-              future: Future.wait(
-                [
-                  lessonResultViewModel.lessonResultModel.lesson.title,
-                  lessonResultViewModel.lessonResultModel.lesson.content,
-                  lessonResultViewModel.lessonResultModel.cssContents,
-                ],
-              ),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return const Text('Error loading lesson content');
-                } else {
-                  final List<String> contents = snapshot.data!;
-                  final String title = contents[0];
-                  final String mdContent = contents[1];
-                  final String cssContent = contents[2];
-
-                  // developer.log(cssContent, name: 'info');
-                  return TextEditor(
-                      title: title,
-                      mdContents: "",
-                      cssContents: cssContent);
-                }
-              },
-            ),
-          ),
+          header,
+          textEditorContainer,
           // Padding(
           //   padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 30.0),
           //   child: StreamBuilder<RustSignal>(

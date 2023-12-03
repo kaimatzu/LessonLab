@@ -254,14 +254,14 @@ class _OverlayUploadFile extends State<OverlayUploadFile> {
     // No DUPLICATES logic
     for (var overlayFile in overlayProvider.fileCache) {
       bool contains = false;
-      for (var uploadFile in uploadViewModel.uploadModel.pdfFilePaths) {
+      for (var uploadFile in uploadViewModel.getFilePaths()) {
         if (uploadFile.path + uploadFile.name ==
             overlayFile.path + overlayFile.name) {
           contains = true;
           break;
         }
       }
-      if (!contains) uploadViewModel.uploadModel.pdfFilePaths.add(overlayFile);
+      if (!contains) uploadViewModel.getFilePaths().add(overlayFile);
     }
 
     // uploadViewModel.files.addAll(overlayProvider.fileCache);
