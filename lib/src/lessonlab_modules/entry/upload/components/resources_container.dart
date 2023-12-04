@@ -30,32 +30,17 @@ class ResourcesContainer extends StatelessWidget {
           if (currentItem is XFile) {
             return ListTile(
               title: ResourcesBar(
-                  viewModel: viewModel,
-                  title: currentItem.name,
-                  icon: icon,
-                  // items: ItemListWrapper(items),
-                  // items: items,
-                  object: currentItem),
+                  title: currentItem.name, icon: icon, object: currentItem),
             );
           } else if (currentItem is TextFile) {
             return ListTile(
               title: ResourcesBar(
-                  viewModel: viewModel,
-                  title: currentItem.title,
-                  icon: icon,
-                  // items: ItemListWrapper(items),
-                  // items: items,
-                  object: currentItem),
+                  title: currentItem.title, icon: icon, object: currentItem),
             );
           } else if (currentItem is String) {
             return ListTile(
               title: ResourcesBar(
-                  viewModel: viewModel,
-                  title: currentItem,
-                  icon: icon,
-                  // items: ItemListWrapper(items),
-                  // items: items,
-                  object: currentItem),
+                  title: currentItem, icon: icon, object: currentItem),
             );
           }
 

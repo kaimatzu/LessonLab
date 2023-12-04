@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/components/lesson_result_screen.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/components/text_editor.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view_model.dart';
@@ -13,19 +14,28 @@ class LessonResultView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lessonResultViewModel = context.watch<LessonResultViewModel>();
+    // final lessonSpecificationsViewModel =
+    //     context.watch<LessonSpecificationsViewModel>();
 
     var regenerate = PrimaryButton(
       handlePress: () {
-        // if generation done then enable regenerate
+        if (lessonResultViewModel.done) {
+          // lessonResultViewModel.regenerate();
+          lessonResultViewModel.loadViewContent();
+        }
       },
       text: 'Regenerate',
-      enabled: true,
+      enabled: lessonResultViewModel.done,
     );
 
     var finish = PrimaryButton(
-      handlePress: () {},
+      handlePress: () {
+        if (lessonResultViewModel.done) {
+          lessonResultViewModel.returnToMenu(context);
+        }
+      },
       text: 'Finish',
-      enabled: true,
+      enabled: lessonResultViewModel.done,
     );
 
     return Scaffold(

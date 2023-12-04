@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/components/text_area.dart';
 import 'package:markdown/markdown.dart' as md;
+import 'package:provider/provider.dart';
 import 'package:rinf/rinf.dart';
 import 'package:lessonlab/messages/results/view_lesson_result/load_lesson.pb.dart'
     as streamMessage;
@@ -37,6 +39,8 @@ class _TextEditor extends State<TextEditor> {
 
   @override
   Widget build(BuildContext context) {
+    final lessonResultViewModel = context.watch<LessonResultViewModel>();
+
     // the main component of this view is the stack where it will hold both
     // raw markdown text and formatted markdown text for display
     // ---- Stack ----
@@ -78,7 +82,7 @@ class _TextEditor extends State<TextEditor> {
                 final rinfMessage = signal.streamMessage;
                 if (rinfMessage == "[LL_END_STREAM]") {
                   _doneGenerating = true;
-                  // setState(() {});
+                  lessonResultViewModel.done = true;
                 } else {
                   textController.text += rinfMessage;
                   htmlContent = md.markdownToHtml(textController.text);
