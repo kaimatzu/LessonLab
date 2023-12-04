@@ -27,7 +27,7 @@ class ResourcesBar extends StatelessWidget {
                 item,
                 style: const TextStyle(
                   fontFamily: 'Inter',
-                  fontSize: 18,
+                  fontSize: 15,
                   color: Colors.white,
                 ),
               ),

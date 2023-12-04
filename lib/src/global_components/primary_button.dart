@@ -43,6 +43,11 @@ class PrimaryButton extends StatelessWidget {
               ? MaterialStateProperty.all<Color>(yellow)
               : MaterialStateProperty.all<Color>(disabled),
           shadowColor: MaterialStateProperty.all<Color>(yellow.withAlpha(0)),
+          shape: MaterialStateProperty.all<OutlinedBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 16.0),

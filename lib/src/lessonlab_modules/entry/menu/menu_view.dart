@@ -31,7 +31,7 @@ class MenuView extends StatelessWidget {
         _menuViewModel.navigateToUploadScreen(context);
       },
       icon: const Icon(Icons.add),
-      text: 'New material',
+      text: 'Create',
     );
 
     var grid = FutureBuilder<List<Object>>(

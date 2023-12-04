@@ -27,7 +27,7 @@ class SecondaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: handlePress,
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(yellow),
+          backgroundColor: MaterialStateProperty.all<Color>(yellow.withOpacity(0.3)),
           shadowColor: MaterialStateProperty.all<Color>(yellow.withAlpha(0)),
         ),
         child: Padding(

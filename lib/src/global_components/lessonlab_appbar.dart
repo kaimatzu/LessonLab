@@ -8,14 +8,14 @@ class LessonLabAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      toolbarHeight: 120.0,
+      toolbarHeight: 100.0,
       title: Row(
         children: [
           const SizedBox(width: 15),
           SvgPicture.asset(
             'assets/svg/lessonlab_logo_final.svg',
-            width: 100.0,
-            height: 100.0,
+            width: 60.0,
+            height: 60.0,
           ),
           const SizedBox(width: 15),
           const Text(
@@ -24,18 +24,25 @@ class LessonLabAppBar extends StatelessWidget implements PreferredSizeWidget {
               color: Color.fromRGBO(49, 51, 56, 1),
               fontSize: 36.0,
               fontWeight: FontWeight.w600,
+              fontFamily: 'Calibri',
             ),
           ),
         ],
       ),
       automaticallyImplyLeading: false,
       centerTitle: false,
-      flexibleSpace: Container(),
-      backgroundColor: Colors.white,
-      elevation: 0,
-      shape: const Border(
-        bottom: BorderSide(width: 0, color: Colors.black12),
+      flexibleSpace: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color.fromRGBO(231, 223, 193, 1), Color.fromRGBO(241, 196, 27, 1)],
+            begin: Alignment.bottomLeft,
+            end: Alignment.topRight,
+          ),
+        ),
       ),
+      backgroundColor: Colors.white,     
+      elevation: 0,
+      shape: const Border(),
       actions: [
         IconButton(
           icon: const Icon(Icons.settings),
@@ -51,5 +58,5 @@ class LessonLabAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(120.0);
+  Size get preferredSize => const Size.fromHeight(80.0);
 }

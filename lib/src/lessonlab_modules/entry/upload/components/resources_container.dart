@@ -12,7 +12,9 @@ class ResourcesContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return SizedBox(
+      child: ListView.builder(
+        padding: const EdgeInsets.only(right: 120.0),
         restorationId: 'contentListView',
         // physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
@@ -35,6 +37,7 @@ class ResourcesContainer extends StatelessWidget {
           }
 
           return Container(); // Placeholder for other types
-        });
+        })
+    );
   }
 }
