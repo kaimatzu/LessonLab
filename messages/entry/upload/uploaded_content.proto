@@ -1,11 +1,14 @@
 syntax = "proto3";
 package uploaded_content;
 
+// MODEL
 message TextFile {
     string title = 1;
     string content = 2;
 }
 
+
+// CREATE
 message CreateRequest {
     repeated string file_paths = 1;
     repeated string urls = 2;
@@ -16,6 +19,7 @@ message CreateResponse {
     uint32 status_code = 1; 
 }
 
+// READ
 message ReadRequest {
     bool req = 1;
 }

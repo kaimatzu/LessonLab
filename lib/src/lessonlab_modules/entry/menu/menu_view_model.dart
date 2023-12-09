@@ -35,12 +35,38 @@ class MenuViewModel with ChangeNotifier {
   }
 
   Future<void> loadViewContent() async {
-    final result = await _menuConnectionOrchestrator.getMenuModel();
+    _menuModel = await _menuConnectionOrchestrator.getMenuModel();
 
     // _menuModel = MenuModel();
 
-    _menuModel.lessons = result.lessons;
-    _menuModel.quizzes = result.quizzes;
+    // _menuModel.lessons = result.lessons;
+    // _menuModel.quizzes = result.quizzes;
+
+    notifyListeners();
+  }
+
+  void delete(String title) {
+    _menuModel.lessons.then((List<LessonModel> lessons) {
+      for (LessonModel lesson in lessons) {
+        lesson.title.then((String elementTitle) {
+          // TODO: add ID for each lesson
+          // id to check for equality here (currently title)
+          //               |
+          //               V
+          if (elementTitle == title) {
+            _deleteLesson(lesson);
+          }
+        });
+      }
+    });
+  }
+
+  void _deleteLesson(LessonModel lesson) {
+    _menuModel.lessons.then((List<LessonModel> lessons) {
+      lessons.remove(lesson);
+    });
+
+    // TODO: save the current state of the lessons list in the config.json
 
     notifyListeners();
   }

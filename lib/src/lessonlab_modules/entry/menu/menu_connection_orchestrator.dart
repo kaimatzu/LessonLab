@@ -51,4 +51,28 @@ class MenuConnectionOrchestrator {
 
     return menuModel;
   }
+
+  // void sendMenuModel(MenuModel menuModel) async {
+  //   final requestMessage = RinfInterface.CreateRequest(req: true);
+  //
+  //   // view menu.proto
+  // }
+
+  /*
+    HTTP METHODS
+
+    GET           -> get data
+    POST          -> send data
+    PUT           -> update data (complete)
+    PATCH         -> update data (partial)
+    DELETE        -> delete data
+    TRACE         -> diagnostics, debuggin
+    HEAD          -> get metadata
+    OPTONS        -> get supported methods
+    CONNECT       -> connect server-side
+    PRI           -> ?
+
+    source:
+    https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/HTTP-methods
+  */
 }

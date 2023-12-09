@@ -29,40 +29,39 @@ class ResourcesBar extends StatelessWidget {
     final viewModel = context.watch<UploadSourcesViewModel>();
 
     return Container(
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 49, 51, 56),
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          children: [
-            icon,
-            const SizedBox(width: 6),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 18,
-                  color: Colors.white,
-                ),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 49, 51, 56),
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      padding: const EdgeInsets.all(12.0),
+      child: Row(
+        children: [
+          icon,
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 18,
+                color: Colors.white,
               ),
             ),
-            GestureDetector(
-              onTap: () {
-                // delete this resource bar instance on trash icon click
-
-                if (object is XFile) {
-                  viewModel.removePdf(object as XFile);
-                } else if (object is String) {
-                  viewModel.removeUrl(object as String);
-                } else if (object is TextFile) {
-                  viewModel.removeText(object as TextFile);
-                }
-              },
-              child: const Icon(Icons.delete, color: Colors.white),
-            )
-          ],
-        ));
+          ),
+          GestureDetector(
+            onTap: () {
+              if (object is XFile) {
+                viewModel.removePdf(object as XFile);
+              } else if (object is String) {
+                viewModel.removeUrl(object as String);
+              } else if (object is TextFile) {
+                viewModel.removeText(object as TextFile);
+              }
+            },
+            child: const Icon(Icons.delete, color: Colors.white),
+          )
+        ],
+      ),
+    );
   }
 }
