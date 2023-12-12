@@ -85,7 +85,8 @@ pub mod lesson_result_data_handlers {
                                 string_payload.push_str("\n"); 
                                 sources.source_files.push(file_path.clone())
                             }
-                            Err(_) => {
+                            Err(err) => {
+								crate::debug_print!("[Scraper] >>> {} ", err);
                             }
                         }
                     }
@@ -237,7 +238,7 @@ pub mod lesson_result_data_handlers {
 
             
             // Do something with the message here 
-            let signal_message = StateSignal { stream_message: message.to_owned()};
+            let signal_message = StateSignal { stream_message: message.to_owned() };
             let rust_signal = RustSignal {
                 resource: ID,
                 message: Some(signal_message.encode_to_vec()),
@@ -275,7 +276,7 @@ pub mod lesson_result_data_handlers {
         // Create a thread for generating the lesson
         let generation_handle = std::thread::spawn(move || {
             if let Err(err) = lesson_generator::generate_lesson_stream() {
-                eprintln!("Error generating lesson stream: {}", err);
+                eprintln!("Error generating lesson stream: {}\n", err);
                 // Handle the error as needed
             }
             println!("Finished generation thread.");

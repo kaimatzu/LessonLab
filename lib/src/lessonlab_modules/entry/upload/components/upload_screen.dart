@@ -10,10 +10,9 @@ class UploadScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final uploadViewModel = context.watch<UploadSourcesViewModel>();
 
-    uploadViewModel.hasFiles =
-        uploadViewModel.uploadModel.pdfFilePaths.isNotEmpty ||
-            uploadViewModel.uploadModel.urls.isNotEmpty ||
-            uploadViewModel.uploadModel.texts.isNotEmpty;
+    uploadViewModel.hasFiles = uploadViewModel.getFilePaths().isNotEmpty ||
+        uploadViewModel.getUrls().isNotEmpty ||
+        uploadViewModel.getTexts().isNotEmpty;
 
     const noFilesStyle = TextStyle(color: Colors.grey);
     const fileNameTextStyle =
@@ -37,10 +36,11 @@ class UploadScreen extends StatelessWidget {
             child: txtFiles,
           ),
           ResourcesContainer(
-            items: uploadViewModel.uploadModel.pdfFilePaths,
+            viewModel: uploadViewModel,
+            items: uploadViewModel.getFilePaths(),
             icon: const Icon(Icons.file_open, color: Colors.white),
           ),
-          if (uploadViewModel.uploadModel.pdfFilePaths.isEmpty)
+          if (uploadViewModel.getFilePaths().isEmpty)
             const Padding(
               padding: emptyPadding,
               child: txtNoFiles,
@@ -50,10 +50,11 @@ class UploadScreen extends StatelessWidget {
             child: txtUrl,
           ),
           ResourcesContainer(
-            items: uploadViewModel.uploadModel.urls,
+            viewModel: uploadViewModel,
+            items: uploadViewModel.getUrls(),
             icon: const Icon(Icons.link, color: Colors.white),
           ),
-          if (uploadViewModel.uploadModel.urls.isEmpty)
+          if (uploadViewModel.getUrls().isEmpty)
             const Padding(
               padding: emptyPadding,
               child: txtNoUrl,
@@ -63,10 +64,11 @@ class UploadScreen extends StatelessWidget {
             child: txtText,
           ),
           ResourcesContainer(
-            items: uploadViewModel.uploadModel.texts,
+            viewModel: uploadViewModel,
+            items: uploadViewModel.getTexts(),
             icon: const Icon(Icons.description, color: Colors.white),
           ),
-          if (uploadViewModel.uploadModel.texts.isEmpty)
+          if (uploadViewModel.getTexts().isEmpty)
             const Padding(
               padding: emptyPadding,
               child: txtNoText,

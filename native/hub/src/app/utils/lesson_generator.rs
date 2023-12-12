@@ -30,7 +30,7 @@ pub fn generate(lesson_source: String) -> PyResult<String> {
 pub fn generate_lesson_stream() -> PyResult<String> {
     let lesson_source = match scrapers::scrape_pdf(String::from("C:/Users/karlj/OneDrive/Documents/Proxy Design Pattern Summary.pdf")) {
         Ok(source) => {
-            print!("{}", source);
+            println!("{}", source);
             println!("\nGenerated Lesson:_______________________________________________________________\n");
             source
         }
