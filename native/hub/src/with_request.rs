@@ -14,7 +14,7 @@ use crate::bridge::{RustRequestUnique, RustResponse, RustResponseUnique};
 use crate::messages;
 use crate::app;
 
-use tokio_with_wasm::tokio;
+use tokio_with_wasm::tokio::{self, join};
 use app::entry::upload::upload_sources_data_object::UploadSourcesDataObject;
 
 pub async fn handle_request(request_unique: RustRequestUnique,
@@ -38,9 +38,18 @@ pub async fn handle_request(request_unique: RustRequestUnique,
         messages::lesson::lesson_specifications::ID => {
             handle_lesson_specifications(rust_request, lesson_specifications_model).await
         }
-        messages::results::view_lesson_result::load_lesson::ID => {
-            tokio::spawn(create_thread_handles());
-            handle_lesson_generation(rust_request, upload_sources_data_object, lesson_specifications_model, save_directory_model).await
+        messages::results::view_lesson_result::load_lesson::ID => { // If mo error, most likely diri
+            let thread_handle = tokio::task::spawn(create_thread_handles());
+            let rust_response = handle_lesson_generation(rust_request, upload_sources_data_object, lesson_specifications_model, save_directory_model).await;
+            tokio::task::spawn(async move {
+                crate::debug_print!("Thread handle joined.");
+                if let Err(err) = tokio::try_join!(thread_handle){
+                    crate::debug_print!("Error: {}", err);
+                } else {
+                    crate::debug_print!("Tokio thread handle terminated successfully.");
+                }
+            });
+            rust_response
         }
         messages::settings::save_directory::ID =>{
             handle_choose_directory(rust_request, save_directory_model).await

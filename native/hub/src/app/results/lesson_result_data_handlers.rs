@@ -58,14 +58,24 @@ pub mod lesson_result_data_handlers {
                 let request_message = ReadRequest::decode(message_bytes.as_slice()).unwrap();
     
                 let _ = request_message;
-    
                 let response_message;
-    
+                
+                let sanitized_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone().replace(" ", "_");
+                // File path of config.json
+                let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
+                // File path of target/output.md
+                let target_folder_path = format!("{}\\{}", &config_file_path, &sanitized_title);
+                if let Err(error) = std::fs::create_dir_all(&target_folder_path) {
+                    crate::debug_print!("Failed to create folder: {}", error);
+                }
+
                 let mut string_payload: String = String::new();
                 
                 let mut lessons_json = LessonsDataObject { lessons: Vec::new() };
                 let mut sources = Sources::default();
                 
+                
+                // TODO: Maybe move string payload creation in python. Just pass in lesson specifications as a vector.
                 string_payload.push_str("Lesson Specifications \n");
     
                 for lesson_specification in &lesson_specifications_data_object.lesson_specifications {
@@ -77,51 +87,44 @@ pub mod lesson_result_data_handlers {
                 string_payload.push_str("------------------------------- \n");
     
                 for file_path in &upload_data_object.file_paths {
-                    if file_path.to_lowercase().ends_with(".pdf") {
-                        // TODO: Implement other scrapers for other text file formats
-                        match scrapers::scrape_pdf(file_path.to_string()) {
-                            Ok(pdf_content) => {
-                                string_payload.push_str(&pdf_content);
-                                string_payload.push_str("\n"); 
-                                sources.source_files.push(file_path.clone())
-                            }
-                            Err(err) => {
-								crate::debug_print!("[Scraper] >>> {} ", err);
-                            }
-                        }
-                    }
+                    sources.source_files.push(file_path.clone());
                 }
     
                 for url in &upload_data_object.urls {
-                    match scrapers::scrape_url(url.to_string()) {
-                        Ok(web_content) => {
-                            string_payload.push_str(&web_content);
-                            string_payload.push_str("\n"); 
-                            sources.source_urls.push(url.clone())
-                        }
-                        Err(_) => {
-                        }
-                    }
+                    sources.source_urls.push(url.clone());
                 }
-    
+                
+                let mut file_index = 0;
                 for text in &upload_data_object.text_files {
-                    string_payload.push_str(&text.title);
-                    string_payload.push_str("\n"); 
-                    string_payload.push_str(&text.content);
-                    string_payload.push_str("\n"); 
+                    // TODO: Create a file that saves into target_folder_path/textfiles
+                    // Each file has the title for the file name. Files will be saved as txt.
+                    let mut text_string_payload = String::from("");
+                    text_string_payload.push_str(&text.title);
+                    text_string_payload.push_str("\n"); 
+                    text_string_payload.push_str(&text.content);
+                    text_string_payload.push_str("\n"); 
+
+                    // let mut final_target_folder_path = target_folder_path.clone();
+                    // final_target_folder_path.push_str("\\textfiles");
+
+                    let mut file_name = text.title.clone();
+                    file_name.push_str(file_index.to_string().as_str());
+                    file_name.push_str(".txt");
+
+                    let final_target_folder_path = format!("{}\\{}", &target_folder_path.clone(), "textfiles");
+                    if let Err(error) = std::fs::create_dir_all(&final_target_folder_path) {
+                        crate::debug_print!("Failed to create folder: {}", error);
+                    }
+                    crate::debug_print!("Final target folder path: {}", final_target_folder_path);
+                    crate::debug_print!("Final file name: {}", file_name);
+
+                    if let Err(error) = write_text_to_target_path(&text_string_payload, &final_target_folder_path, &file_name.as_str()) {
+                        crate::debug_print!("Failed to write to target file: {}", error);
+                    }
+
+                    file_index += 1;
+
                     sources.source_texts.push(text.clone())
-                }
-                
-                let sanitized_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone().replace(" ", "_");
-                
-                // File path of config.json
-                let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
-                
-                // File path of target/output.md
-                let target_folder_path = format!("{}\\{}", &config_file_path, &sanitized_title);
-    
-                if let Err(error) = std::fs::create_dir_all(&target_folder_path) {
-                    crate::debug_print!("Failed to create folder: {}", error);
                 }
     
                 let lesson = Lesson{
@@ -161,6 +164,10 @@ pub mod lesson_result_data_handlers {
                     //         };
                     //     }
                     // }
+                    if let Err(error) = write_text_to_target_path("Dummy Content", &target_folder_path, "output.md") {
+                        crate::debug_print!("Failed to write to target file: {}", error);
+                    }
+
                     response_message = ReadResponse {
                         status_code: StatusCode::OK.as_u16() as u32,
                         title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
@@ -170,7 +177,7 @@ pub mod lesson_result_data_handlers {
                 }
                 else {
                     // write to file here
-                    if let Err(error) = write_lesson_to_target_path("Debug Mode: Dummy Content", &target_folder_path) {
+                    if let Err(error) = write_text_to_target_path("Debug Mode: Dummy Content", &target_folder_path, "output.md") {
                         crate::debug_print!("Failed to write to target file: {}", error);
                     }
                     
@@ -258,33 +265,40 @@ pub mod lesson_result_data_handlers {
         crate::debug_print!("loop broken");
         
         // Just to make sure that the socket is unbound for future operations.
-        let _ = socket.unbind("tcp://127.0.0.1:5555");
-        let _ = ctx.destroy();
-    
+        if let Err(err) = socket.unbind("tcp://127.0.0.1:5555") {
+            crate::debug_print!("Error unbinding socket: {}", err);
+        }
+        else {
+            crate::debug_print!("Gucci");
+        }
+        
+        crate::debug_print!("Return Ok");
         Ok(())
     }
 
     // runs the lesson_generation in python using a thread
     // runs streaming in different thread
     pub async fn create_thread_handles() {
+        crate::debug_print!("Thread handle created.");
         // Create a thread for reading inproc stream concurrently
         let stream_handle = std::thread::spawn(move || {
             let _ = read_tcp_stream();
-            println!("Finished server thread.");
+            crate::debug_print!("Finished server thread.");
         });
     
         // Create a thread for generating the lesson
         let generation_handle = std::thread::spawn(move || {
             if let Err(err) = lesson_generator::generate_lesson_stream() {
                 eprintln!("Error generating lesson stream: {}\n", err);
+                crate::debug_print!("Error generating lesson stream: {}\n", err);
                 // Handle the error as needed
             }
-            println!("Finished generation thread.");
+            crate::debug_print!("Finished generation thread.");
         });
     
         // Wait for the generation thread to finish
-        generation_handle.join().unwrap();
         stream_handle.join().unwrap();
+        generation_handle.join().unwrap();
     
         println!("Finished.");
     }
@@ -330,12 +344,14 @@ pub mod lesson_result_data_handlers {
         Ok(())
     }
 
-    fn write_lesson_to_target_path(string_payload: &str, target_path: &str) -> std::io::Result<()> {
+    fn write_text_to_target_path(string_payload: &str, target_path: &str, file_name: &str) -> std::io::Result<()> {
         crate::debug_print!("Writing to target path...");
 
         let mut final_path: String = String::from(target_path);
 
-        final_path.push_str("\\output.md");
+        // final_path.push_str("\\output.md");
+        final_path.push_str("\\");
+        final_path.push_str(file_name);
 
         let mut file = OpenOptions::new()
             .write(true)

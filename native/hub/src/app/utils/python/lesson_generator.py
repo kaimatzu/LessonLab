@@ -51,31 +51,31 @@ def generate_lesson_stream(source):
     collected_chunks = []
     collected_messages = []
     # iterate through the stream of events
-    for chunk in response:
-        try:
-            chunk_time = time.time() - start_time  # calculate the time delay of the chunk
-            collected_chunks.append(chunk)  # save the event response
-            chunk_message = chunk.choices[0].delta.content # extract the message
-            collected_messages.append(chunk_message)  # save the message
-            # print(f"Message received {chunk_time:.2f} seconds after request: {chunk_message}")  # print the delay and text
+    # for chunk in response:
+    #     try:
+    #         chunk_time = time.time() - start_time  # calculate the time delay of the chunk
+    #         collected_chunks.append(chunk)  # save the event response
+    #         chunk_message = chunk.choices[0].delta.content # extract the message
+    #         collected_messages.append(chunk_message)  # save the message
+    #         # print(f"Message received {chunk_time:.2f} seconds after request: {chunk_message}")  # print the delay and text
 
-            socket.send_string(chunk_message)
-            print(f"Sent to Rust: {chunk_message}")
+    #         socket.send_string(chunk_message)
+    #         print(f"Sent to Rust: {chunk_message}")
 
-            # Wait for acknowledgment from Rust
-            ack = socket.recv_string()
-            print(f"Received ACK from Rust: {ack}")
-        except Exception as e:
-            print(f"Error processing chunk: {e}")
+    #         # Wait for acknowledgment from Rust
+    #         ack = socket.recv_string()
+    #         print(f"Received ACK from Rust: {ack}")
+    #     except Exception as e:
+    #         print(f"Error processing chunk: {e}")
     
-    # for i in range(25):
-    #     time.sleep(0.25)
-    #     socket.send_string("e")
-    #     print(f"Sent to Rust: e")
+    for i in range(25):
+        time.sleep(0.25)
+        socket.send_string("e")
+        print(f"Sent to Rust: e")
 
-    #     # Wait for acknowledgment from Rust
-    #     ack = socket.recv_string()
-    #     print(f"Received ACK from Rust: {ack}")
+        # Wait for acknowledgment from Rust
+        ack = socket.recv_string()
+        print(f"Received ACK from Rust: {ack}")
         
     print(f"Finished generation.")
      
@@ -84,13 +84,8 @@ def generate_lesson_stream(source):
     print(f"Sent to Rust: Exit message")
     
     # Wait for acknowledgment from Rust
-    ack = socket.recv_string()
-    print(f"Received exit ACK from Rust: {ack}")
+    # ack = socket.recv_string()
+    # print(f"Received exit ACK from Rust: {ack}")
     
     socket.close()
     context.term()
-    
-def testrun():
-    print("Fucking python")
-    
-testrun()
