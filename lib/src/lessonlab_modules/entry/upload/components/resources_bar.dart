@@ -43,7 +43,7 @@ class ResourcesBar extends StatelessWidget {
               title,
               style: const TextStyle(
                 fontFamily: 'Inter',
-                fontSize: 18,
+                fontSize: 15,
                 color: Colors.white,
               ),
             ),

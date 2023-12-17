@@ -42,7 +42,7 @@ class UploadSourcesView extends StatelessWidget {
     return Scaffold(
       appBar: const LessonLabAppBar(),
       body: Padding(
-          padding: const EdgeInsets.fromLTRB(180.0, 30.0, 180.0, 60.0),
+          padding: const EdgeInsets.fromLTRB(100.0, 30.0, 140.0, 60.0),
           child: UploadScreen()),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(0.0, 0.0, 180.0, 60.0),
@@ -51,9 +51,31 @@ class UploadSourcesView extends StatelessWidget {
           children: [
             cancel,
             const SizedBox(width: 30.0),
-            newLesson,
+            PrimaryButton(
+              handlePress: () {
+                if (uploadViewModel.hasFiles) {
+                  // uploadViewModel.sendData();
+                  // uploadViewModel.getData();
+                  // Navigator.restorablePushNamed(
+                  //   context,
+                  //   LessonSpecificationsView.routeName,
+                  // );
+                  uploadViewModel.newLesson(context);
+                } else {
+                  null;
+                }
+              },
+              text: 'New Lesson',
+              enabled: uploadViewModel.hasFiles,
+            ),
             const SizedBox(width: 30.0),
-            newQuiz,
+            PrimaryButton(
+              handlePress: () {
+                uploadViewModel.newQuiz(context);
+              },
+              text: 'New Quiz',
+              enabled: uploadViewModel.hasFiles,
+            ),
             const SizedBox(width: 30.0),
             Container(
               decoration: BoxDecoration(
