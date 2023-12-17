@@ -2,19 +2,24 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/resources_bar.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view_model.dart';
 
 class ResourcesContainer extends StatelessWidget {
-  const ResourcesContainer(
-      {super.key, required this.items, required this.icon});
+  const ResourcesContainer({
+    super.key,
+    required this.viewModel,
+    required this.items,
+    required this.icon,
+  });
 
+  final UploadSourcesViewModel viewModel;
   final List<Object> items;
   final Icon icon;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: ListView.builder(
-        padding: const EdgeInsets.only(right: 120.0),
+    var listView = ListView.builder(
         restorationId: 'contentListView',
         // physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
@@ -24,20 +29,24 @@ class ResourcesContainer extends StatelessWidget {
           final dynamic currentItem = items[index];
           if (currentItem is XFile) {
             return ListTile(
-              title: ResourcesBar(item: currentItem.name, icon: icon),
+              title: ResourcesBar(
+                  title: currentItem.name, icon: icon, object: currentItem),
             );
           } else if (currentItem is TextFile) {
             return ListTile(
-              title: ResourcesBar(item: currentItem.title, icon: icon),
+              title: ResourcesBar(
+                  title: currentItem.title, icon: icon, object: currentItem),
             );
           } else if (currentItem is String) {
             return ListTile(
-              title: ResourcesBar(item: currentItem, icon: icon),
+              title: ResourcesBar(
+                  title: currentItem, icon: icon, object: currentItem),
             );
           }
 
           return Container(); // Placeholder for other types
-        })
-    );
+        });
+
+    return listView;
   }
 }

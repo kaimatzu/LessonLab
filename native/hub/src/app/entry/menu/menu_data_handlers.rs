@@ -19,6 +19,18 @@ pub mod menu_data_handlers {
     
         match rust_request.operation {
             RustOperation::Create => RustResponse::default(),
+
+            // RustOperation::Create => {
+            //     let message_bytes: = rust_request.message.unwrap();
+            //     let request_message: = CreateRequest::decode(message_bytes.as_slice()).unwrap();
+            //     
+            //     let _ = request_message;
+            //     
+            //     let mut file_path = settings_data_object.save_directory.clone();
+            //     file_path.push_str("\\confing.json");
+            
+            // },
+
             RustOperation::Read => {
                 // Debug purposes. Just to check if the uploaded files are stored in main().
                 let message_bytes = rust_request.message.unwrap();
@@ -59,17 +71,17 @@ pub mod menu_data_handlers {
             lessons.push(lesson_model);
         }
 
-		let mut quizzes: Vec<QuizModel> = Vec::new();
-		for quiz in menu_data_object.quizzes_data_object.quizzes.clone() {
-			let mut quiz_model: QuizModel = QuizModel::default();
-			quiz_model.title = quiz.title;
-			quiz_model.location = quiz.target_path;
+        let mut quizzes: Vec<QuizModel> = Vec::new();
+        for quiz in menu_data_object.quizzes_data_object.quizzes.clone() {
+            let mut quiz_model: QuizModel = QuizModel::default();
+            quiz_model.title = quiz.title;
+            quiz_model.location = quiz.target_path;
 
-			
+            
             quizzes.push(quiz_model);
-			// quiz_model.questions = quiz.questions;
-			// quizzes.append(quiz_model);
-		}
+            // quiz_model.questions = quiz.questions;
+            // quizzes.append(quiz_model);
+        }
 
         let menu_model = MenuModel {
             lessons: lessons,

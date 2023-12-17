@@ -1,6 +1,7 @@
 syntax = "proto3";
 package menu;
 
+// MODELS
 message LessonModel {
 	string title = 1;
 	string content = 2;
@@ -28,10 +29,22 @@ message MenuModel {
 	repeated QuizModel quizzes = 2;
 }
 
+
+
+// READ
 message ReadRequest {
 	bool req = 1;
 }
 
 message ReadResponse {
 	MenuModel menuModel = 1;
+}
+
+// CREATE
+message CreateRequest {
+	MenuModel menuModel = 1;
+}
+
+message CreateResponse {
+	uint32 status_code = 1;
 }

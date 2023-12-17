@@ -7,9 +7,9 @@ class MenuModel {
 
   MenuModel();
 
-  MenuModel.initialize() 
-    : _lessons = Future.value([]),
-      _quizzes = Future.value([]);
+  MenuModel.initialize()
+      : _lessons = Future.value([]),
+        _quizzes = Future.value([]);
 
   Future<List<LessonModel>> get lessons => _lessons;
   set lessons(Future<List<LessonModel>> value) {

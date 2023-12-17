@@ -8,7 +8,7 @@ import time
 from openai import OpenAI
 
 load_dotenv()
-client = OpenAI(api_key=os.getenv("API_KEY"))
+client = OpenAI(api_key = os.getenv("API_KEY"))
 
 def generate_lesson(source):
     
@@ -38,10 +38,11 @@ def generate_lesson_stream(source):
     start_time = time.time()
     prompt = "Can you make a markdown format lesson based on this source: " + source
 
-    response  = client.chat.completions.create(
+    response = client.chat.completions.create(
         stream = True,
-        model="gpt-4-1106-preview",
-        messages=[
+        # model="gpt-4-1106-preview",
+        model = "gpt-3.5-turbo",
+        messages = [
             {"role": "system", "content": "You are a college teacher."},
             {"role": "user", "content": prompt}
         ]

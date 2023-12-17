@@ -1,3 +1,5 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/upload_screen.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +22,23 @@ class UploadSourcesView extends StatelessWidget {
     final uploadViewModel = context.watch<UploadSourcesViewModel>();
     final overlayProvider = context.watch<OverlayController>();
 
+    var cancel = SecondaryButton(
+      handlePress: () => uploadViewModel.cancelUpload(context),
+      text: 'Cancel',
+    );
+    var newLesson = PrimaryButton(
+      handlePress: () {
+        if (uploadViewModel.hasFiles) uploadViewModel.newLesson(context);
+      },
+      text: 'New lesson',
+      enabled: uploadViewModel.hasFiles,
+    );
+    var newQuiz = PrimaryButton(
+      handlePress: () => uploadViewModel.newQuiz(context),
+      text: 'New quiz',
+      enabled: uploadViewModel.hasFiles,
+    );
+
     return Scaffold(
       appBar: const LessonLabAppBar(),
       body: Padding(
@@ -30,12 +49,7 @@ class UploadSourcesView extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            SecondaryButton(
-              handlePress: () {
-                uploadViewModel.cancelUpload(context);
-              },
-              text: 'Cancel',
-            ),
+            cancel,
             const SizedBox(width: 30.0),
             PrimaryButton(
               handlePress: () {
@@ -77,9 +91,7 @@ class UploadSourcesView extends StatelessWidget {
                 ],
               ),
               child: FloatingActionButton(
-                onPressed: () {
-                  overlayProvider.showOverlay(context);
-                },
+                onPressed: () => overlayProvider.showOverlay(context),
                 elevation: 0,
                 tooltip: 'Add new document',
                 child: const Icon(Icons.add),
