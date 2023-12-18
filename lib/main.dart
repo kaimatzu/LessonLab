@@ -4,7 +4,7 @@ import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view_model.dart';
-import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications/quiz_specifications_view_model.dart';
 import 'package:lessonlab/src/settings/settings_view_model.dart';
 import 'package:lessonlab/src/settings/shared_preferences.dart';
 import 'package:provider/provider.dart';
