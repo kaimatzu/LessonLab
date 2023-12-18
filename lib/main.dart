@@ -32,6 +32,7 @@ void main() async {
             create: (context) => LessonSpecificationsViewModel()),
         ChangeNotifierProvider(create: (context) => LessonResultViewModel()),
         ChangeNotifierProvider(create: (context) => MenuViewModel()),
+        ChangeNotifierProvider(create: (context) => QuizSpecificationsViewModel()),
       ],
       child: MyApp(settingsViewModel: settingsViewModel),
     ),
