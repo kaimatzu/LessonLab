@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
 
+import 'package:flutter/services.dart';
+
 class InputField extends StatefulWidget {
   InputField({
     Key? key,
@@ -38,6 +40,8 @@ class _InputFieldState extends State<InputField> {
           TextField(
             controller: widget.controller,
             style: const TextStyle(color: Colors.white),
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
             decoration: InputDecoration(
               filled: true,
               fillColor: const Color.fromARGB(255, 49, 51, 56),

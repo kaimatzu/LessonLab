@@ -34,11 +34,12 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
         'Simple',
         'Comprehensive',
       ]),
-      const Dropdown(label: "Quiz Length", list: <String>[
-        'Short (5 items)',
-        'Medium (10 items)',
-        'Long (20 items)'
+      const Dropdown(label: "Quiz Type", list: <String>[
+        'Identification',
+        'Multiple Choice',
+        'Both'
       ]),
+      InputField(label: 'Number of Items', hintLabel: 'Enter number of items'),
       InputField(label: 'Timeframe', hintLabel: 'Enter timeframe'),
     ];
 
