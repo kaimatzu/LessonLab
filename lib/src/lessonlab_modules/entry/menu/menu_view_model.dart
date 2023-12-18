@@ -34,13 +34,13 @@ class MenuViewModel with ChangeNotifier {
     );
   }
 
-  Future<void> loadViewContent() async {
-    _menuModel = await _menuConnectionOrchestrator.getMenuModel();
+  void loadViewContent() async {
+    final result = await _menuConnectionOrchestrator.getMenuModel();
 
     // _menuModel = MenuModel();
 
-    // _menuModel.lessons = result.lessons;
-    // _menuModel.quizzes = result.quizzes;
+    _menuModel.lessons = result.lessons;
+    _menuModel.quizzes = result.quizzes;
 
     notifyListeners();
   }
@@ -49,7 +49,7 @@ class MenuViewModel with ChangeNotifier {
     _menuModel.lessons.then((List<LessonModel> lessons) {
       for (LessonModel lesson in lessons) {
         lesson.title.then((String elementTitle) {
-          // TODO: add ID for each lesson
+          // TODO: add ID for each lesson (id to check for equality)
           // id to check for equality here (currently title)
           //               |
           //               V

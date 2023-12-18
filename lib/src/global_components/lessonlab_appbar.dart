@@ -44,6 +44,7 @@ class LessonLabAppBar extends StatelessWidget implements PreferredSizeWidget {
             // to the app after it has been killed while running in the
             // background, the navigation stack is restored.
             Navigator.restorablePushNamed(context, SettingsView.routeName);
+            // TODO: add right paddding after icon
           },
         ),
       ],

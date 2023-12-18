@@ -29,6 +29,8 @@ pub async fn handle_request(request_unique: RustRequestUnique,
     // Run the function that handles the Rust resource.
     let rust_resource = rust_request.resource;
     let rust_response = match rust_resource {
+		// ! Warning errors while running `rinf message` can delete the const ID in messages
+		// pub const ID: i32 = 0;
         messages::entry::menu::menu::ID => {
             handle_menu_content_loading(rust_request, menu_data_object, save_directory_model).await
         }

@@ -64,16 +64,16 @@ class MenuView extends StatelessWidget {
                   builder: (context, titleSnapshot) {
                     if (titleSnapshot.connectionState ==
                         ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
                     } else if (titleSnapshot.hasError) {
-                      return Text('Error loading lesson title');
+                      return const Text('Error loading lesson title');
                     } else {
                       return FutureBuilder<String>(
                         future: lessons[index].content,
                         builder: (context, contentSnapshot) {
                           if (contentSnapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return CircularProgressIndicator();
+                            return const CircularProgressIndicator();
                           } else if (contentSnapshot.hasError) {
                             return Text('Error loading lesson content');
                           } else {

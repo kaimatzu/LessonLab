@@ -125,6 +125,8 @@ pub mod lesson_result_data_handlers {
                 }
     
                 let lesson = Lesson{
+					// TODO: make an ID auto incrementer
+					id: 1,
                     sources,
                     target_path: target_folder_path.to_owned(),
                     title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone()

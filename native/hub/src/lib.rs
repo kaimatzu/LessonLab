@@ -2,7 +2,7 @@ use bridge::respond_to_dart;
 use tokio_with_wasm::tokio;
 use tokio_with_wasm::tokio::sync::Mutex;
 use with_request::handle_request;
-use std::sync::Arc;
+use std::sync::{Arc, atomic::{AtomicUsize, Ordering}};
 
 use app::entry::menu::menu_data_object::MenuDataObject;
 use app::entry::upload::upload_sources_data_object::UploadSourcesDataObject;
@@ -17,6 +17,9 @@ mod with_request;
 /// This `hub` crate is the entry point for the Rust logic.
 /// Always use non-blocking async functions such as `tokio::fs::File::open`.
 async fn main() {
+	
+	// TODO: get the current id count from config.json
+	// let mut id_head: u32 = 1;
     let menu_data_object = Arc::new(Mutex::new(MenuDataObject::default()));
     let upload_sources_data_object = Arc::new(Mutex::new(UploadSourcesDataObject::default()));
     let lesson_specifications_model = Arc::new(Mutex::new(LessonSpecificationsDataObject::default()));
@@ -45,7 +48,8 @@ async fn main() {
                 &mut menu_data_object_guard,
                 &mut upload_sources_data_object_guard,
                 &mut lesson_specifications_guard,
-                &mut save_directory_guard).await;
+                &mut save_directory_guard
+			).await;
             respond_to_dart(response_unique);
         });
     }
