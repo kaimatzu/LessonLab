@@ -15,7 +15,7 @@ class QuizSpecificationsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lessonSpecificationsViewModel =
+    final quizSpecificationsViewModel =
         context.watch<QuizSpecificationsViewModel>();
 
     return Scaffold(
@@ -25,7 +25,7 @@ class QuizSpecificationsView extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: lessonSpecificationsViewModel.formFields
+            children: quizSpecificationsViewModel.formFields
                 .map<Widget?>((formField) {
                   if (formField.inputField != null) {
                     return formField.inputField;
@@ -49,7 +49,7 @@ class QuizSpecificationsView extends StatelessWidget {
           children: [
             SecondaryButton(
               handlePress: () {
-                lessonSpecificationsViewModel.cancelQuiz(context);
+                quizSpecificationsViewModel.cancelQuiz(context);
               },
               text: 'Cancel',
             ),
@@ -64,10 +64,10 @@ class QuizSpecificationsView extends StatelessWidget {
             const SizedBox(width: 30.0),
             PrimaryButton(
               handlePress: () {
-                lessonSpecificationsViewModel.collectFormTextValues();
+                quizSpecificationsViewModel.collectFormTextValues();
                 // lessonSpecificationsViewModel.sendData();
                 // lessonSpecificationsViewModel.getData();
-                lessonSpecificationsViewModel.generateQuiz(context);
+                quizSpecificationsViewModel.generateQuiz(context);
               },
               text: 'Generate',
               enabled: true,
