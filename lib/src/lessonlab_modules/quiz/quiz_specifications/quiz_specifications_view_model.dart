@@ -46,14 +46,17 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
   QuizSpecificationsViewModel() {
     final initializeFields = [
       InputField(label: 'Title', hintLabel: 'Enter quiz title'),
-      const Dropdown(label: "Quiz Level", list: <String>[
-        'Simple',
-        'Comprehensive',
-      ]),
       const Dropdown(
-          label: "Quiz Type",
+          label: "Type",
           list: <String>['Identification', 'Multiple Choice', 'Both']),
-      NumberField(label: 'Number of Items', hintLabel: 'Enter number of items'),
+      const Dropdown(label: "Difficulty", list: <String>[
+        'any',
+        'easy',
+        'medium',
+        'hard',
+        'asian',
+      ]),
+      InputField(label: 'Number of Items', hintLabel: 'Enter number of items'),
       InputField(label: 'Timeframe', hintLabel: 'Enter timeframe'),
     ];
 
