@@ -56,6 +56,13 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
         'hard',
         'asian',
       ]),
+      const Dropdown(label: "Difficulty", list: <String>[
+        'any',
+        'easy',
+        'medium',
+        'hard',
+        'asian',
+      ]),
       InputField(label: 'Number of Items', hintLabel: 'Enter number of items'),
       InputField(label: 'Timeframe', hintLabel: 'Enter timeframe'),
     ];
