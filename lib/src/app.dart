@@ -8,6 +8,7 @@ import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications/quiz_specifications_view.dart';
 import 'package:lessonlab/src/settings/settings_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view.dart';
 
 import 'lessonlab_modules/entry/menu/menu_view.dart';
 import 'settings/settings_view.dart';
@@ -71,6 +72,8 @@ class MyApp extends StatelessWidget {
                     return const LessonSpecificationsView();
                   case '/quiz_specifications':
                     return const QuizSpecificationsView();
+                  case '/quiz_page':
+                    return const QuizPageView();
                   default:
                     return MenuView();
                 }

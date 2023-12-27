@@ -4,6 +4,8 @@ import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications/quiz_specifications_view_model.dart';
 import 'package:lessonlab/src/settings/settings_view_model.dart';
 import 'package:lessonlab/src/settings/shared_preferences.dart';
@@ -32,7 +34,9 @@ void main() async {
             create: (context) => LessonSpecificationsViewModel()),
         ChangeNotifierProvider(create: (context) => LessonResultViewModel()),
         ChangeNotifierProvider(create: (context) => MenuViewModel()),
-        ChangeNotifierProvider(create: (context) => QuizSpecificationsViewModel()),
+        ChangeNotifierProvider(
+            create: (context) => QuizSpecificationsViewModel()),
+        ChangeNotifierProvider(create: (context) => QuizPageViewModel()),
       ],
       child: MyApp(settingsViewModel: settingsViewModel),
     ),
