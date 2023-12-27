@@ -7,7 +7,9 @@ import 'dart:developer' as developer;
 import 'package:lessonlab/messages/lesson/lesson_specifications.pb.dart'
     // ignore: library_prefixes
     as RinfInterface;
+import 'package:lessonlab/src/lessonlab_modules/quiz/components/number_field.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/components/text_area.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view.dart';
 // import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 import 'package:rinf/rinf.dart';
 
@@ -16,14 +18,28 @@ class FormField {
   final InputField? inputField;
   final TextArea? textArea;
   final Dropdown? dropdown;
+  final NumberField? numberField;
   // final String? dropdownValue;
 
-  FormField({this.inputField, this.dropdown, this.textArea})
+  FormField({this.inputField, this.dropdown, this.textArea, this.numberField})
       : assert(
-            (inputField != null && dropdown == null && textArea == null) ||
-                (inputField == null && dropdown != null && textArea == null) ||
-                (inputField == null && dropdown == null && textArea != null),
-            'Either provide an InputField or a Dropdown or a TextArea.');
+            (inputField != null &&
+                    dropdown == null &&
+                    textArea == null &&
+                    numberField == null) ||
+                (inputField == null &&
+                    dropdown != null &&
+                    textArea == null &&
+                    numberField == null) ||
+                (inputField == null &&
+                    dropdown == null &&
+                    textArea != null &&
+                    numberField == null) ||
+                (inputField == null &&
+                    dropdown == null &&
+                    textArea == null &&
+                    numberField != null),
+            'Either provide an InputField or a Dropdown or a TextArea or a NumberField');
 }
 
 class QuizSpecificationsViewModel extends ChangeNotifier {
@@ -34,12 +50,10 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
         'Simple',
         'Comprehensive',
       ]),
-      const Dropdown(label: "Quiz Type", list: <String>[
-        'Identification',
-        'Multiple Choice',
-        'Both'
-      ]),
-      InputField(label: 'Number of Items', hintLabel: 'Enter number of items'),
+      const Dropdown(
+          label: "Quiz Type",
+          list: <String>['Identification', 'Multiple Choice', 'Both']),
+      NumberField(label: 'Number of Items', hintLabel: 'Enter number of items'),
       InputField(label: 'Timeframe', hintLabel: 'Enter timeframe'),
     ];
 
@@ -50,6 +64,8 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
         formFields.add(FormField(textArea: formField));
       } else if (formField is Dropdown) {
         formFields.add(FormField(dropdown: formField));
+      } else if (formField is NumberField) {
+        formFields.add(FormField(numberField: formField));
       }
     }
   }
@@ -132,5 +148,6 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
 
   void generateQuiz(BuildContext context) {
     // Navigator.restorablePushNamed(context, LessonResultView.routeName);
+    Navigator.restorablePushNamed(context, QuizPageView.routeName);
   }
 }
