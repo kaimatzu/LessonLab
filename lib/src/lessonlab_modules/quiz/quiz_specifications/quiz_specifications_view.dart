@@ -33,6 +33,8 @@ class QuizSpecificationsView extends StatelessWidget {
                     return formField.textArea;
                   } else if (formField.dropdown != null) {
                     return formField.dropdown;
+                  } else if (formField.numberField != null) {
+                    return formField.numberField;
                   } else {
                     return null;
                   }
@@ -65,9 +67,9 @@ class QuizSpecificationsView extends StatelessWidget {
             PrimaryButton(
               handlePress: () {
                 quizSpecificationsViewModel.collectFormTextValues();
+                quizSpecificationsViewModel.generateQuiz(context);
                 // lessonSpecificationsViewModel.sendData();
                 // lessonSpecificationsViewModel.getData();
-                quizSpecificationsViewModel.generateQuiz(context);
               },
               text: 'Generate',
               enabled: true,
