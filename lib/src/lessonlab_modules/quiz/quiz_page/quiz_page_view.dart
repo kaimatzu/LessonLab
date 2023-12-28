@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/components/answer.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -34,57 +35,11 @@ class _QuizPageViewState extends State<QuizPageView> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
-                  InkWell(
-                    onTap: () {},
-                    child: Container(
-                      padding: const EdgeInsets.all(15.0),
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 5.0, horizontal: 30.0),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          color: null,
-                          border: Border.all(color: Colors.blue),
-                          borderRadius: BorderRadius.circular(20.0)),
-                      child: const Text(
-                        'Answer',
-                        style: TextStyle(fontSize: 15.0),
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {},
-                    child: Container(
-                      padding: const EdgeInsets.all(15.0),
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 5.0, horizontal: 30.0),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          color: null,
-                          border: Border.all(color: Colors.blue),
-                          borderRadius: BorderRadius.circular(20.0)),
-                      child: const Text(
-                        'Answer',
-                        style: TextStyle(fontSize: 15.0),
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {},
-                    child: Container(
-                      padding: const EdgeInsets.all(15.0),
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 5.0, horizontal: 30.0),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          color: null,
-                          border: Border.all(color: Colors.blue),
-                          borderRadius: BorderRadius.circular(20.0)),
-                      child: const Text(
-                        'Answer',
-                        style: TextStyle(fontSize: 15.0),
-                      ),
-                    ),
-                  ),
+                  ...(quizViewModel.questions[_questionIndex]['answers']
+                          as List<Map<String, Object>>)
+                      .map((answer) => Answer(
+                            answerText: answer['answerText'] as String,
+                          )),
                 ],
               ),
               const SizedBox(
