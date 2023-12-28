@@ -31,6 +31,7 @@ class _QuizPageViewState extends State<QuizPageView> {
     return Scaffold(
         appBar: const LessonLabAppBar(),
         body: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           child: Center(
               child: Column(
             children: [
@@ -61,21 +62,30 @@ class _QuizPageViewState extends State<QuizPageView> {
               const SizedBox(
                 height: 20.0,
               ),
-              PrimaryButton(
-                  handlePress: () {
-                    _nextQuestion();
-                  },
-                  text: 'Next',
-                  enabled: true),
-              const SizedBox(
-                height: 20.0,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    PrimaryButton(
+                        handlePress: () {
+                          _prevQuestion();
+                        },
+                        text: 'Prev',
+                        enabled: true),
+                    const SizedBox(
+                      height: 20.0,
+                      width: 20.0,
+                    ),
+                    PrimaryButton(
+                        handlePress: () {
+                          _nextQuestion();
+                        },
+                        text: 'Next',
+                        enabled: true),
+                  ],
+                ),
               ),
-              PrimaryButton(
-                  handlePress: () {
-                    _prevQuestion();
-                  },
-                  text: 'Prev',
-                  enabled: true),
               Container(
                   padding: const EdgeInsets.all(20.0),
                   child: Text(
@@ -95,18 +105,22 @@ class _QuizPageViewState extends State<QuizPageView> {
   }
 
   void _prevQuestion() {
-    setState(() {
-      _questionIndex--;
-      _currentItem--;
-    });
+    if (_questionIndex > 0) {
+      setState(() {
+        _questionIndex--;
+        _currentItem--;
+      });
+    }
   }
 
   void _nextQuestion() {
-    setState(() {
-      _questionIndex++;
-      _currentItem++;
-      _isSelected = false;
-    });
+    if (_questionIndex + 1 < _totalItem) {
+      setState(() {
+        _questionIndex++;
+        _currentItem++;
+        _isSelected = false;
+      });
+    }
 
     if (_questionIndex >= _totalItem) _resetQuiz();
   }
