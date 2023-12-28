@@ -18,10 +18,16 @@ class QuizPageView extends StatefulWidget {
 
 class _QuizPageViewState extends State<QuizPageView> {
   int _questionIndex = 0;
+  bool _isSelected = false;
+
+  int _totalItem = 0;
+  int _currentItem = 1;
 
   @override
   Widget build(BuildContext context) {
     final quizViewModel = context.watch<QuizPageViewModel>();
+    _totalItem = quizViewModel.questions.length;
+
     return Scaffold(
         appBar: const LessonLabAppBar(),
         body: SingleChildScrollView(
@@ -37,19 +43,79 @@ class _QuizPageViewState extends State<QuizPageView> {
                 children: [
                   ...(quizViewModel.questions[_questionIndex]['answers']
                           as List<Map<String, Object>>)
-                      .map((answer) => Answer(
-                            answerText: answer['answerText'] as String,
-                          )),
+                      .map(
+                    (answer) => Answer(
+                      answerText: answer['answerText'] as String,
+                      answerColor: _isSelected
+                          ? answer['score'] as bool
+                              ? Colors.green
+                              : Colors.red
+                          : Colors.transparent,
+                      answerTap: () {
+                        _questionAnswered(answer['score'] as bool);
+                      },
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(
                 height: 20.0,
               ),
               PrimaryButton(
-                  handlePress: () {}, text: 'Next Question', enabled: true)
+                  handlePress: () {
+                    _nextQuestion();
+                  },
+                  text: 'Next',
+                  enabled: true),
+              const SizedBox(
+                height: 20.0,
+              ),
+              PrimaryButton(
+                  handlePress: () {
+                    _prevQuestion();
+                  },
+                  text: 'Prev',
+                  enabled: true),
+              Container(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(
+                    '$_currentItem/$_totalItem',
+                    style: const TextStyle(
+                        fontSize: 40.0, fontWeight: FontWeight.bold),
+                  ))
             ],
           )),
         ));
+  }
+
+  void _questionAnswered(bool answer) {
+    setState(() {
+      _isSelected = true;
+    });
+  }
+
+  void _prevQuestion() {
+    setState(() {
+      _questionIndex--;
+      _currentItem--;
+    });
+  }
+
+  void _nextQuestion() {
+    setState(() {
+      _questionIndex++;
+      _currentItem++;
+      _isSelected = false;
+    });
+
+    if (_questionIndex >= _totalItem) _resetQuiz();
+  }
+
+  void _resetQuiz() {
+    setState(() {
+      _questionIndex = 0;
+      _totalItem = 0;
+    });
   }
 
   Widget _buildQuestionWidget(
