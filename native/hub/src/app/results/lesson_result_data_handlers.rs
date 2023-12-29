@@ -169,23 +169,27 @@ pub mod lesson_result_data_handlers {
                         md_content: "MOVED LESSON GENERATION".to_string(),
                         error_string: String::from("No error")
                     };
-                }
-                else {
+                } else {
                     // write to file here
                     if let Err(error) = write_lesson_to_target_path("Debug Mode: Dummy Content", &target_folder_path) {
                         crate::debug_print!("Failed to write to target file: {}", error);
+                        response_message = ReadResponse {
+                            status_code: StatusCode::INTERNAL_SERVER_ERROR.as_u16() as u32,
+                            title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+                            md_content: "Debug Mode: Dummy Content\n\n500: INTERNAL_SERVER_ERROR".to_string(),
+                            error_string: String::from("Failed to write to target file")
+                        };
+                    } else {
+                        response_message = ReadResponse {
+                            status_code: StatusCode::OK.as_u16() as u32,
+                            title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+                            md_content: "Debug Mode: Dummy Content".to_string(),
+                            error_string: String::from("No error")
+                        };
                     }
                     
-                    response_message = ReadResponse {
-                        status_code: StatusCode::OK.as_u16() as u32,
-                        title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                        md_content: "Debug Mode: Dummy Content".to_string(),
-                        error_string: String::from("No error")
-                    };
                 }
                 
-                
-    
                 if response_message.status_code == StatusCode::OK.as_u16() as u32 {
                     RustResponse {
                         successful: true,
@@ -292,6 +296,8 @@ pub mod lesson_result_data_handlers {
     }
 
     pub fn write_lesson_to_config_file(current_lesson: &Lesson, file_path: &str) -> std::io::Result<()> {
+        // Remember `Root` class
+
         // crate::debug_print!("Deserializing...");
     
         // Load all lessons in the config file and Deserialize the JSON string

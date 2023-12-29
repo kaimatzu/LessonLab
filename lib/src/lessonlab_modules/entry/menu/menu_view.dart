@@ -77,9 +77,15 @@ class MenuView extends StatelessWidget {
                           } else if (contentSnapshot.hasError) {
                             return Text('Error loading lesson content');
                           } else {
-                            return MenuCard(
-                              title: titleSnapshot.data!,
-                              content: contentSnapshot.data!,
+                            return FutureBuilder<int>(
+                              future: lessons[index].id,
+                              builder: (context, idSnapshot) {
+                                return MenuCard(
+                                  title: titleSnapshot.data!,
+                                  content: contentSnapshot.data!,
+                                  id: idSnapshot.data!,
+                                );
+                              },
                             );
                           }
                         },

@@ -45,6 +45,7 @@ class MenuViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+  // delete using the string as comparison (temporary)
   void delete(String title) {
     _menuModel.lessons.then((List<LessonModel> lessons) {
       for (LessonModel lesson in lessons) {
@@ -61,12 +62,25 @@ class MenuViewModel with ChangeNotifier {
     });
   }
 
+  void deleteId(int id) {
+    _menuModel.lessons.then((List<LessonModel> lessons) {
+      for (LessonModel lesson in lessons) {
+        lesson.id.then((int elementId) {
+          if (elementId == id) {
+            _deleteLesson(lesson);
+          }
+        });
+      }
+    });
+  }
+
   void _deleteLesson(LessonModel lesson) {
     _menuModel.lessons.then((List<LessonModel> lessons) {
       lessons.remove(lesson);
     });
 
-    // TODO: save the current state of the lessons list in the config.json
+    // TODO: delete item in backend
+    lesson.id.then((id) => _menuConnectionOrchestrator.deleteLesson(id));
 
     notifyListeners();
   }

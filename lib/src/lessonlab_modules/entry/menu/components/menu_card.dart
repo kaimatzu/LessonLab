@@ -8,8 +8,14 @@ import 'package:lessonlab/src/global_models/lesson_model.dart';
 class MenuCard extends StatelessWidget {
   final String title;
   final String content;
+  final int id;
 
-  const MenuCard({super.key, required this.title, required this.content});
+  const MenuCard({
+    super.key,
+    required this.title,
+    required this.content,
+    required this.id,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +59,7 @@ class MenuCard extends StatelessWidget {
       top: 20,
       right: 20,
       child: GestureDetector(
-        onTap: () => viewModel.delete(title),
+        onTap: () => viewModel.deleteId(id),
         child: const Icon(
           Icons.delete, // 'delete' icon
           // Icons.more_vert,     // 'Kebab' icon

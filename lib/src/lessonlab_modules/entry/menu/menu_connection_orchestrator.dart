@@ -53,6 +53,7 @@ class MenuConnectionOrchestrator {
     final menuModel = MenuModel();
     menuModel.lessons = Future.value(lessonModels);
     menuModel.quizzes = Future.value([]);
+    menuModel.idHead = Future.value(content.idHead);
 
     // Log
     // menuModel.lessons.then(
@@ -61,7 +62,7 @@ class MenuConnectionOrchestrator {
     //       .then((value) => developer.log(value, name: 'location')),
     // );
 
-    // Logging filepath of a lesson
+    // LOGGING filepath of a lesson
     menuModel.lessons.then(
       (value) {
         for (LessonModel lesson in value) {
@@ -115,11 +116,17 @@ class MenuConnectionOrchestrator {
   Future<int> updateLesson(LessonModel lesson) async {
     String title = '';
     String content = '';
+    String location = '';
 
     lesson.title.then((value) => title = value);
     lesson.content.then((value) => content = value);
+    lesson.location.then((value) => location = value);
 
-    final pbLesson = RinfInterface.LessonModel(title: title, content: content);
+    final pbLesson = RinfInterface.LessonModel(
+      title: title,
+      content: content,
+      location: location,
+    );
     lesson.title.then((value) => pbLesson.title = value);
     final requestMessage =
         RinfInterface.UpdateRequest(lesson: pbLesson, isLesson: true);

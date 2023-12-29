@@ -1,50 +1,73 @@
 pub mod menu_data_handlers {
+
     use http::StatusCode;
+    use crate::app::entry::menu;
     use crate::app::entry::upload::upload_sources_data_object::TextFile;
     use crate::app::global_objects::lessons_data_object::{LessonsDataObject, Lesson};
-    use crate::app::global_objects::quizzes_data_object::{self, QuizzesDataObject};
+    use crate::app::global_objects::quizzes_data_object::{self, QuizzesDataObject, Quiz, Question, Choice};
+    use crate::app::lesson;
     use crate::app::results::lesson_result_data_object::Sources;
     use crate::app::settings::settings_data_object::SettingsDataObject;
     use crate::bridge::{RustOperation, RustRequest, RustResponse, RustSignal};
-    use crate::messages::entry::menu::menu::{MenuModel, LessonModel, QuizModel, QuestionModel};
+    use crate::messages::entry::menu::menu::{
+        MenuModel as RinfMenuModel,
+        LessonModel as RinfLessonModel,
+        QuizModel as RinfQuizModel,
+        QuestionModel as RinfQuestionModel,
+        Sources as RinfMenuSource
+    };
     use crate::messages::entry::upload::uploaded_content;
-    use std::fs::File;
-    use std::io::Read;
+    use std::fs::{File, OpenOptions};
+    use std::io::{Read, Write};
     use prost::Message;
 
     use tokio_with_wasm::tokio;
     use crate::app::entry::menu::menu_data_object::{MenuDataObject, Root};
 
-    pub async fn handle_lesson_crud(rust_request: RustRequest) -> RustResponse {
-        use crate::messages::entry::menu::menu::{ReadRequest, ReadResponse};
+    // Temporary code
+    // function to handle CRUD for lesson only
+    // pub async fn handle_lesson_crud(rust_request: RustRequest) -> RustResponse {
+    //     use crate::messages::entry::menu::menu::{ReadRequest, ReadResponse};
 
-        match rust_request.operation {
-            RustOperation::Create => RustResponse::default(),
-            RustOperation::Read => RustResponse::default(),
-            RustOperation::Update => RustResponse::default(),
-            RustOperation::Delete => RustResponse::default(),
-        }
-    }
+    //     match rust_request.operation {
+    //         RustOperation::Create => RustResponse::default(),
+    //         RustOperation::Read => RustResponse::default(),
+    //         RustOperation::Update => RustResponse::default(),
+    //         RustOperation::Delete => RustResponse::default(),
+    //     }
+    // }
 
-    pub async fn handle_quiz_crud(rust_request: RustRequest) -> RustResponse {
-        use crate::messages::entry::menu::menu::{ReadRequest, ReadResponse};
+    // Temporary code
+    // function to handle CRUD for quiz only
+    // pub async fn handle_quiz_crud(rust_request: RustRequest) -> RustResponse {
+    //     use crate::messages::entry::menu::menu::{ReadRequest, ReadResponse};
 
-        match rust_request.operation {
-            RustOperation::Create => RustResponse::default(),
-            RustOperation::Read => RustResponse::default(),
-            RustOperation::Update => RustResponse::default(),
-            RustOperation::Delete => RustResponse::default(),
-        }
+    //     match rust_request.operation {
+    //         RustOperation::Create => RustResponse::default(),
+    //         RustOperation::Read => RustResponse::default(),
+    //         RustOperation::Update => RustResponse::default(),
+    //         RustOperation::Delete => RustResponse::default(),
+    //     }
 
-    }
+    // }
 
     /// Handles the CRUD for the data in Menu screen
     /// @see menu_connection_orchestrator.dart
     /// @see MenuConnectionOrchestrator
-    pub async fn handle_menu_content_loading(rust_request: RustRequest,
+    pub async fn handle_menu_content_loading(
+        rust_request: RustRequest,
         menu_data_object: &mut tokio::sync::MutexGuard<'_, MenuDataObject>,
-        settings_data_object: &mut tokio::sync::MutexGuard<'_, SettingsDataObject>) -> RustResponse {
-        use crate::messages::entry::menu::menu::{ReadRequest, ReadResponse};
+        settings_data_object: &mut tokio::sync::MutexGuard<'_, SettingsDataObject>,
+        id_head: &mut i32) -> RustResponse {
+
+        use crate::messages::entry::menu::menu::{
+            ReadRequest,
+            ReadResponse,
+            UpdateRequest,
+            UpdateResponse,
+            DeleteRequest,
+            DeleteResponse
+        };
     
         match rust_request.operation {
             RustOperation::Create => RustResponse::default(),
@@ -95,53 +118,41 @@ pub mod menu_data_handlers {
             // RustOperation::Update => RustResponse::default(),
             // RustOperation::Delete => RustResponse::default(),
             RustOperation::Update => {
-                /*
-                    STEPS FOR `MenuModel` UPDATE VERSION
-
-                    1. retrieve MenuModel data from Dart and item ID
-                    2. Find file with ID
-                    3. If exist => update
-                        write the updated file
-                       If not => create
-                        write new file
-                    4. write current MenuModel status in config.json
-                        - erase the deleted entry in json
-                        Regex to delete -> {"title": "<title>"*"sources":{*}*},
-                 */
                 let message_bytes = rust_request.message.unwrap();
-                let request_message = ReadRequest::decode(message_bytes.as_slice()).unwrap();
-    
-                let _ = request_message;
+                // The data from Dart (MenuModel data from Dart)
+                let request_message = UpdateRequest::decode(message_bytes.as_slice()).unwrap();
 
                 // Get the save directory from settings
                 let mut file_path = settings_data_object.save_directory.clone();
                 file_path.push_str("\\config.json");
 
-                // Read lesson and quiz data from saved files
-                let temp_menu_data_object = load_menu_data_from_file(file_path.as_str());
-                menu_data_object.lessons_data_object = temp_menu_data_object.lessons_data_object;
-                menu_data_object.quizzes_data_object = temp_menu_data_object.quizzes_data_object; 
+                // Write lesson data to files
+                let result: std::io::Result<()>;
+                if request_message.is_lesson {
+                    result = update_lesson_file(
+                        file_path.as_str(),
+                        menu_data_object,
+                        request_message.lesson.unwrap()
+                    );
+                } else {
+                    result = update_quiz_file(
+                        file_path.as_str(),
+                        menu_data_object,
+                        request_message.quiz.unwrap()
+                    );
+                }
 
-                // STEPS FOR `LessonModel` UPDATE VERSION
-                // Update lesson or quiz according to ID/filepath (TBD)
-                // example -- menu_data_object.lessons.update(int id, LessonModel updatedModel);
-                // - find the path of that file and update the contents in that directory
-                // Update the actual file
-
-                // If it fails to find the specified lesson/quiz create a entry
-                // return 201
-                
-                // Update config.json (edit the updated item)
-                // - Get the config.json text and edit the updated item
-                // - Write again to config.json
-
-                // Create message
-                let response_message = ReadResponse {
-                    menu_model: serialize_menu_model(menu_data_object)
+                let response_message: UpdateResponse = {
+                    if result.is_ok() {
+                        UpdateResponse {
+                            status_code: 200,
+                        }
+                    } else {
+                        UpdateResponse {
+                            status_code: 500
+                        }
+                    }
                 };
-                // let response_message = UpdateResponse {
-                //     status_code: 200,
-                // };
     
                 // Create rust response to send to dart
                 RustResponse {
@@ -152,34 +163,18 @@ pub mod menu_data_handlers {
             },
             RustOperation::Delete => {
                 let message_bytes = rust_request.message.unwrap();
-                let request_message = ReadRequest::decode(message_bytes.as_slice()).unwrap();
-    
-                let _ = request_message;
+                let request_message = DeleteRequest::decode(message_bytes.as_slice()).unwrap();
 
                 // Get the save directory from settings
                 let mut file_path = settings_data_object.save_directory.clone();
                 file_path.push_str("\\config.json");
 
+                // TODO: Add actual file deletion here
 
-                // Read lesson and quiz data from saved files
-                let temp_menu_data_object = load_menu_data_from_file(file_path.as_str());
-                menu_data_object.lessons_data_object = temp_menu_data_object.lessons_data_object;
-                menu_data_object.quizzes_data_object = temp_menu_data_object.quizzes_data_object; 
 
-                // --- STEPS ---
-                // Delete lesson or quiz according to ID/filepath (TBD)
-                // menu_data_object.lessons.delete(int id);
-                // - find the path of that file and delete the directory
-
-                // If it fails to find the specified lesson/quiz return error 404
-                
-                // Update config.json (erase the deleted item)
-                // - get the config.json text and erase the deleted item
-                // Delete the actual file
-
-                // Create message
-                let response_message = ReadResponse {
-                    menu_model: serialize_menu_model(menu_data_object)
+                // Temporary change this
+                let response_message = DeleteResponse {
+                    status_code: 200,
                 };
     
                 // Create rust response to send to dart
@@ -192,20 +187,22 @@ pub mod menu_data_handlers {
         }
     }
 
-    fn serialize_menu_model(menu_data_object: &mut tokio::sync::MutexGuard<'_, MenuDataObject>) -> Option<MenuModel> {
+    /// Creates a `MenuModel` from `MenuDataObject`
+    /// @author Karl Villardar
+    fn serialize_menu_model(menu_data_object: &mut tokio::sync::MutexGuard<'_, MenuDataObject>) -> Option<RinfMenuModel> {
         // Logic to create a MenuModel
-        let mut lessons: Vec<LessonModel> = Vec::new();
+        let mut lessons: Vec<RinfLessonModel> = Vec::new();
         for lesson in menu_data_object.lessons_data_object.lessons.clone() {
-            let mut lesson_model: LessonModel = LessonModel::default();
+            let mut lesson_model: RinfLessonModel = RinfLessonModel::default();
             lesson_model.title = lesson.title;
             // Need to load content form target. Use a file opener
             lesson_model.location = lesson.target_path;
             lessons.push(lesson_model);
         }
 
-        let mut quizzes: Vec<QuizModel> = Vec::new();
+        let mut quizzes: Vec<RinfQuizModel> = Vec::new();
         for quiz in menu_data_object.quizzes_data_object.quizzes.clone() {
-            let mut quiz_model: QuizModel = QuizModel::default();
+            let mut quiz_model: RinfQuizModel = RinfQuizModel::default();
             quiz_model.title = quiz.title;
             quiz_model.location = quiz.target_path;
 
@@ -215,55 +212,53 @@ pub mod menu_data_handlers {
             // quizzes.append(quiz_model);
         }
 
-        let menu_model = MenuModel {
-            lessons: lessons,
-            quizzes: quizzes,
+        let menu_model = RinfMenuModel {
+            lessons,
+            quizzes,
+            id_head: menu_data_object.id_head,
         };
     
         // Use Some to wrap the MenuModel in an Option
         Some(menu_model)
     }
 
-    fn deserialize_menu_model(menu_model: &mut tokio::sync::MutexGuard<'_, MenuModel>) -> Option<MenuDataObject>{
+    /// Creates a `MenuDataObject` from `MenuModel`
+    /// @author Hans Duran
+    fn deserialize_menu_model(menu_model: RinfMenuModel) -> Option<MenuDataObject>{
 
-        let lessons: Vec<Lesson>;
+        let mut lessons: Vec<Lesson> = Vec::new();
 
-
-        for lesson in menu_model.lessons.clone() {
-            // TODO: Add sources to `MenuModel`
-            let mut texts: Vec<TextFile>;
-
-            for source in lesson.source.unwrap().texts {
+        let len = menu_model.lessons.len() - 1;
+        for i in 0..len {
+            let mut texts: Vec<TextFile> = Vec::new();
+            for source in menu_model.lessons[i].source.clone().unwrap().texts {
                 texts.push(TextFile {
                     title: source.title,
                     content: source.content,
                 });
             }		
-
-            let mut temp_lesson = Lesson {
-                id: lesson.id,
-                title: lesson.title.clone(),
-                target_path: lesson.location.clone(),
+            let temp_lesson = Lesson {
+                id: menu_model.lessons[i].id.clone(),
+                title: menu_model.lessons[i].title.clone(),
+                target_path: menu_model.lessons[i].location.clone(),
                 sources: Sources {
-                    source_files: lesson.clone().source.unwrap().files,
-                    source_urls: lesson.clone().source.unwrap().urls,
-                    source_texts: texts,
+                    source_files: menu_model.lessons[i].source.clone().unwrap().files,
+                    source_urls: menu_model.lessons[i].source.clone().unwrap().urls,
+                    source_texts: texts.clone(),
                 },
             };
             lessons.push(temp_lesson.clone());
         }
 
-
-        let mdo = MenuDataObject {
+        Some(MenuDataObject {
             lessons_data_object: LessonsDataObject { lessons },
             quizzes_data_object: QuizzesDataObject { quizzes: todo!() },
-        };
-
-        Some(mdo)
+            id_head: 0 // TODO: get the current id head
+        })
     }
 
     fn load_menu_data_from_file(file_path: &str) -> MenuDataObject {
-        // Open the file
+        // Open config.json file
         let mut file = File::open(file_path).expect("Failed to open file");
     
         // Read the file content into a string
@@ -274,8 +269,163 @@ pub mod menu_data_handlers {
         // Deserialize the JSON content into a MenuDataObject
         let root: Root = serde_json::from_str(&json_content).expect("Failed to deserialize JSON");
 
-        let menu_data: MenuDataObject = root.menu_data_object;
+        // let menu_data: MenuDataObject = root.menu_data_object;
     
-        menu_data
+        // menu_data
+        root.menu_data_object
+    }
+
+    fn update_lesson_file(file_path: &str, mdo: &mut MenuDataObject, lesson_model: RinfLessonModel) -> std::io::Result<()> {
+        let mut file = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .open(file_path)
+            .expect("Failed to open file"); // Open file
+
+        for temp_lesson_do in &mut mdo.lessons_data_object.lessons { // Find ID
+            if temp_lesson_do.id == lesson_model.id {
+                *temp_lesson_do = rinf_lesson_model_to_lesson(lesson_model); // Update lesson
+                break;
+            }
+        }
+
+        // JSONify the struct and write to config.json
+        let root = Root {
+            menu_data_object: mdo.clone()
+        };
+
+        let serialized_root = serde_json::to_string_pretty(&root).unwrap();
+
+        
+        // Write to config.json
+        
+        file.write_all(serialized_root.as_bytes())
+        // ?: How to edit a textfile using serde or std::filestream? (delete or update)
+        // Serialize `MenuDataObject` to file (serde)
+        // Edit config.json
+    }
+
+    fn update_quiz_file(file_path: &str, mdo: &mut MenuDataObject, quiz_model: RinfQuizModel) -> std::io::Result<()> {
+        // Open file
+        let mut file = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .open(file_path).expect("Failed to open file");
+
+        // Find ID
+        for temp_quiz_do in &mut mdo.quizzes_data_object.quizzes {
+            if temp_quiz_do.id  == quiz_model.id {
+                *temp_quiz_do = rinf_quiz_model_to_quiz(quiz_model);
+                break;
+            }
+        }
+
+        let root = Root {
+            menu_data_object: mdo.clone()
+        };
+
+        let serialized_root = serde_json::to_string_pretty(&root).unwrap();
+
+        file.write_all(serialized_root.as_bytes())
+    }
+
+    fn delete_lesson_file(file_path: &str, mdo: &mut MenuDataObject, id: u32) -> std::io::Result<()> {
+        // let mut file = OpenOptions::new()
+            // .write(true)
+            // .truncate(true)
+            // .open(file_path)
+            // .expect("Failed to open file"); // Open file
+// 
+// 
+        // for temp_lesson_do in &mut mdo.lessons_data_object.lessons { // Find ID
+            // if temp_lesson_do.id == id {
+// 
+                // Delete selected lesson from lessons list
+                // if let Some(index) = mdo.lessons_data_object.lessons.iter().position(|x| x.id == temp_lesson_do.id) {
+                    // mdo.lessons_data_object.lessons.remove(index.clone());
+                // }
+                // 
+                // *temp_lesson_do = rinf_lesson_model_to_lesson(lesson_model); // Update lesson
+                // break;
+            // }
+        // }
+// 
+        // let root = Root {
+            // menu_data_object: mdo.clone()
+        // };
+// 
+        // let serialized_root = serde_json::to_string_pretty(&root).unwrap();
+// 
+        // file.write_all(serialized_root.as_bytes())
+
+        let lessons = &mut mdo.lessons_data_object.lessons;
+
+        if let Some(index) = lessons.iter_mut().position(|temp_lesson_do| temp_lesson_do.id == id) {
+            lessons.remove(index);
+        }
+    
+        let root = Root {
+            menu_data_object: mdo.clone(),
+        };
+    
+        let serialized_root = serde_json::to_string_pretty(&root).unwrap();
+    
+        let mut file = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .open(file_path)
+            .expect("Failed to open file");
+    
+        file.write_all(serialized_root.as_bytes())
+    }
+
+    /// Creates a `Lesson` model from `Lesson`
+    fn rinf_lesson_model_to_lesson(lesson_model: RinfLessonModel) -> Lesson {
+        let lm = lesson_model.clone(); // need to clone because of partial move
+        let mut texts: Vec<TextFile> = Vec::new();
+        for source in lesson_model.source.unwrap().texts {
+            texts.push(TextFile {
+                title: source.title,
+                content: source.content,
+            })
+        }
+        Lesson {
+            id: lesson_model.id,
+            title: lesson_model.title,
+            target_path: lesson_model.location,
+            sources: Sources {
+                source_files: lm.clone().source.unwrap().files,
+                source_urls: lm.clone().source.unwrap().urls,
+                source_texts: texts,
+            }
+        }
+    }
+
+    fn rinf_quiz_model_to_quiz(quiz_model: RinfQuizModel) -> Quiz {
+
+        let mut questions: Vec<Question> = Vec::new();
+
+        for question_model in quiz_model.questions {
+
+            let mut choices: Vec<Choice> = Vec::new();
+            for choice_model in question_model.choices {
+                choices.push(Choice {
+                    content: choice_model.content,
+                    is_correct: choice_model.is_correct,
+                });
+            }
+
+            questions.push(Question {
+                question: question_model.question,
+                choices,
+            });
+        }
+
+        Quiz {
+            id: quiz_model.id,
+            title: quiz_model.title,
+            target_path: quiz_model.location,
+            questions,
+        }
     }
 }

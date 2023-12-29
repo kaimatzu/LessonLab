@@ -41,8 +41,8 @@ message ChoiceModel {
 message MenuModel {
     repeated LessonModel lessons = 1;
     repeated QuizModel quizzes = 2;
+    int32 id_head = 3;
 }
-
 
 
 // READ

@@ -4,6 +4,7 @@ import 'package:lessonlab/src/global_models/quiz_model.dart';
 class MenuModel {
   late Future<List<LessonModel>> _lessons;
   late Future<List<QuizModel>> _quizzes;
+  late Future<int> _idHead;
 
   MenuModel();
 
@@ -19,5 +20,10 @@ class MenuModel {
   Future<List<QuizModel>> get quizzes => _quizzes;
   set quizzes(Future<List<QuizModel>> value) {
     _quizzes = value;
+  }
+
+  Future<int> get idHead => _idHead;
+  set idHead(Future<int> value) {
+    _idHead = value;
   }
 }
