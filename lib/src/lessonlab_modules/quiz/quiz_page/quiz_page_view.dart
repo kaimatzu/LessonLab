@@ -16,6 +16,9 @@ class QuizPageView extends StatefulWidget {
   State<QuizPageView> createState() => _QuizPageViewState();
 }
 
+//TODO: MAKE IDENTIFICATION TYPE QUIZ
+
+//THIS IS MULTIPLE CHOICE QUIZ
 class _QuizPageViewState extends State<QuizPageView> {
   int _questionIndex = 0;
   bool _isSelected = false;
