@@ -16,6 +16,8 @@ import 'package:rinf/rinf.dart';
 class QuizPageViewModel extends ChangeNotifier {
   QuizPageViewModel() {}
 
+  //TODO: GET QUESTIONS FROM BACKEND
+
   final _questions = const [
     {
       'question': 'How long is New Zealand’s Ninety Mile Beach?',
