@@ -17,7 +17,7 @@ void main() async {
   await Rinf.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
 
-  final settingsViewModel = SettingsViewModel(SettingsService());
+  final settingsViewModel = SettingsViewModel();
 
   await SettingsPreferences.init();
   await settingsViewModel.loadSettings();

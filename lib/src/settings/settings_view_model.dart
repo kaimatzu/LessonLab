@@ -15,9 +15,9 @@ import 'package:rinf/rinf.dart';
 import 'dart:developer' as developer;
 
 class SettingsViewModel with ChangeNotifier {
-  SettingsViewModel(this._settingsService);
+  SettingsViewModel();
 
-  final SettingsService _settingsService;
+  final SettingsService _settingsService = SettingsService();
 
   late ThemeMode _themeMode;
 

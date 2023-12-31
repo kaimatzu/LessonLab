@@ -69,10 +69,10 @@ packages:
     dependency: "direct main"
     description:
       name: cross_file
-      sha256: "445db18de832dba8d851e287aff8ccf169bed30d2e94243cb54c7d2f1ed2142c"
+      sha256: "2f9d2cbccb76127ba28528cb3ae2c2326a122446a83de5a056aaa3880d3882c5"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.3+6"
+    version: "0.3.3+7"
   crypto:
     dependency: transitive
     description:
@@ -249,10 +249,10 @@ packages:
     dependency: transitive
     description:
       name: http
-      sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
+      sha256: "759d1a329847dd0f39226c688d3e06a6b8679668e350e2891a6474f8b4bb8525"
       url: "https://pub.dev"
     source: hosted
-    version: "0.13.6"
+    version: "1.1.0"
   http_parser:
     dependency: transitive
     description:
@@ -377,10 +377,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_android
-      sha256: e595b98692943b4881b219f0a9e3945118d3c16bd7e2813f98ec6e532d905f72
+      sha256: "477184d672607c0a3bf68fbbf601805f92ef79c82b64b4d6eb318cbca4c48668"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.1"
+    version: "2.2.2"
   path_provider_foundation:
     dependency: transitive
     description:
@@ -433,10 +433,10 @@ packages:
     dependency: transitive
     description:
       name: plugin_platform_interface
-      sha256: da3fdfeccc4d4ff2da8f8c556704c08f912542c5fb3cf2233ed75372384a034d
+      sha256: f4f88d4a900933e7267e2b353594774fc0d07fb072b47eedcd5b54e1ea3269f8
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.6"
+    version: "2.1.7"
   pointycastle:
     dependency: transitive
     description:
@@ -465,10 +465,10 @@ packages:
     dependency: "direct main"
     description:
       name: rinf
-      sha256: "6de297929aa4e7d4820e646974acc5048fc946bea2a4bd41c6fd4ac79a63a17d"
+      sha256: a76b3d53b9cf740ccff0e8edffc465b0fb81bcad090b83d8d1486dd70aadbd6a
       url: "https://pub.dev"
     source: hosted
-    version: "4.16.3"
+    version: "4.20.0"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -618,6 +618,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  watcher:
+    dependency: transitive
+    description:
+      name: watcher
+      sha256: "3d2ad6751b3c16cf07c7fca317a1413b3f26530319181b37e3b9039b84fc01d8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   web:
     dependency: transitive
     description:
@@ -630,10 +638,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: "7c99c0e1e2fa190b48d25c81ca5e42036d5cac81430ef249027d97b0935c553f"
+      sha256: b0f37db61ba2f2e9b7a78a1caece0052564d1bc70668156cf3a29d676fe4e574
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.0"
+    version: "5.1.1"
   xdg_directories:
     dependency: transitive
     description:
