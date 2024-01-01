@@ -1,5 +1,3 @@
-import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/components/dropdown_menu.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/components/input_field.dart';
 
 class LessonSpecification {
   String _label;

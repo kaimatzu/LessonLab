@@ -8,8 +8,6 @@ import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_components/secondary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view_model.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/resources_container.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
 
 class UploadSourcesView extends StatelessWidget {
@@ -41,8 +39,8 @@ class UploadSourcesView extends StatelessWidget {
 
     return Scaffold(
       appBar: const LessonLabAppBar(),
-      body: Padding(
-          padding: const EdgeInsets.fromLTRB(100.0, 30.0, 140.0, 60.0),
+      body: const Padding(
+          padding: EdgeInsets.fromLTRB(100.0, 30.0, 140.0, 60.0),
           child: UploadScreen()),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(0.0, 0.0, 180.0, 60.0),

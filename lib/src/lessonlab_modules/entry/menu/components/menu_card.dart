@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
-import 'dart:developer' as developer;
 
 import 'package:provider/provider.dart';
-import 'package:lessonlab/src/global_models/lesson_model.dart';
 
 class MenuCard extends StatelessWidget {
   final String title;

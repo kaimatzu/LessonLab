@@ -3,9 +3,10 @@ import 'package:provider/provider.dart';
 
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/resources_container.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
 
 class UploadScreen extends StatelessWidget {
+  const UploadScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final uploadViewModel = context.watch<UploadSourcesViewModel>();

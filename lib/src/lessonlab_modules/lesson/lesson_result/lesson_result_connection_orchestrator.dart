@@ -1,10 +1,8 @@
 import 'package:flutter/services.dart';
-import 'dart:developer' as developer;
 import 'package:lessonlab/messages/results/view_lesson_result/load_lesson.pb.dart'
     // ignore: library_prefixes
     as RinfInterface;
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_model.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view_model.dart';
 import 'package:rinf/rinf.dart';
 
 class LessonResultConnectionOrchestrator {

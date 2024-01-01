@@ -1,11 +1,7 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:file_selector/file_selector.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
-import 'package:lessonlab/src/settings/shared_preferences.dart';
-import 'settings_view_model.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:lessonlab/src/settings/settings_view_model.dart';
 /// Displays the various settings that can be customized by the user.
 ///
 /// When a user changes a setting, the SettingsController is updated and

@@ -5,16 +5,12 @@ import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/com
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/components/input_field.dart';
 import 'dart:developer' as developer;
 
-import 'package:lessonlab/messages/lesson/lesson_specifications.pb.dart'
-    // ignore: library_prefixes
-    as RinfInterface;
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/components/lesson_specification.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/components/text_area.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_connection_orchestrator.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_model.dart';
 import 'package:lessonlab/src/settings/shared_preferences.dart';
-import 'package:rinf/rinf.dart';
 
 // This class holds all the input fields in the view
 class FormField {
@@ -78,7 +74,7 @@ class LessonSpecificationsViewModel extends ChangeNotifier {
       TextEditingController(text: SettingsPreferences.getDirectory());
   TextEditingController get saveTargetController => _saveTargetController;
 
-  var _statusCode = 0;
+  final _statusCode = 0;
 
   void sendData() {
     _lessonSpecificationsConnectionOrchestrator.sendData(

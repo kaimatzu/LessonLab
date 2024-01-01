@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_connection_orchestrator.dart';
 import 'dart:developer' as developer;
@@ -10,7 +9,7 @@ class LessonResultViewModel with ChangeNotifier {
   late final LessonResultModel _lessonResultModel;
   late final LessonResultConnectionOrchestrator
       _lessonResultConnectionOrchestrator;
-  var _statusCode = 0;
+  final _statusCode = 0;
 
   bool _done = false;
   bool get done => _done;

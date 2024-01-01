@@ -1,10 +1,7 @@
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 // import 'package:lessonlab/messages/entry/upload/uploaded_content.pb.dart';
-import 'dart:developer' as developer;
 
-import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view_model.dart';
 import 'package:provider/provider.dart';
 

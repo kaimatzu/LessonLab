@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/components/text_editor.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view_model.dart';
 import 'package:provider/provider.dart';
-import 'package:rinf/rinf.dart';
-import 'package:lessonlab/messages/results/view_lesson_result/load_lesson.pb.dart'
-    as streamMessage;
 
 class LessonResultScreen extends StatelessWidget {
+  const LessonResultScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final lessonResultViewModel = context.watch<LessonResultViewModel>();

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/components/lesson_result_screen.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view_model.dart';
 import 'package:provider/provider.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/components/text_editor.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view_model.dart';
 
 class LessonResultView extends StatelessWidget {
@@ -39,7 +37,7 @@ class LessonResultView extends StatelessWidget {
     );
 
     return Scaffold(
-      body: LessonResultScreen(),
+      body: const LessonResultScreen(),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(0.0, 30.0, 180.0, 60.0),
         child: Row(
