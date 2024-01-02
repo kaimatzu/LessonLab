@@ -57,8 +57,7 @@ pub mod menu_data_handlers {
     pub async fn handle_menu_content_loading(
         rust_request: RustRequest,
         menu_data_object: &mut tokio::sync::MutexGuard<'_, MenuDataObject>,
-        settings_data_object: &mut tokio::sync::MutexGuard<'_, SettingsDataObject>,
-        id_head: &mut i32) -> RustResponse {
+        settings_data_object: &mut tokio::sync::MutexGuard<'_, SettingsDataObject>) -> RustResponse {
 
         use crate::messages::entry::menu::menu::{
             ReadRequest,
@@ -170,13 +169,24 @@ pub mod menu_data_handlers {
                 file_path.push_str("\\config.json");
 
                 // TODO: Add actual file deletion here
+                // Write lesson data to files
+                let result: std::io::Result<()>;
+                if request_message.is_lesson {
+                    result = delete_lesson_file(file_path.as_str(), menu_data_object, request_message.id);
+                } else {
+                    result = delete_quiz_file(file_path.as_str(), menu_data_object, request_message.id);
+                }
 
-
-                // Temporary change this
-                let response_message = DeleteResponse {
-                    status_code: 200,
+                // let mut code: u32;
+                let code = match result {
+                    Ok(_) => 200,
+                    Err(_) => 300,
                 };
     
+                let response_message = DeleteResponse {
+                    status_code: code,
+                };
+
                 // Create rust response to send to dart
                 RustResponse {
                     successful: true,
@@ -214,8 +224,8 @@ pub mod menu_data_handlers {
 
         let menu_model = RinfMenuModel {
             lessons,
-            quizzes,
-            id_head: menu_data_object.id_head,
+            quizzes
+            // id_head: menu_data_object.id_head,
         };
     
         // Use Some to wrap the MenuModel in an Option
@@ -275,28 +285,27 @@ pub mod menu_data_handlers {
         root.menu_data_object
     }
 
-    fn update_lesson_file(file_path: &str, mdo: &mut MenuDataObject, lesson_model: RinfLessonModel) -> std::io::Result<()> {
+    fn update_lesson_file(file_path: &str, menu_data_object: &mut MenuDataObject, lesson_model: RinfLessonModel) -> std::io::Result<()> {
         let mut file = OpenOptions::new()
             .write(true)
             .truncate(true)
             .open(file_path)
             .expect("Failed to open file"); // Open file
 
-        for temp_lesson_do in &mut mdo.lessons_data_object.lessons { // Find ID
-            if temp_lesson_do.id == lesson_model.id {
-                *temp_lesson_do = rinf_lesson_model_to_lesson(lesson_model); // Update lesson
+        for lesson_data_object in &mut menu_data_object.lessons_data_object.lessons { // Find ID
+            if lesson_data_object.id == lesson_model.id {
+                *lesson_data_object = rinf_lesson_model_to_lesson(lesson_model); // Update lesson
                 break;
             }
         }
 
         // JSONify the struct and write to config.json
         let root = Root {
-            menu_data_object: mdo.clone()
+            menu_data_object: menu_data_object.clone()
         };
 
         let serialized_root = serde_json::to_string_pretty(&root).unwrap();
 
-        
         // Write to config.json
         
         file.write_all(serialized_root.as_bytes())
@@ -329,43 +338,16 @@ pub mod menu_data_handlers {
         file.write_all(serialized_root.as_bytes())
     }
 
-    fn delete_lesson_file(file_path: &str, mdo: &mut MenuDataObject, id: u32) -> std::io::Result<()> {
-        // let mut file = OpenOptions::new()
-            // .write(true)
-            // .truncate(true)
-            // .open(file_path)
-            // .expect("Failed to open file"); // Open file
-// 
-// 
-        // for temp_lesson_do in &mut mdo.lessons_data_object.lessons { // Find ID
-            // if temp_lesson_do.id == id {
-// 
-                // Delete selected lesson from lessons list
-                // if let Some(index) = mdo.lessons_data_object.lessons.iter().position(|x| x.id == temp_lesson_do.id) {
-                    // mdo.lessons_data_object.lessons.remove(index.clone());
-                // }
-                // 
-                // *temp_lesson_do = rinf_lesson_model_to_lesson(lesson_model); // Update lesson
-                // break;
-            // }
-        // }
-// 
-        // let root = Root {
-            // menu_data_object: mdo.clone()
-        // };
-// 
-        // let serialized_root = serde_json::to_string_pretty(&root).unwrap();
-// 
-        // file.write_all(serialized_root.as_bytes())
+    fn delete_lesson_file(file_path: &str, menu_data_object: &mut MenuDataObject, id: u32) -> std::io::Result<()> {
 
-        let lessons = &mut mdo.lessons_data_object.lessons;
+        let lessons = &mut menu_data_object.lessons_data_object.lessons;
 
-        if let Some(index) = lessons.iter_mut().position(|temp_lesson_do| temp_lesson_do.id == id) {
+        if let Some(index) = lessons.iter_mut().position(|lesson| lesson.id == id) {
             lessons.remove(index);
         }
     
         let root = Root {
-            menu_data_object: mdo.clone(),
+            menu_data_object: menu_data_object.clone(),
         };
     
         let serialized_root = serde_json::to_string_pretty(&root).unwrap();
@@ -376,6 +358,29 @@ pub mod menu_data_handlers {
             .open(file_path)
             .expect("Failed to open file");
     
+        file.write_all(serialized_root.as_bytes())
+    }
+
+    fn delete_quiz_file(file_path: &str, menu_data_object: &mut MenuDataObject, id: u32) -> std::io::Result<()> {
+
+        let quizzes = &mut menu_data_object.quizzes_data_object.quizzes;
+
+        if let Some(index) = quizzes.iter_mut().position(|quiz| quiz.id == id) {
+            quizzes.remove(index);
+        }
+    
+        let root = Root {
+            menu_data_object: menu_data_object.clone(),
+        };
+    
+        let serialized_root = serde_json::to_string_pretty(&root).unwrap();
+
+        let mut file = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .open(file_path)
+            .expect("Failed to open file");
+
         file.write_all(serialized_root.as_bytes())
     }
 

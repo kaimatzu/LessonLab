@@ -21,8 +21,7 @@ pub async fn handle_request(request_unique: RustRequestUnique,
     menu_data_object: &mut tokio::sync::MutexGuard<'_, MenuDataObject>,
     upload_sources_data_object: &mut tokio::sync::MutexGuard<'_, UploadSourcesDataObject>,
     lesson_specifications_model: &mut tokio::sync::MutexGuard<'_, LessonSpecificationsDataObject>,
-    save_directory_model: &mut tokio::sync::MutexGuard<'_, SettingsDataObject>,
-    id_head: &mut i32) -> RustResponseUnique {
+    save_directory_model: &mut tokio::sync::MutexGuard<'_, SettingsDataObject>) -> RustResponseUnique {
     // Get the request data from Dart.
     let rust_request = request_unique.request;
     let interaction_id = request_unique.id;
@@ -33,7 +32,7 @@ pub async fn handle_request(request_unique: RustRequestUnique,
 		// ! Warning errors while running `rinf message` can delete the const ID in messages
 		// pub const ID: i32 = 0;
         messages::entry::menu::menu::ID => {
-            handle_menu_content_loading(rust_request, menu_data_object, save_directory_model, id_head).await
+            handle_menu_content_loading(rust_request, menu_data_object, save_directory_model).await
         }
         messages::entry::upload::uploaded_content::ID => { // Handle Uploaded File content
             handle_uploaded_content(rust_request, upload_sources_data_object).await

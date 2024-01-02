@@ -48,7 +48,7 @@ pub mod lesson_result_data_handlers {
         use crate::messages::results::view_lesson_result::load_lesson::{ReadRequest, ReadResponse};
         
         // TODO: MAKE THIS GLOBAL
-        let release = true; // DEBUG MODE
+        let release = false; // DEBUG MODE
     
         match rust_request.operation {
             RustOperation::Create => RustResponse::default(),
