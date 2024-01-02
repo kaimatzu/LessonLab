@@ -32,12 +32,12 @@ class MenuViewModel with ChangeNotifier {
   }
 
   Future<void> loadViewContent() async {
-    _menuModel = await _menuConnectionOrchestrator.getMenuModel();
+    final result = await _menuConnectionOrchestrator.getMenuModel();
 
     // _menuModel = MenuModel();
 
-    // _menuModel.lessons = result.lessons;
-    // _menuModel.quizzes = result.quizzes;
+    _menuModel.lessons = result.lessons;
+    _menuModel.quizzes = result.quizzes;
 
     notifyListeners();
   }
