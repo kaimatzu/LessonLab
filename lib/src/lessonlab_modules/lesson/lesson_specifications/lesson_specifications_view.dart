@@ -19,86 +19,128 @@ class LessonSpecificationsView extends StatelessWidget {
 
     return Scaffold(
       appBar: const LessonLabAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(180.0, 32.0, 180.0, 32.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: lessonSpecificationsViewModel.formFields
-                .map<Widget?>((formField) {
-                  if (formField.inputField != null) {
-                    return formField.inputField;
-                  } else if (formField.textArea != null) {
-                    return formField.textArea;
-                  } else if (formField.dropdown != null) {
-                    return formField.dropdown;
-                  } else {
-                    return null;
-                  }
-                })
-                .whereType<Widget>() // Filter out null values
-                .toList(),
-          ),
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(0.0, 30.0, 180.0, 60.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            PrimaryButton(
-                handlePress: () async {
-                  lessonSpecificationsViewModel.selectLessonSavePath(context,
-                      lessonSpecificationsViewModel.saveTargetController);
-                },
-                text: 'Save Path',
-                enabled: true),
-            const SizedBox(width: 8.0),
-            SizedBox(
-              width: 300,
-              height: 50,
-              child: TextField(
-                controller: lessonSpecificationsViewModel.saveTargetController,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 49, 51, 56),
-                  border: OutlineInputBorder(),
-                  hintText: 'No save directory',
-                  hintStyle: TextStyle(
-                    fontFamily: 'Roboto, Inter, Arial',
-                    color: Colors.grey,
+        body: Padding(
+          padding: const EdgeInsets.fromLTRB(30.0, 20.0, 30.0, 20.0),
+          child: Row(
+            children: [
+            // Left side (scrollable form)
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(40.0, 32.0, 30.0, 32.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ...lessonSpecificationsViewModel.formFields
+                        .map<Widget?>((formField) {
+                          if (formField.inputField != null) {
+                            return formField.inputField;
+                          } else if (formField.textArea != null) {
+                            return formField.textArea;
+                          } else if (formField.dropdown != null) {
+                            return formField.dropdown;
+                          } else {
+                            return null;
+                          }
+                        })                    
+                        .whereType<Widget>()
+                        .toList(),
+                        const SizedBox(height: 8.0),
+                        PrimaryButton(
+                          handlePress: () {
+                            lessonSpecificationsViewModel.addCustomSpecifications();
+                          },
+                          text: 'Add Custom',
+                          enabled: true,
+                        ),
+                      ],                                       
                   ),
                 ),
-                enabled: false,
               ),
             ),
-            const SizedBox(width: 60.0),
-            SecondaryButton(
-              handlePress: () {
-                lessonSpecificationsViewModel.cancelLesson(context);
-              },
-              text: 'Cancel',
-            ),
-            const SizedBox(width: 30.0),
-            PrimaryButton(
-              handlePress: () {
-                lessonSpecificationsViewModel.addCustomSpecifications();
-              },
-              text: 'Add',
-              enabled: true,
-            ),
-            const SizedBox(width: 30.0),
-            PrimaryButton(
-              handlePress: () {
-                lessonSpecificationsViewModel.collectFormTextValues();
-                lessonSpecificationsViewModel.sendData();
-                lessonSpecificationsViewModel.getData();
-                lessonSpecificationsViewModel
-                    .navigateToLessonGeneration(context);
-              },
-              text: 'Generate',
-              enabled: true,
+            // Right side (static buttons)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0.0, 170.0, 0.0, 0.0),
+              child: SizedBox(
+                width: 420,
+                child: Align(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const SizedBox(width: 50.0),
+                          PrimaryButton(
+                            handlePress: () async {
+                              lessonSpecificationsViewModel.selectLessonSavePath(
+                                context,
+                                lessonSpecificationsViewModel.saveTargetController,
+                              );
+                            },
+                            text: 'Save Path',
+                            enabled: true,
+                            width: 100.0,
+                            topRightRadius: 0.0,
+                            bottomRightRadius: 0.0,
+                          ),
+                          const SizedBox(width: 2.0),
+                          SizedBox(
+                            width: 200,
+                            height: 50,
+                            child: TextField(
+                              controller: lessonSpecificationsViewModel.saveTargetController,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: const InputDecoration(
+                                filled: true,
+                                fillColor: Color.fromARGB(255, 49, 51, 56),
+                                border: OutlineInputBorder(),
+                                hintText: 'No save directory',
+                                hintStyle: TextStyle(
+                                  fontFamily: 'Roboto, Inter, Arial',
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              enabled: false,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20.0),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SecondaryButton(
+                                  handlePress: () {
+                                    lessonSpecificationsViewModel.cancelLesson(context);
+                                  },
+                                  text: 'Cancel',
+                                ),
+                                const SizedBox(width: 8.0),
+                                PrimaryButton(
+                                  handlePress: () {
+                                    lessonSpecificationsViewModel.collectFormTextValues();
+                                    lessonSpecificationsViewModel.sendData();
+                                    lessonSpecificationsViewModel.getData();
+                                    lessonSpecificationsViewModel.navigateToLessonGeneration(context);
+                                  },
+                                  text: 'Generate',
+                                  enabled: true,
+                                  width: 120.0
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         ),
