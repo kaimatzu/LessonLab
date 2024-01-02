@@ -7,6 +7,7 @@ import 'package:file_selector/file_selector.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/drag_and_drop_area.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_navigation.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
+import 'dart:developer' as developer;
 
 /* 
   TODO: Fix angy Flutter
@@ -255,16 +256,19 @@ class _OverlayUploadFile extends State<OverlayUploadFile> {
     for (var overlayFile in overlayProvider.fileCache) {
       bool contains = false;
       for (var uploadFile in uploadViewModel.getFilePaths()) {
-        if (uploadFile.path + uploadFile.name ==
-            overlayFile.path + overlayFile.name) {
+        if ('${uploadFile.path}\\${uploadFile.name}' ==
+            '${overlayFile.path}\\${overlayFile.name}') {
           contains = true;
           break;
         }
       }
       if (!contains) uploadViewModel.getFilePaths().add(overlayFile);
     }
-
     // uploadViewModel.files.addAll(overlayProvider.fileCache);
+    for (var uploadFile in uploadViewModel.getFilePaths()) {
+      developer.log('File in upload view model: ${uploadFile.path}\\${uploadFile.name}');
+    }
+
     overlayProvider.fileCache.clear();
 
     overlayProvider.hideOverlay();

@@ -1,5 +1,3 @@
-// ignore_for_file: curly_braces_in_flow_control_structures
-
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/upload_screen.dart';
 import 'package:provider/provider.dart';
@@ -39,8 +37,12 @@ class UploadSourcesView extends StatelessWidget {
 
     return Scaffold(
       appBar: const LessonLabAppBar(),
-      body: const Padding(
+      // DO NOT USE CONST HERE. FLUTTER IS FUCKING STUPID. THE UI WILL NOT RELOAD IF YOU USE CONST
+      // ignore: prefer_const_constructors
+      body: Padding(
+          // ignore: prefer_const_constructors
           padding: EdgeInsets.fromLTRB(100.0, 30.0, 140.0, 60.0),
+          // ignore: prefer_const_constructors
           child: UploadScreen()),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(0.0, 0.0, 180.0, 60.0),

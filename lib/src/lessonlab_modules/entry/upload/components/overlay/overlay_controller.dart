@@ -1,6 +1,7 @@
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_navigation.dart';
+import 'dart:developer' as developer;
 
 class OverlayController extends ChangeNotifier {
   OverlayEntry? _overlayEntry;
@@ -53,6 +54,7 @@ class OverlayController extends ChangeNotifier {
 
   void hideOverlay() {
     if (_overlayEntry != null) {
+      
       _overlayEntry!.remove();
       _overlayEntry = null;
 
@@ -61,7 +63,9 @@ class OverlayController extends ChangeNotifier {
 
       _currentContent = OverlayNavigation(
           containerWidth: containerWidth, containerHeight: containerHeight);
+
       notifyListeners();
+      developer.log("Rebuild needs to trigger!");
     }
   }
 
