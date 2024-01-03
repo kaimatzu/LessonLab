@@ -38,7 +38,7 @@ class UploadScreen extends StatelessWidget {
             child: txtFiles,
           ),
           ResourcesContainer(
-      viewModel: uploadViewModel,
+            viewModel: uploadViewModel,
             items: uploadViewModel.getFilePaths(),
             icon: const Icon(Icons.file_open, color: Colors.white),
           ),
@@ -52,7 +52,7 @@ class UploadScreen extends StatelessWidget {
             child: txtUrl,
           ),
           ResourcesContainer(
-      viewModel: uploadViewModel,
+            viewModel: uploadViewModel,
             items: uploadViewModel.getUrls(),
             icon: const Icon(Icons.link, color: Colors.white),
           ),
@@ -66,7 +66,7 @@ class UploadScreen extends StatelessWidget {
             child: txtText,
           ),
           ResourcesContainer(
-      viewModel: uploadViewModel,
+            viewModel: uploadViewModel,
             items: uploadViewModel.getTexts(),
             icon: const Icon(Icons.description, color: Colors.white),
           ),

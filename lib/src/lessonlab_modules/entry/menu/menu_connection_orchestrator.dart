@@ -48,6 +48,8 @@ class MenuConnectionOrchestrator {
     menuModel.lessons = Future.value(lessonModels);
     menuModel.quizzes = Future.value([]);
 
+    // data are retrieved from menu_data_handlers.rs
+
     return menuModel;
   }
 
