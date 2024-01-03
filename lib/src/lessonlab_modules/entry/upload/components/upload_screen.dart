@@ -30,68 +30,52 @@ class UploadScreen extends StatelessWidget {
     const txtNoText = Text('No text available.', style: noFilesStyle);
 
     return SingleChildScrollView(
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left Column
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: filePadding,
-                  child: txtFiles,
-                ),
-                ResourcesContainer(
-            viewModel: uploadViewModel,
-                  items: uploadViewModel.getFilePaths(),
-                  icon: const Icon(Icons.file_open, color: Colors.white),
-                ),
-                if (uploadViewModel.getFilePaths().isEmpty)
-                  const Padding(
-                    padding: emptyPadding,
-                    child: txtNoFiles,
-                  ),
-                const Padding(
-                  padding: filePadding,
-                  child: txtUrl,
-                ),
-                ResourcesContainer(
-            viewModel: uploadViewModel,
-                  items: uploadViewModel.getUrls(),
-                  icon: const Icon(Icons.link, color: Colors.white),
-                ),
-                if (uploadViewModel.getUrls().isEmpty)
-                  const Padding(
-                    padding: emptyPadding,
-                    child: txtNoUrl,
-                  ),
-                const Padding(
-                  padding: filePadding,
-                  child: txtText,
-                ),
-                ResourcesContainer(
-            viewModel: uploadViewModel,
-                  items: uploadViewModel.getTexts(),
-                  icon: const Icon(Icons.description, color: Colors.white),
-                ),
-                if (uploadViewModel.getTexts().isEmpty)
-                  const Padding(
-                    padding: emptyPadding,
-                    child: txtNoText,
-                  ),
-                const SizedBox(height: 16.0),
-              ],
-            ),
+          const Padding(
+            padding: filePadding,
+            child: txtFiles,
           ),
-          // Right Column
-          Container(
-            margin: const EdgeInsets.only(right: 6.0),
-            child: const Text(
-              '\n1. Select source type to upload by\n\t\t clicking the + icon.\n\n2. Upload a PDF file, paste a URL,\n\t\tor provide a text.\n\n3. Select New Lesson to generate\n\t\ta lesson, or New Quiz to generate\n\t\tan interactive quiz!',
-              style: TextStyle(fontSize: 16.0, color: Colors.black, fontWeight: FontWeight.w500),
-            ),
+          ResourcesContainer(
+      viewModel: uploadViewModel,
+            items: uploadViewModel.getFilePaths(),
+            icon: const Icon(Icons.file_open, color: Colors.white),
           ),
+          if (uploadViewModel.getFilePaths().isEmpty)
+            const Padding(
+              padding: emptyPadding,
+              child: txtNoFiles,
+            ),
+          const Padding(
+            padding: filePadding,
+            child: txtUrl,
+          ),
+          ResourcesContainer(
+      viewModel: uploadViewModel,
+            items: uploadViewModel.getUrls(),
+            icon: const Icon(Icons.link, color: Colors.white),
+          ),
+          if (uploadViewModel.getUrls().isEmpty)
+            const Padding(
+              padding: emptyPadding,
+              child: txtNoUrl,
+            ),
+          const Padding(
+            padding: filePadding,
+            child: txtText,
+          ),
+          ResourcesContainer(
+      viewModel: uploadViewModel,
+            items: uploadViewModel.getTexts(),
+            icon: const Icon(Icons.description, color: Colors.white),
+          ),
+          if (uploadViewModel.getTexts().isEmpty)
+            const Padding(
+              padding: emptyPadding,
+              child: txtNoText,
+            ),
+          const SizedBox(height: 16.0),
         ],
       ),
     );

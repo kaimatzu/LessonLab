@@ -14,15 +14,15 @@ class LessonLabAppBar extends StatelessWidget implements PreferredSizeWidget {
           const SizedBox(width: 15),
           SvgPicture.asset(
             'assets/svg/lessonlab_logo_final.svg',
-            width: 60.0,
-            height: 60.0,
+            width: 40.0,
+            height: 40.0,
           ),
           const SizedBox(width: 15),
           const Text(
             'LessonLab',
             style: TextStyle(
               color: Color.fromRGBO(49, 51, 56, 1),
-              fontSize: 36.0,
+              fontSize: 32.0,
               fontWeight: FontWeight.w600,
               fontFamily: 'Calibri',
             ),
@@ -34,9 +34,16 @@ class LessonLabAppBar extends StatelessWidget implements PreferredSizeWidget {
       flexibleSpace: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color.fromRGBO(231, 223, 193, 1), Color.fromRGBO(241, 196, 27, 1)],
-            begin: Alignment.bottomLeft,
-            end: Alignment.topRight,
+            colors: [
+              Color.fromRGBO(255, 206, 45, 0.6),
+              Color.fromRGBO(250, 250, 250, 1),
+              Color.fromRGBO(250, 250, 250, 1),
+              Color.fromRGBO(250, 250, 250, 1),
+              Color.fromRGBO(250, 250, 250, 1),
+              Color.fromRGBO(250, 250, 250, 1),
+              Color.fromRGBO(250, 250, 250, 1),],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
           ),
         ),
       ),
@@ -58,5 +65,5 @@ class LessonLabAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(80.0);
+  Size get preferredSize => const Size.fromHeight(70.0);
 }

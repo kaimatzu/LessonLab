@@ -6,11 +6,23 @@ class PrimaryButton extends StatelessWidget {
     required this.handlePress,
     required this.text,
     required this.enabled,
+    this.width,
+    this.height,
+    this.topLeftRadius = 12.0,
+    this.topRightRadius = 12.0,
+    this.bottomLeftRadius = 12.0,
+    this.bottomRightRadius = 12.0,
   });
 
   final void Function() handlePress;
   final String text;
   final bool enabled;
+  final double? width;
+  final double? height;
+  final double topLeftRadius;
+  final double topRightRadius;
+  final double bottomLeftRadius;
+  final double bottomRightRadius;
 
   static const yellow = Color.fromARGB(255, 241, 196, 27);
   static const disabled =
@@ -19,6 +31,8 @@ class PrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: width,
+      height: height,
       decoration: BoxDecoration(
         boxShadow: enabled
             ? [
@@ -45,12 +59,17 @@ class PrimaryButton extends StatelessWidget {
           shadowColor: MaterialStateProperty.all<Color>(yellow.withAlpha(0)),
           shape: MaterialStateProperty.all<OutlinedBorder>(
             RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(topLeftRadius),
+                topRight: Radius.circular(topRightRadius),
+                bottomLeft: Radius.circular(bottomLeftRadius),
+                bottomRight: Radius.circular(bottomRightRadius),
+              ),
             ),
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 16.0),
+          padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 16.0),
           child: Text(text),
         ),
       ),
