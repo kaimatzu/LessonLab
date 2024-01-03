@@ -19,7 +19,7 @@ pub mod lesson_result_data_handlers {
     
     use crate::app::global_objects::lessons_data_object::{Lesson, LessonsDataObject};
     
-    impl LessonsDataObject{
+    impl LessonsDataObject {
         fn create_lesson(&mut self, new_lesson: Lesson) {
             // Check for duplicate target_path before adding
             if !self.lessons.iter().any(|lesson| lesson.target_path == new_lesson.target_path) {
@@ -99,8 +99,7 @@ pub mod lesson_result_data_handlers {
                             string_payload.push_str("\n"); 
                             sources.source_urls.push(url.clone())
                         }
-                        Err(_) => {
-                        }
+                        Err(_) => {}
                     }
                 }
     
@@ -125,6 +124,7 @@ pub mod lesson_result_data_handlers {
                 }
     
                 let lesson = Lesson{
+                    id: 1, // TODO: loop through all existing items and determine what ID to use here
                     sources,
                     target_path: target_folder_path.to_owned(),
                     title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone()
@@ -138,60 +138,63 @@ pub mod lesson_result_data_handlers {
                 }
 
                 if release {
-                    // match lesson_generator::generate(string_payload) {
-                    //     Ok(md_content) => {
-                    //         // write to file here
-                    //         if let Err(error) = write_lesson_to_target_path(&md_content, &target_folder_path) {
-                    //             crate::debug_print!("Failed to write to target file: {}", error);
-                    //         }
+                    match lesson_generator::generate(string_payload) {
+                        Ok(md_content) => {
+                            // write to file here
+                            if let Err(error) = write_lesson_to_target_path(&md_content, &target_folder_path) {
+                                crate::debug_print!("Failed to write to target file: {}", error);
+                            }
 
-                    //         response_message = ReadResponse {
-                    //             status_code: StatusCode::OK.as_u16() as u32,
-                    //             title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                    //             md_content,
-                    //             error_string: String::from("No error")
-                    //         };
-                    //     }
-                    //     Err(error) => {
-                    //         response_message = ReadResponse {
-                    //             status_code: StatusCode::NOT_FOUND.as_u16() as u32,
-                    //             title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                    //             md_content: String::from("No content"),
-                    //             error_string: error.to_string()
-                    //         };
-                    //     }
-                    // }
-                    response_message = ReadResponse {
-                        status_code: StatusCode::OK.as_u16() as u32,
-                        title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                        md_content: "MOVED LESSON GENERATION".to_string(),
-                        error_string: String::from("No error")
-                    };
-                }
-                else {
+                            response_message = ReadResponse {
+                                status_code: StatusCode::OK.as_u16() as u32,
+                                title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+                                md_content,
+                                error_string: String::from("No error")
+                            };
+                        }
+                        Err(error) => {
+                            response_message = ReadResponse {
+                                status_code: StatusCode::NOT_FOUND.as_u16() as u32,
+                                title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+                                md_content: String::from("No content"),
+                                error_string: error.to_string()
+                            };
+                        }
+                    }
+                    // response_message = ReadResponse {
+                    //     status_code: StatusCode::OK.as_u16() as u32,
+                    //     title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+                    //     md_content: "MOVED LESSON GENERATION".to_string(),
+                    //     error_string: String::from("No error")
+                    // };
+                } else {
                     // write to file here
                     if let Err(error) = write_lesson_to_target_path("Debug Mode: Dummy Content", &target_folder_path) {
                         crate::debug_print!("Failed to write to target file: {}", error);
+                        response_message = ReadResponse {
+                            status_code: StatusCode::INTERNAL_SERVER_ERROR.as_u16() as u32,
+                            title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+                            md_content: "Debug Mode: Dummy Content\n\n500: INTERNAL_SERVER_ERROR".to_string(),
+                            error_string: String::from("Failed to write to target file")
+                        };
+                    } else {
+                        response_message = ReadResponse {
+                            status_code: StatusCode::OK.as_u16() as u32,
+                            title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+                            md_content: "Debug Mode: Dummy Content".to_string(),
+                            error_string: String::from("No error")
+                        };
                     }
                     
-                    response_message = ReadResponse {
-                        status_code: StatusCode::OK.as_u16() as u32,
-                        title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                        md_content: "Debug Mode: Dummy Content".to_string(),
-                        error_string: String::from("No error")
-                    };
                 }
                 
-                
-    
                 if response_message.status_code == StatusCode::OK.as_u16() as u32 {
                     RustResponse {
                         successful: true,
                         message: Some(response_message.encode_to_vec()),
                         blob: None,
                     }
-                }
-                else {
+                } else {
                     RustResponse {
                         successful: false,
                         message: Some(response_message.encode_to_vec()),
@@ -290,6 +293,8 @@ pub mod lesson_result_data_handlers {
     }
 
     pub fn write_lesson_to_config_file(current_lesson: &Lesson, file_path: &str) -> std::io::Result<()> {
+        // Remember 'Root' class
+
         // crate::debug_print!("Deserializing...");
     
         // Load all lessons in the config file and Deserialize the JSON string

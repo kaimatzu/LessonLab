@@ -34,9 +34,12 @@ class UploadSourcesView extends StatelessWidget {
       text: 'New quiz',
       enabled: uploadViewModel.hasFiles,
     );
+    var paddingBetweenButtons = const SizedBox(width: 30.0);
 
     return Scaffold(
       appBar: const LessonLabAppBar(),
+<<<<<<< HEAD
+<<<<<<< HEAD
       body: Row(
         children: [
           // Left side
@@ -106,6 +109,36 @@ class UploadSourcesView extends StatelessWidget {
                       '\n1) Select source type to upload by\n\t\t clicking the + icon.\n\n2) Upload a PDF file, paste a URL,\n\t\tor provide a text.\n\n3) Select New Lesson to generate\n\t\ta lesson, or New Quiz to generate\n\t\tan interactive quiz!',
                       style: TextStyle(fontSize: 16.0, color: Color.fromRGBO(49, 51, 56, 1), fontWeight: FontWeight.w500),
                     ),
+=======
+=======
+>>>>>>> 8754148bd8ed411e1756cfda6e65bb9de535fcec
+      // ignore: prefer_const_constructors
+      body: Padding(
+          padding: const EdgeInsets.fromLTRB(100.0, 30.0, 140.0, 60.0),
+          // ignore: prefer_const_constructors
+          child: UploadScreen()),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 180.0, 60.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            cancel,
+            paddingBetweenButtons,
+            newLesson,
+            paddingBetweenButtons,
+            newQuiz,
+            paddingBetweenButtons,
+            Container(
+              decoration: BoxDecoration(
+                // borderRadius: BorderRadius.circular(50),
+                boxShadow: [
+                  BoxShadow(
+                    color:
+                        const Color.fromRGBO(241, 196, 27, 1).withOpacity(.3),
+                    spreadRadius: 3,
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+>>>>>>> 8754148 (Impl delete in config.json)
                   ),
                   const Spacer(),
                   Padding(
