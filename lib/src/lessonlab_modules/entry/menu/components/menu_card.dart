@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
-import 'dart:developer' as developer;
 
 import 'package:provider/provider.dart';
 
 class MenuCard extends StatelessWidget {
   final String title;
   final String content;
-  final int id;
 
-  const MenuCard({
-    super.key,
-    required this.title,
-    required this.content,
-    required this.id,
-  });
+  const MenuCard({super.key, required this.title, required this.content});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +51,7 @@ class MenuCard extends StatelessWidget {
       top: 20,
       right: 20,
       child: GestureDetector(
-        onTap: () => viewModel.deleteId(id),
+        onTap: () => viewModel.delete(title),
         child: const Icon(
           Icons.delete, // 'delete' icon
           // Icons.more_vert,     // 'Kebab' icon

@@ -4,7 +4,7 @@ use pyo3::{
     exceptions,
 };
 
-// TODO: change this accordingly
+//TODO:change this accordingly
 use crate::app::utils::scrapers;
 
 pub fn generate(lesson_source: String) -> PyResult<String> {

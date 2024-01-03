@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Quiz{
-    pub id: u32,
     pub title: String,
     pub target_path: String,
     pub questions: Vec<Question>

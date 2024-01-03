@@ -30,8 +30,6 @@ pub async fn handle_request(request_unique: RustRequestUnique,
     let rust_resource = rust_request.resource;
     let rust_response = match rust_resource {
         messages::entry::menu::menu::ID => {
-            // !!! Warning running `rinf message` can delete the const ID in messages
-            // pub const ID: i32 = 0;
             handle_menu_content_loading(rust_request, menu_data_object, save_directory_model).await
         }
         messages::entry::upload::uploaded_content::ID => { // Handle Uploaded File content
