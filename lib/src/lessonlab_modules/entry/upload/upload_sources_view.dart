@@ -46,13 +46,14 @@ class UploadSourcesView extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15.0),
-                  color: const Color.fromARGB(255, 240, 240, 237),
+                  color: const Color.fromARGB(255, 240, 240, 240),
                 ),
                 padding: const EdgeInsets.all(25.0),
                 height: 1000,
                 width: 800,
                 child: Stack(
                   children: [
+                    // Ignore the warning here and DO NOT use const
                     Padding(
                       padding: const EdgeInsets.only(bottom: 80.0),
                       child: SingleChildScrollView(
