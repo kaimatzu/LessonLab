@@ -3,6 +3,7 @@ import 'package:lessonlab/src/global_models/lesson_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_connection_orchestrator.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view.dart';
+import 'dart:developer' as developer;
 
 class MenuViewModel with ChangeNotifier {
   late final MenuModel _menuModel;
@@ -31,7 +32,11 @@ class MenuViewModel with ChangeNotifier {
     );
   }
 
+<<<<<<< HEAD
   Future<void> loadViewContent() async {
+=======
+  void loadViewContent() async {
+>>>>>>> 8754148 (Impl delete in config.json)
     final result = await _menuConnectionOrchestrator.getMenuModel();
 
     // _menuModel = MenuModel();
@@ -46,11 +51,19 @@ class MenuViewModel with ChangeNotifier {
     _menuModel.lessons.then((List<LessonModel> lessons) {
       for (LessonModel lesson in lessons) {
         lesson.title.then((String elementTitle) {
-          // TODO: add ID for each lesson
-          // id to check for equality here (currently title)
-          //               |
-          //               V
           if (elementTitle == title) {
+            _deleteLesson(lesson);
+          }
+        });
+      }
+    });
+  }
+
+  void deleteId(int id) {
+    _menuModel.lessons.then((List<LessonModel> lessons) {
+      for (LessonModel lesson in lessons) {
+        lesson.id.then((int elementId) {
+          if (elementId == id) {
             _deleteLesson(lesson);
           }
         });
@@ -63,7 +76,7 @@ class MenuViewModel with ChangeNotifier {
       lessons.remove(lesson);
     });
 
-    // TODO: save the current state of the lessons list in the config.json
+    lesson.id.then((id) => _menuConnectionOrchestrator.deleteLesson(id));
 
     notifyListeners();
   }
