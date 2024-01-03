@@ -36,11 +36,14 @@ class UploadSourcesView extends StatelessWidget {
       text: 'New quiz',
       enabled: uploadViewModel.hasFiles,
     );
+    var paddingBetweenButtons = const SizedBox(width: 30.0);
 
     return Scaffold(
       appBar: const LessonLabAppBar(),
-      body: const Padding(
-          padding: EdgeInsets.fromLTRB(100.0, 30.0, 140.0, 60.0),
+      // ignore: prefer_const_constructors
+      body: Padding(
+          padding: const EdgeInsets.fromLTRB(100.0, 30.0, 140.0, 60.0),
+          // ignore: prefer_const_constructors
           child: UploadScreen()),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(0.0, 0.0, 180.0, 60.0),
@@ -48,33 +51,11 @@ class UploadSourcesView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             cancel,
-            const SizedBox(width: 30.0),
-            PrimaryButton(
-              handlePress: () {
-                if (uploadViewModel.hasFiles) {
-                  // uploadViewModel.sendData();
-                  // uploadViewModel.getData();
-                  // Navigator.restorablePushNamed(
-                  //   context,
-                  //   LessonSpecificationsView.routeName,
-                  // );
-                  uploadViewModel.newLesson(context);
-                } else {
-                  null;
-                }
-              },
-              text: 'New Lesson',
-              enabled: uploadViewModel.hasFiles,
-            ),
-            const SizedBox(width: 30.0),
-            PrimaryButton(
-              handlePress: () {
-                uploadViewModel.newQuiz(context);
-              },
-              text: 'New Quiz',
-              enabled: uploadViewModel.hasFiles,
-            ),
-            const SizedBox(width: 30.0),
+            paddingBetweenButtons,
+            newLesson,
+            paddingBetweenButtons,
+            newQuiz,
+            paddingBetweenButtons,
             Container(
               decoration: BoxDecoration(
                 // borderRadius: BorderRadius.circular(50),

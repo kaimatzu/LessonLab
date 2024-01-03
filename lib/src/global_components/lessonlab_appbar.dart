@@ -34,13 +34,16 @@ class LessonLabAppBar extends StatelessWidget implements PreferredSizeWidget {
       flexibleSpace: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color.fromRGBO(231, 223, 193, 1), Color.fromRGBO(241, 196, 27, 1)],
+            colors: [
+              Color.fromRGBO(231, 223, 193, 1),
+              Color.fromRGBO(241, 196, 27, 1)
+            ],
             begin: Alignment.bottomLeft,
             end: Alignment.topRight,
           ),
         ),
       ),
-      backgroundColor: Colors.white,     
+      backgroundColor: Colors.white,
       elevation: 0,
       shape: const Border(),
       actions: [
@@ -51,6 +54,7 @@ class LessonLabAppBar extends StatelessWidget implements PreferredSizeWidget {
             // to the app after it has been killed while running in the
             // background, the navigation stack is restored.
             Navigator.restorablePushNamed(context, SettingsView.routeName);
+            // TODO: add right padding after icon
           },
         ),
       ],

@@ -8,6 +8,8 @@ import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart'
 
 import 'package:provider/provider.dart';
 
+import 'dart:developer' as developer;
+
 class MenuView extends StatelessWidget {
   MenuView({
     super.key,
@@ -20,6 +22,7 @@ class MenuView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _menuViewModel = context.watch<MenuViewModel>();
+
     double cardWidth = MediaQuery.of(context).size.width * 0.25;
     double cardHeight = MediaQuery.of(context).size.height * 0.25;
 
@@ -46,6 +49,8 @@ class MenuView extends StatelessWidget {
           final List<LessonModel> lessons = contents[0] as List<LessonModel>;
           final List<QuizModel> quizzes = contents[1] as List<QuizModel>;
 
+          // developer.log(lessons[0].id.toString(), name: 'future builder');
+
           return GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
@@ -57,6 +62,7 @@ class MenuView extends StatelessWidget {
             itemBuilder: (BuildContext context, int index) {
               if (index < lessons.length) {
                 return FutureBuilder<String>(
+                  // * Future builder for title
                   future: lessons[index].title,
                   builder: (context, titleSnapshot) {
                     if (titleSnapshot.connectionState ==
@@ -66,6 +72,7 @@ class MenuView extends StatelessWidget {
                       return const Text('Error loading lesson title');
                     } else {
                       return FutureBuilder<String>(
+                        // * Future builder for content
                         future: lessons[index].content,
                         builder: (context, contentSnapshot) {
                           if (contentSnapshot.connectionState ==
@@ -74,9 +81,24 @@ class MenuView extends StatelessWidget {
                           } else if (contentSnapshot.hasError) {
                             return const Text('Error loading lesson content');
                           } else {
-                            return MenuCard(
-                              title: titleSnapshot.data!,
-                              content: contentSnapshot.data!,
+                            return FutureBuilder<int>(
+                              // * Future builder for id
+                              future: lessons[index].id,
+                              builder: (context, idSnapshot) {
+                                if (contentSnapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const CircularProgressIndicator();
+                                } else if (contentSnapshot.hasError) {
+                                  return const Text(
+                                      'Error loading lesson content');
+                                } else {
+                                  return MenuCard(
+                                    title: titleSnapshot.data!,
+                                    content: contentSnapshot.data!,
+                                    id: idSnapshot.data!,
+                                  );
+                                }
+                              },
                             );
                           }
                         },

@@ -159,6 +159,7 @@ class _OverlayUploadTextState extends State<OverlayUploadText> {
     final String content = contentController.text;
 
     uploadViewModel.getTexts().add(TextFile(title: title, content: content));
+    uploadViewModel.hasFiles = true;
 
     overlayProvider.changeContent(
         context,

@@ -21,7 +21,6 @@ class UploadScreen extends StatelessWidget {
     const emptyPadding = EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0);
     const filePadding = EdgeInsets.fromLTRB(14.0, 0.0, 14.0, 4.0);
 
-
     const txtFiles = Text('Files', style: fileNameTextStyle);
     const txtNoFiles = Text('No files available', style: noFilesStyle);
     const txtUrl = Text('URL', style: fileNameTextStyle);
@@ -43,7 +42,7 @@ class UploadScreen extends StatelessWidget {
                   child: txtFiles,
                 ),
                 ResourcesContainer(
-            viewModel: uploadViewModel,
+                  viewModel: uploadViewModel,
                   items: uploadViewModel.getFilePaths(),
                   icon: const Icon(Icons.file_open, color: Colors.white),
                 ),
@@ -57,7 +56,7 @@ class UploadScreen extends StatelessWidget {
                   child: txtUrl,
                 ),
                 ResourcesContainer(
-            viewModel: uploadViewModel,
+                  viewModel: uploadViewModel,
                   items: uploadViewModel.getUrls(),
                   icon: const Icon(Icons.link, color: Colors.white),
                 ),
@@ -71,7 +70,7 @@ class UploadScreen extends StatelessWidget {
                   child: txtText,
                 ),
                 ResourcesContainer(
-            viewModel: uploadViewModel,
+                  viewModel: uploadViewModel,
                   items: uploadViewModel.getTexts(),
                   icon: const Icon(Icons.description, color: Colors.white),
                 ),
@@ -89,7 +88,10 @@ class UploadScreen extends StatelessWidget {
             margin: const EdgeInsets.only(right: 6.0),
             child: const Text(
               '\n1. Select source type to upload by\n\t\t clicking the + icon.\n\n2. Upload a PDF file, paste a URL,\n\t\tor provide a text.\n\n3. Select New Lesson to generate\n\t\ta lesson, or New Quiz to generate\n\t\tan interactive quiz!',
-              style: TextStyle(fontSize: 16.0, color: Colors.black, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500),
             ),
           ),
         ],

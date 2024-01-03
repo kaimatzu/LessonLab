@@ -261,7 +261,10 @@ class _OverlayUploadFile extends State<OverlayUploadFile> {
           break;
         }
       }
-      if (!contains) uploadViewModel.getFilePaths().add(overlayFile);
+      if (!contains) {
+        uploadViewModel.getFilePaths().add(overlayFile);
+        uploadViewModel.hasFiles = true;
+      }
     }
 
     // uploadViewModel.files.addAll(overlayProvider.fileCache);
