@@ -39,6 +39,7 @@ class UploadSourcesView extends StatelessWidget {
     return Scaffold(
       appBar: const LessonLabAppBar(),
 <<<<<<< HEAD
+<<<<<<< HEAD
       body: Row(
         children: [
           // Left side
@@ -109,6 +110,8 @@ class UploadSourcesView extends StatelessWidget {
                       style: TextStyle(fontSize: 16.0, color: Color.fromRGBO(49, 51, 56, 1), fontWeight: FontWeight.w500),
                     ),
 =======
+=======
+>>>>>>> 8754148bd8ed411e1756cfda6e65bb9de535fcec
       // ignore: prefer_const_constructors
       body: Padding(
           padding: const EdgeInsets.fromLTRB(100.0, 30.0, 140.0, 60.0),

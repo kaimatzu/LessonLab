@@ -33,10 +33,14 @@ class MenuViewModel with ChangeNotifier {
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   Future<void> loadViewContent() async {
 =======
   void loadViewContent() async {
 >>>>>>> 8754148 (Impl delete in config.json)
+=======
+  void loadViewContent() async {
+>>>>>>> 8754148bd8ed411e1756cfda6e65bb9de535fcec
     final result = await _menuConnectionOrchestrator.getMenuModel();
 
     // _menuModel = MenuModel();
