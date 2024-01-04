@@ -54,7 +54,6 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
         'easy',
         'medium',
         'hard',
-        'asian',
       ]),
       NumberField(label: 'Number of Items', hintLabel: 'Enter number of items'),
       InputField(label: 'Timeframe', hintLabel: 'Enter timeframe'),
