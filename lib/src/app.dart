@@ -47,6 +47,8 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             // useMaterial3: true,
             colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.amber),
+            //BG color
+            scaffoldBackgroundColor: Colors.white,
             // * colors from figma
             // primary color: (241, 196, 149)
             // secondary color: (255, 242, 148)
