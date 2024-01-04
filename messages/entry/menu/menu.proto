@@ -1,17 +1,31 @@
 syntax = "proto3";
 package menu;
 
+message TextFile {
+    string title = 1;
+    string content = 2;
+}
+
 // MODELS
 message LessonModel {
-	string title = 1;
-	string content = 2;
-	string location = 3;
+    uint32 id = 1;
+	string title = 2;
+	string content = 3;
+	string location = 4;
+	Sources source = 5;
+}
+
+message Sources {
+    repeated string files = 1;
+    repeated string urls = 2;
+    repeated TextFile texts = 3;
 }
 
 message QuizModel {
-	string title = 1;
-	repeated QuestionModel questions = 2;
-	string location = 3;
+    uint32 id = 1;
+	string title = 2;
+	repeated QuestionModel questions = 3;
+	string location = 4;
 }
 
 message QuestionModel {
@@ -29,8 +43,6 @@ message MenuModel {
 	repeated QuizModel quizzes = 2;
 }
 
-
-
 // READ
 message ReadRequest {
 	bool req = 1;
@@ -47,4 +59,25 @@ message CreateRequest {
 
 message CreateResponse {
 	uint32 status_code = 1;
+}
+
+// UPDATE
+message UpdateRequest {
+    bool is_lesson = 1;
+    LessonModel lesson = 2;
+    QuizModel quiz = 3;
+} 
+
+message UpdateResponse {
+    uint32 status_code = 1;
+}
+
+// DELETE
+message DeleteRequest {
+    uint32 id = 1;
+    bool is_lesson = 2;
+}
+
+message DeleteResponse {
+    uint32 status_code = 1;
 }
