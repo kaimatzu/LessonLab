@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_components/secondary_button.dart';
-import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications/quiz_specifications_view_model.dart';
 // import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +15,7 @@ class QuizSpecificationsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lessonSpecificationsViewModel =
+    final quizSpecificationsViewModel =
         context.watch<QuizSpecificationsViewModel>();
 
     return Scaffold(
@@ -25,7 +25,7 @@ class QuizSpecificationsView extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: lessonSpecificationsViewModel.formFields
+            children: quizSpecificationsViewModel.formFields
                 .map<Widget?>((formField) {
                   if (formField.inputField != null) {
                     return formField.inputField;
@@ -33,6 +33,8 @@ class QuizSpecificationsView extends StatelessWidget {
                     return formField.textArea;
                   } else if (formField.dropdown != null) {
                     return formField.dropdown;
+                  } else if (formField.numberField != null) {
+                    return formField.numberField;
                   } else {
                     return null;
                   }
@@ -49,7 +51,7 @@ class QuizSpecificationsView extends StatelessWidget {
           children: [
             SecondaryButton(
               handlePress: () {
-                lessonSpecificationsViewModel.cancelQuiz(context);
+                quizSpecificationsViewModel.cancelQuiz(context);
               },
               text: 'Cancel',
             ),
@@ -64,10 +66,10 @@ class QuizSpecificationsView extends StatelessWidget {
             const SizedBox(width: 30.0),
             PrimaryButton(
               handlePress: () {
-                lessonSpecificationsViewModel.collectFormTextValues();
+                //quizSpecificationsViewModel.collectFormTextValues();
+                quizSpecificationsViewModel.generateQuiz(context);
                 // lessonSpecificationsViewModel.sendData();
                 // lessonSpecificationsViewModel.getData();
-                lessonSpecificationsViewModel.generateQuiz(context);
               },
               text: 'Generate',
               enabled: true,

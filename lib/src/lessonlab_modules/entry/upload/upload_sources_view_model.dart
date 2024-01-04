@@ -6,7 +6,7 @@ import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_connection_orchestrator.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications/quiz_specifications_view.dart';
 // import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view.dart';
 import 'package:cross_file/cross_file.dart';
 // import 'dart:developer' as developer;

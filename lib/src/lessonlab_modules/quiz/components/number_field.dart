@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'dart:developer' as developer;
 
 import 'package:flutter/services.dart';
 
-import 'package:flutter/services.dart';
-
-class InputField extends StatefulWidget {
-  InputField({
+class NumberField extends StatefulWidget {
+  NumberField({
     Key? key,
     required this.label,
     required this.hintLabel,
@@ -18,10 +17,10 @@ class InputField extends StatefulWidget {
 
   @override
   // ignore: library_private_types_in_public_api
-  _InputFieldState createState() => _InputFieldState();
+  _NumberFieldState createState() => _NumberFieldState();
 }
 
-class _InputFieldState extends State<InputField> {
+class _NumberFieldState extends State<NumberField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -41,6 +40,10 @@ class _InputFieldState extends State<InputField> {
           TextField(
             controller: widget.controller,
             style: const TextStyle(color: Colors.white),
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+            ],
             decoration: InputDecoration(
               filled: true,
               fillColor: const Color.fromARGB(255, 49, 51, 56),
