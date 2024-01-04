@@ -188,7 +188,7 @@ class _QuizPageViewState extends State<QuizPageView> {
                                 handlePress: () {
                                   _checkAllAnswers();
                                   Navigator.restorablePushNamed(
-                                    context, '/quiz_result');
+                                      context, '/quiz_result');
                                 },
                                 text: 'Finish Attempt',
                                 enabled: true),
