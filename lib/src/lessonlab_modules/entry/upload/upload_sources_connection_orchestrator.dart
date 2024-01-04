@@ -1,4 +1,3 @@
-import 'package:lessonlab/messages/entry/upload/uploaded_content.pb.dart';
 import 'dart:developer' as developer;
 
 import 'package:lessonlab/messages/entry/upload/uploaded_content.pb.dart'
@@ -13,7 +12,8 @@ class UploadSourcesConnectionOrchestrator {
       filePaths: uploadModel.pdfFilePaths.map((file) => file.path).toList(),
       urls: uploadModel.urls,
       texts: uploadModel.texts
-          .map((text) => TextFile(title: text.title, content: text.content))
+          .map((text) =>
+              RinfInterface.TextFile(title: text.title, content: text.content))
           .toList(),
     );
     final rustRequest = RustRequest(

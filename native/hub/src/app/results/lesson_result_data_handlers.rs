@@ -1,7 +1,7 @@
 pub mod lesson_result_data_handlers {
     use http::StatusCode;
     use crate::bridge::send_rust_signal;
-    use crate::app::entry::menu::menu_data_object::Root;
+    use crate::app::entry::menu::menu_data_object::{Root, MenuDataObject};
     use crate::app::settings::settings_data_object::SettingsDataObject;
     use crate::bridge::{RustOperation, RustRequest, RustResponse, RustSignal};
     use crate::messages::entry::upload::uploaded_content;
@@ -44,7 +44,8 @@ pub mod lesson_result_data_handlers {
     pub async fn handle_lesson_generation(rust_request: RustRequest,
         upload_data_object: &mut tokio::sync::MutexGuard<'_, UploadSourcesDataObject>,
         lesson_specifications_data_object: &mut tokio::sync::MutexGuard<'_, LessonSpecificationsDataObject>,
-        settings_save_directory_data_object: &mut tokio::sync::MutexGuard<'_, SettingsDataObject>) -> RustResponse {
+        settings_save_directory_data_object: &mut tokio::sync::MutexGuard<'_, SettingsDataObject>,
+        menu_data_object: &mut tokio::sync::MutexGuard<'_, MenuDataObject>) -> RustResponse {
         use crate::messages::results::view_lesson_result::load_lesson::{ReadRequest, ReadResponse};
         
         // TODO: MAKE THIS GLOBAL
@@ -124,7 +125,17 @@ pub mod lesson_result_data_handlers {
                     crate::debug_print!("Failed to create folder: {}", error);
                 }
     
+                // TODO: loop through all lessons list and find ID to add
+                let lessons = menu_data_object.lessons_data_object.lessons.clone();
+
+                let mut i: u32 = 0;
+                for lesson  in lessons {
+                    i = lesson.id; 
+                    i += 1;
+                }
+                
                 let lesson = Lesson{
+                    id: i,
                     sources,
                     target_path: target_folder_path.to_owned(),
                     title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone()
@@ -138,35 +149,35 @@ pub mod lesson_result_data_handlers {
                 }
 
                 if release {
-                    // match lesson_generator::generate(string_payload) {
-                    //     Ok(md_content) => {
-                    //         // write to file here
-                    //         if let Err(error) = write_lesson_to_target_path(&md_content, &target_folder_path) {
-                    //             crate::debug_print!("Failed to write to target file: {}", error);
-                    //         }
+                    match lesson_generator::generate(string_payload) {
+                        Ok(md_content) => {
+                            // write to file here
+                            if let Err(error) = write_lesson_to_target_path(&md_content, &target_folder_path) {
+                                crate::debug_print!("Failed to write to target file: {}", error);
+                            }
 
-                    //         response_message = ReadResponse {
-                    //             status_code: StatusCode::OK.as_u16() as u32,
-                    //             title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                    //             md_content,
-                    //             error_string: String::from("No error")
-                    //         };
-                    //     }
-                    //     Err(error) => {
-                    //         response_message = ReadResponse {
-                    //             status_code: StatusCode::NOT_FOUND.as_u16() as u32,
-                    //             title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                    //             md_content: String::from("No content"),
-                    //             error_string: error.to_string()
-                    //         };
-                    //     }
-                    // }
-                    response_message = ReadResponse {
-                        status_code: StatusCode::OK.as_u16() as u32,
-                        title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                        md_content: "MOVED LESSON GENERATION".to_string(),
-                        error_string: String::from("No error")
-                    };
+                            response_message = ReadResponse {
+                                status_code: StatusCode::OK.as_u16() as u32,
+                                title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+                                md_content,
+                                error_string: String::from("No error")
+                            };
+                        }
+                        Err(error) => {
+                            response_message = ReadResponse {
+                                status_code: StatusCode::NOT_FOUND.as_u16() as u32,
+                                title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+                                md_content: String::from("No content"),
+                                error_string: error.to_string()
+                            };
+                        }
+                    }
+                    // response_message = ReadResponse {
+                    //     status_code: StatusCode::OK.as_u16() as u32,
+                    //     title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+                    //     md_content: "MOVED LESSON GENERATION".to_string(),
+                    //     error_string: String::from("No error")
+                    // };
                 }
                 else {
                     // write to file here

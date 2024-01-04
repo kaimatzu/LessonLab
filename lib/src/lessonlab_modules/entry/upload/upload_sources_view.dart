@@ -34,6 +34,7 @@ class UploadSourcesView extends StatelessWidget {
       text: 'New quiz',
       enabled: uploadViewModel.hasFiles,
     );
+    var paddingBetweenButtons = const SizedBox(width: 30.0);
 
     return Scaffold(
       appBar: const LessonLabAppBar(),
@@ -113,33 +114,11 @@ class UploadSourcesView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           cancel,
-                          const SizedBox(width: 15.0),
-                          PrimaryButton(
-                              handlePress: () {
-                                if (uploadViewModel.hasFiles) {
-                                  // uploadViewModel.sendData();
-                                  // uploadViewModel.getData();
-                                  // Navigator.restorablePushNamed(
-                                  //   context,
-                                  //   LessonSpecificationsView.routeName,
-                                  // );
-                                  uploadViewModel.newLesson(context);
-                                } else {
-                                  null;
-                                }
-                              },
-                              text: 'New Lesson',
-                              enabled: uploadViewModel.hasFiles,
-                              width: 120.0),
-                          const SizedBox(width: 15.0),
-                          PrimaryButton(
-                              handlePress: () {
-                                uploadViewModel.newQuiz(context);
-                              },
-                              text: 'New Quiz',
-                              enabled: uploadViewModel.hasFiles,
-                              width: 120.0),
-                          const SizedBox(width: 15.0),
+                          paddingBetweenButtons,
+                          newLesson,
+                          paddingBetweenButtons,
+                          newQuiz,
+                          paddingBetweenButtons,
                         ],
                       ),
                     ),

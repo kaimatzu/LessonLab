@@ -57,6 +57,7 @@ class MenuView extends StatelessWidget {
             itemBuilder: (BuildContext context, int index) {
               if (index < lessons.length) {
                 return FutureBuilder<String>(
+                  // * Future builder for TITLE
                   future: lessons[index].title,
                   builder: (context, titleSnapshot) {
                     if (titleSnapshot.connectionState ==
@@ -66,6 +67,7 @@ class MenuView extends StatelessWidget {
                       return const Text('Error loading lesson title');
                     } else {
                       return FutureBuilder<String>(
+                        // * Future builder for CONTENT
                         future: lessons[index].content,
                         builder: (context, contentSnapshot) {
                           if (contentSnapshot.connectionState ==
@@ -74,9 +76,24 @@ class MenuView extends StatelessWidget {
                           } else if (contentSnapshot.hasError) {
                             return const Text('Error loading lesson content');
                           } else {
-                            return MenuCard(
-                              title: titleSnapshot.data!,
-                              content: contentSnapshot.data!,
+                            return FutureBuilder<int>(
+                              // * Future builder for ID
+                              future: lessons[index].id,
+                              builder: (context, idSnapshot) {
+                                if (contentSnapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const CircularProgressIndicator();
+                                } else if (contentSnapshot.hasError) {
+                                  return const Text(
+                                      'Error loading lesson content');
+                                } else {
+                                  return MenuCard(
+                                    title: titleSnapshot.data!,
+                                    content: contentSnapshot.data!,
+                                    id: idSnapshot.data!,
+                                  );
+                                }
+                              },
                             );
                           }
                         },

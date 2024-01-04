@@ -27,8 +27,14 @@ class SecondaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: handlePress,
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(yellow.withOpacity(0.3)),
+          backgroundColor:
+              MaterialStateProperty.all<Color>(yellow.withOpacity(0.3)),
           shadowColor: MaterialStateProperty.all<Color>(yellow.withAlpha(0)),
+          shape: MaterialStateProperty.all<OutlinedBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 16.0),
