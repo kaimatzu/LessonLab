@@ -80,12 +80,12 @@ class MenuView extends StatelessWidget {
                               // * Future builder for ID
                               future: lessons[index].id,
                               builder: (context, idSnapshot) {
-                                if (contentSnapshot.connectionState ==
+                                if (idSnapshot.connectionState ==
                                     ConnectionState.waiting) {
                                   return const CircularProgressIndicator();
-                                } else if (contentSnapshot.hasError) {
+                                } else if (idSnapshot.hasError) {
                                   return const Text(
-                                      'Error loading lesson content');
+                                      'Error loading lesson id');
                                 } else {
                                   return MenuCard(
                                     title: titleSnapshot.data!,
