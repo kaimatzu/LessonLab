@@ -66,7 +66,7 @@ class QuizSpecificationsView extends StatelessWidget {
             const SizedBox(width: 30.0),
             PrimaryButton(
               handlePress: () {
-                quizSpecificationsViewModel.collectFormTextValues();
+                //quizSpecificationsViewModel.collectFormTextValues();
                 quizSpecificationsViewModel.generateQuiz(context);
                 // lessonSpecificationsViewModel.sendData();
                 // lessonSpecificationsViewModel.getData();

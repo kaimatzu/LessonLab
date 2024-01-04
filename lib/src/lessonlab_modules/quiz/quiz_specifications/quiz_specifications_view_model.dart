@@ -56,7 +56,7 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
         'hard',
         'asian',
       ]),
-      InputField(label: 'Number of Items', hintLabel: 'Enter number of items'),
+      NumberField(label: 'Number of Items', hintLabel: 'Enter number of items'),
       InputField(label: 'Timeframe', hintLabel: 'Enter timeframe'),
     ];
 
@@ -77,60 +77,60 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
   var lessonSpecifications = <String>[];
   var statusCode = 0;
 
-  Future<void> sendData() async {
-    final requestMessage =
-        RinfInterface.CreateRequest(lessonSpecifications: lessonSpecifications);
-    final rustRequest = RustRequest(
-      resource: RinfInterface.ID,
-      operation: RustOperation.Create,
-      message: requestMessage.writeToBuffer(),
-      // blob: NO BLOB
-    );
-    final rustResponse = await requestToRust(rustRequest);
-    final responseMessage = RinfInterface.CreateResponse.fromBuffer(
-      rustResponse.message!,
-    );
-    statusCode = responseMessage.statusCode;
-    developer.log(statusCode.toString(), name: 'response-code');
-  }
+  // Future<void> sendData() async {
+  //   final requestMessage =
+  //       RinfInterface.CreateRequest(lessonSpecifications: lessonSpecifications);
+  //   final rustRequest = RustRequest(
+  //     resource: RinfInterface.ID,
+  //     operation: RustOperation.Create,
+  //     message: requestMessage.writeToBuffer(),
+  //     // blob: NO BLOB
+  //   );
+  //   final rustResponse = await requestToRust(rustRequest);
+  //   final responseMessage = RinfInterface.CreateResponse.fromBuffer(
+  //     rustResponse.message!,
+  //   );
+  //   statusCode = responseMessage.statusCode;
+  //   developer.log(statusCode.toString(), name: 'response-code');
+  // }
 
-  Future<void> getData() async {
-    // Debug purposes. Just to check if the lesson specs are stored in rust main().
-    final requestMessage = RinfInterface.ReadRequest(req: true);
-    final rustRequest = RustRequest(
-      resource: RinfInterface.ID,
-      operation: RustOperation.Read,
-      message: requestMessage.writeToBuffer(),
-      // blob: NO BLOB
-    );
-    final rustResponse = await requestToRust(rustRequest);
-    final responseMessage = RinfInterface.ReadResponse.fromBuffer(
-      rustResponse.message!,
-    );
-    var content = responseMessage.lessonSpecifications;
-    developer.log(content.toString(), name: 'content');
-  }
+  // Future<void> getData() async {
+  //   // Debug purposes. Just to check if the lesson specs are stored in rust main().
+  //   final requestMessage = RinfInterface.ReadRequest(req: true);
+  //   final rustRequest = RustRequest(
+  //     resource: RinfInterface.ID,
+  //     operation: RustOperation.Read,
+  //     message: requestMessage.writeToBuffer(),
+  //     // blob: NO BLOB
+  //   );
+  //   final rustResponse = await requestToRust(rustRequest);
+  //   final responseMessage = RinfInterface.ReadResponse.fromBuffer(
+  //     rustResponse.message!,
+  //   );
+  //   var content = responseMessage.lessonSpecifications;
+  //   developer.log(content.toString(), name: 'content');
+  // }
 
-  void collectFormTextValues() {
-    lessonSpecifications.clear();
+  // void collectFormTextValues() {
+  //   lessonSpecifications.clear();
 
-    for (var formField in formFields) {
-      if (formField.inputField != null) {
-        lessonSpecifications.add(formField.inputField!.controller.text);
-      } else if (formField.textArea != null) {
-        lessonSpecifications.add(formField.textArea!.controller.text);
-      } else if (formField.dropdown != null) {
-        lessonSpecifications.add(formField.dropdown!.getSelectedValue);
-      } else {
-        developer.log('Null error', name: 'generate-lesson');
-        // TODO: Handle uninitialized null values, just in case.
-      }
-    }
+  //   for (var formField in formFields) {
+  //     if (formField.inputField != null) {
+  //       lessonSpecifications.add(formField.inputField!.controller.text);
+  //     } else if (formField.textArea != null) {
+  //       lessonSpecifications.add(formField.textArea!.controller.text);
+  //     } else if (formField.dropdown != null) {
+  //       lessonSpecifications.add(formField.dropdown!.getSelectedValue);
+  //     } else {
+  //       developer.log('Null error', name: 'generate-lesson');
+  //       // TODO: Handle uninitialized null values, just in case.
+  //     }
+  //   }
 
-    notifyListeners();
+  //   notifyListeners();
 
-    developer.log(lessonSpecifications.toString(), name: 'collect');
-  }
+  //   developer.log(lessonSpecifications.toString(), name: 'collect');
+  // }
 
   void addCustomSpecifications() {
     formFields.add(
