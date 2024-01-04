@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
           // preferred ThemeMode (light, dark, or system default) from the
           // SettingsController to display the correct theme.
           theme: ThemeData(
-            // useMaterial3: true,
+            useMaterial3: false,
             colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.amber),
             //BG color
             scaffoldBackgroundColor: Colors.white,
