@@ -25,7 +25,7 @@ class _QuizPageViewState extends State<QuizPageView> {
   int _questionIndex = 0;
 
   int _totalItems = 0;
-  int _currentItem = 1;
+  int _currentItem = 0;
 
   List<bool?> _selectedAnswers = List.filled(10, null);
 
@@ -36,111 +36,137 @@ class _QuizPageViewState extends State<QuizPageView> {
 
     return Scaffold(
         appBar: const LessonLabAppBar(),
-        body: Padding(
-          padding: const EdgeInsets.only(left: 10.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                  margin:
-                      const EdgeInsets.only(left: 50.0, top: 20.0, right: 20.0),
-                  height: 200.0,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 253, 237, 183),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 20.0),
-                    child: Text('Question ${_questionIndex + 1}',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 15.0,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 49, 51, 56),
-                        )),
-                  )),
-              Expanded(
+        body: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          scrollDirection: Axis.vertical,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10.0, bottom: 20.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                    margin: const EdgeInsets.only(
+                        left: 50.0, top: 20.0, right: 20.0),
+                    height: 200.0,
+                    width: 150,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 253, 237, 183),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 20.0),
+                      child: Text('Question ${_questionIndex + 1}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 49, 51, 56),
+                          )),
+                    )),
+                Expanded(
+                    child: Padding(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildQuestionWidget(
+                              quizViewModel.questions[_questionIndex],
+                              _questionIndex + 1,
+                              _questionIndex,
+                            ),
+                            const SizedBox(
+                              height: 20.0,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 0.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  PrimaryButton(
+                                      handlePress: () {
+                                        _prevQuestion();
+                                      },
+                                      text: 'prev',
+                                      enabled: true),
+                                  const SizedBox(
+                                    width: 20.0,
+                                  ),
+                                  PrimaryButton(
+                                      handlePress: () {
+                                        _nextQuestion();
+                                      },
+                                      text: 'next',
+                                      enabled: true),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ))),
+                Expanded(
                   child: Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
-                      child: Column(
+                    padding: const EdgeInsets.only(left: 40.0),
+                    child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildQuestionWidget(
-                            quizViewModel.questions[_questionIndex],
-                            _questionIndex + 1,
-                            _questionIndex,
-                          ),
-                          const SizedBox(
-                            height: 20.0,
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 0.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                PrimaryButton(
-                                    handlePress: () {
-                                      _prevQuestion();
-                                    },
-                                    text: 'prev',
-                                    enabled: true),
-                                const SizedBox(
-                                  width: 20.0,
-                                ),
-                                PrimaryButton(
-                                    handlePress: () {
-                                      _nextQuestion();
-                                    },
-                                    text: 'next',
-                                    enabled: true),
-                              ],
+                          Container(
+                            margin: const EdgeInsets.only(top: 20.0),
+                            width: 350.0,
+                            constraints: const BoxConstraints(minHeight: 200.0),
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 253, 237, 183),
+                              borderRadius: BorderRadius.circular(10.0),
                             ),
-                          ),
-                        ],
-                      ))),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 40.0),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 20.0),
-                          width: 350.0,
-                          height: 250.0,
-                          decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 253, 237, 183),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 20.0, top: 40.0),
-                            child: Wrap(
-                              spacing: 10.0,
-                              runSpacing: 11.0,
-                              alignment: WrapAlignment.start,
-                              children: [
-                                ...List.generate(
-                                  _totalItems,
-                                  (index) => Container(
-                                    height: 50.0,
-                                    width: 35.0,
-                                    decoration: BoxDecoration(
-                                        color: Colors.amber,
-                                        border:
-                                            Border.all(color: Colors.amber)),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 23.5, top: 36.0, bottom: 36.0),
+                              child: Wrap(
+                                spacing: 10.0,
+                                runSpacing: 11.0,
+                                alignment: WrapAlignment.start,
+                                children: [
+                                  ...List.generate(
+                                    _totalItems,
+                                    (index) => InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          _questionIndex = index;
+                                        });
+                                      },
+                                      child: Container(
+                                        height: 50.0,
+                                        width: 35.0,
+                                        decoration: BoxDecoration(
+                                            color: _questionIndex == index
+                                                ? Color.fromARGB(
+                                                    255, 49, 51, 56)
+                                                : Colors.amber,
+                                            border: Border.all(
+                                                color: Colors.amber)),
+                                        child: Align(
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            '${index + 1}',
+                                            style: TextStyle(
+                                                color: _questionIndex == index
+                                                    ? Colors.amber
+                                                    : Color.fromARGB(
+                                                        255, 49, 51, 56),
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ]),
+                        ]),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ));
   }
