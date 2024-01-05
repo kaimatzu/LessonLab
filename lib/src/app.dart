@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lessonlab/src/global_components/route_animation.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_result/quiz_result_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications/quiz_specifications_view.dart';
 import 'package:lessonlab/src/settings/settings_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view.dart';
@@ -76,6 +77,8 @@ class MyApp extends StatelessWidget {
                     return const QuizSpecificationsView();
                   case '/quiz_page':
                     return const QuizPageView();
+                  case '/quiz_result':
+                    return const QuizResultView();
                   default:
                     return MenuView();
                 }

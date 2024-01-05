@@ -6,6 +6,7 @@ import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_resu
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_result/quiz_result_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications/quiz_specifications_view_model.dart';
 import 'package:lessonlab/src/settings/settings_view_model.dart';
 import 'package:lessonlab/src/settings/shared_preferences.dart';
@@ -37,6 +38,7 @@ void main() async {
         ChangeNotifierProvider(
             create: (context) => QuizSpecificationsViewModel()),
         ChangeNotifierProvider(create: (context) => QuizPageViewModel()),
+        ChangeNotifierProvider(create: (context) => QuizResultViewModel()),
       ],
       child: MyApp(settingsViewModel: settingsViewModel),
     ),
