@@ -25,12 +25,13 @@ class Answer extends StatelessWidget {
         ),
         Container(
             padding: const EdgeInsets.all(15.0), // Adjust the right padding
-            margin: const EdgeInsets.only(bottom: 10.0, right: 600.0),
+            margin: const EdgeInsets.only(bottom: 10.0),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 answerText,
-                style: TextStyle(fontSize: 15.0),
+                style: const TextStyle(
+                    fontSize: 15.0, color: Color.fromARGB(255, 49, 51, 56)),
               ),
             )),
       ],
