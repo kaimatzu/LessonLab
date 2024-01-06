@@ -36,46 +36,46 @@ def generate_lesson_stream(source):
     socket.connect("tcp://127.0.0.1:5555")
     
     start_time = time.time()
-    # prompt = "Can you make a markdown format lesson based on this source: " + source
+    prompt = "Can you make a markdown format lesson based on this source: " + source
 
-    # response = client.chat.completions.create(
-    #     stream = True,
-    #     # model="gpt-4-1106-preview",
-    #     model = "gpt-3.5-turbo",
-    #     messages = [
-    #         {"role": "system", "content": "You are a college teacher."},
-    #         {"role": "user", "content": prompt}
-    #     ]
-    # )
-    # # create variables to collect the stream of chunks
-    # collected_chunks = []
-    # collected_messages = []
-    # # iterate through the stream of events
-    # for chunk in response:
-    #     try:
-    #         chunk_time = time.time() - start_time  # calculate the time delay of the chunk
-    #         collected_chunks.append(chunk)  # save the event response
-    #         chunk_message = chunk.choices[0].delta.content # extract the message
-    #         collected_messages.append(chunk_message)  # save the message
-    #         # print(f"Message received {chunk_time:.2f} seconds after request: {chunk_message}")  # print the delay and text
+    response = client.chat.completions.create(
+        stream = True,
+        # model="gpt-4-1106-preview",
+        model = "gpt-3.5-turbo",
+        messages = [
+            {"role": "system", "content": "You are a college teacher."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    # create variables to collect the stream of chunks
+    collected_chunks = []
+    collected_messages = []
+    # iterate through the stream of events
+    for chunk in response:
+        try:
+            chunk_time = time.time() - start_time  # calculate the time delay of the chunk
+            collected_chunks.append(chunk)  # save the event response
+            chunk_message = chunk.choices[0].delta.content # extract the message
+            collected_messages.append(chunk_message)  # save the message
+            # print(f"Message received {chunk_time:.2f} seconds after request: {chunk_message}")  # print the delay and text
 
-    #         socket.send_string(chunk_message)
-    #         print(f"Sent to Rust: {chunk_message}")
+            socket.send_string(chunk_message)
+            print(f"Sent to Rust: {chunk_message}")
 
-    #         # Wait for acknowledgment from Rust
-    #         ack = socket.recv_string()
-    #         print(f"Received ACK from Rust: {ack}")
-    #     except Exception as e:
-    #         print(f"Error processing chunk: {e}")
+            # Wait for acknowledgment from Rust
+            ack = socket.recv_string()
+            print(f"Received ACK from Rust: {ack}")
+        except Exception as e:
+            print(f"Error processing chunk: {e}")
     
-    for i in range(25):
-        time.sleep(0.25)
-        socket.send_string("e")
-        print(f"Sent to Rust: e")
+    # for i in range(25):
+    #     time.sleep(0.25)
+    #     socket.send_string("e")
+    #     print(f"Sent to Rust: e")
 
-        # Wait for acknowledgment from Rust
-        ack = socket.recv_string()
-        print(f"Received ACK from Rust: {ack}")
+    #     # Wait for acknowledgment from Rust
+    #     ack = socket.recv_string()
+    #     print(f"Received ACK from Rust: {ack}")
         
     print(f"Finished generation.")
      
