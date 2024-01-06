@@ -5,34 +5,33 @@ class SecondaryButton extends StatelessWidget {
     super.key,
     required this.handlePress,
     required this.text,
+    this.width,
+    this.height,
   });
 
   final void Function() handlePress;
   final String text;
   final Color yellow = const Color.fromRGBO(242, 212, 102, 1);
+  final double? width;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: yellow.withOpacity(.3),
-            spreadRadius: 3,
-            blurRadius: 10,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
+    return SizedBox(
+      width: width,
+      height: height,
       child: ElevatedButton(
         onPressed: handlePress,
         style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(yellow.withOpacity(0.3)),
-          shadowColor: MaterialStateProperty.all<Color>(yellow.withAlpha(0)),
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+          elevation: MaterialStateProperty.all<double>(0),
           shape: MaterialStateProperty.all<OutlinedBorder>(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12.0),
+              side: BorderSide(
+                color: yellow,
+                width: 2.0
+                ),
             ),
           ),
         ),
@@ -43,6 +42,7 @@ class SecondaryButton extends StatelessWidget {
             style: const TextStyle(
               fontFamily: 'Inter',
               fontWeight: FontWeight.w600,
+              color: Color.fromRGBO(184, 156, 57, 1)
             ),
           ),
         ),

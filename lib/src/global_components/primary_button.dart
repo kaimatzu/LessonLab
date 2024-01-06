@@ -30,21 +30,9 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: width,
       height: height,
-      decoration: BoxDecoration(
-        boxShadow: enabled
-            ? [
-                BoxShadow(
-                  color: yellow.withOpacity(.3),
-                  spreadRadius: 3,
-                  blurRadius: 10,
-                  offset: const Offset(0, 10),
-                ),
-              ]
-            : [],
-      ),
       child: ElevatedButton(
         onPressed: handlePress,
         onHover: enabled
