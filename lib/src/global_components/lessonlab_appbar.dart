@@ -36,12 +36,12 @@ class LessonLabAppBar extends StatelessWidget implements PreferredSizeWidget {
           gradient: LinearGradient(
             colors: [
               Color.fromRGBO(255, 206, 45, 0.6),
-              Color.fromRGBO(250, 250, 250, 1),
-              Color.fromRGBO(250, 250, 250, 1),
-              Color.fromRGBO(250, 250, 250, 1),
-              Color.fromRGBO(250, 250, 250, 1),
-              Color.fromRGBO(250, 250, 250, 1),
-              Color.fromRGBO(250, 250, 250, 1),],
+              Colors.white,
+              Colors.white,
+              Colors.white,
+              Colors.white,
+              Colors.white,
+              Colors.white,],
             begin: Alignment.topLeft,
             end: Alignment.bottomCenter,
           ),
