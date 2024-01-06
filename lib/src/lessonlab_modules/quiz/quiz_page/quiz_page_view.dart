@@ -36,7 +36,7 @@ class _QuizPageViewState extends State<QuizPageView> {
     Future.delayed(Duration.zero, () {
       final quizViewModel = context.read<QuizPageViewModel>();
       setState(() {
-        _totalItems = quizViewModel.questions.length;
+        _totalItems = quizViewModel.allQuestions.length;
         _selectedAnswers = List.filled(_totalItems, -1);
       });
     });
@@ -45,7 +45,7 @@ class _QuizPageViewState extends State<QuizPageView> {
   @override
   Widget build(BuildContext context) {
     final quizViewModel = context.watch<QuizPageViewModel>();
-    _totalItems = quizViewModel.questions.length;
+    _totalItems = quizViewModel.allQuestions.length;
     return Scaffold(
         appBar: const LessonLabAppBar(),
         body: SingleChildScrollView(
@@ -82,7 +82,7 @@ class _QuizPageViewState extends State<QuizPageView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildQuestionWidget(
-                              quizViewModel.questions[_questionIndex],
+                              quizViewModel.allQuestions[_questionIndex],
                               _questionIndex + 1,
                               _questionIndex,
                             ),
@@ -273,25 +273,34 @@ class _QuizPageViewState extends State<QuizPageView> {
                     const SizedBox(
                       height: 40.0,
                     ),
-                    for (int i = 0;
-                        i < (question['answers'] as List).length;
-                        i++)
-                      Answer(
-                        answerText: ((question['answers'] as List?)?[i]
-                                    as Map<String, Object>?)?['answerText']
-                                as String? ??
-                            '',
-                        index: i,
-                        groupValue: _selectedAnswers[index],
-                        answerTap: (value) {
-                          setState(() {
-                            _selectedAnswers[index] = value;
-                          });
-                        },
-                      ),
+                    if (question['type'] == 1)
+                      _buildIdentification()
+                    else if (question['type'] == 2)
+                      for (int i = 0;
+                          i < (question['answers'] as List).length;
+                          i++)
+                        Answer(
+                          answerText: ((question['answers'] as List?)?[i]
+                                      as Map<String, Object>?)?['answerText']
+                                  as String? ??
+                              '',
+                          index: i,
+                          groupValue: _selectedAnswers[index],
+                          answerTap: (value) {
+                            setState(() {
+                              _selectedAnswers[index] = value;
+                            });
+                          },
+                        ),
                   ]),
             )),
       ],
+    );
+  }
+
+  Widget _buildIdentification() {
+    return Column(
+      children: [TextField()],
     );
   }
 }
