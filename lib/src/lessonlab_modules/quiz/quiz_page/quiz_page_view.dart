@@ -27,13 +27,25 @@ class _QuizPageViewState extends State<QuizPageView> {
   int _totalItems = 0;
   int _currentItem = 0;
 
-  List<bool?> _selectedAnswers = List.filled(10, null);
+  List<int> _selectedAnswers = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration.zero, () {
+      final quizViewModel = context.read<QuizPageViewModel>();
+      setState(() {
+        _totalItems = quizViewModel.questions.length;
+        _selectedAnswers = List.filled(_totalItems, -1);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final quizViewModel = context.watch<QuizPageViewModel>();
     _totalItems = quizViewModel.questions.length;
-
     return Scaffold(
         appBar: const LessonLabAppBar(),
         body: SingleChildScrollView(
@@ -181,12 +193,6 @@ class _QuizPageViewState extends State<QuizPageView> {
         ));
   }
 
-  void _selectAnswer(bool? answer, int questionIndex) {
-    setState(() {
-      _selectedAnswers[questionIndex] = answer;
-    });
-  }
-
   void _prevQuestion() {
     if (_questionIndex > 0) {
       setState(() {
@@ -211,7 +217,7 @@ class _QuizPageViewState extends State<QuizPageView> {
     setState(() {
       _questionIndex = 0;
       _totalItems = 0;
-      _selectedAnswers = List.filled(_totalItems, null);
+      _selectedAnswers = List.filled(_totalItems, -1);
     });
   }
 
@@ -267,17 +273,21 @@ class _QuizPageViewState extends State<QuizPageView> {
                     const SizedBox(
                       height: 40.0,
                     ),
-                    for (Map<String, Object> answer
-                        in (question['answers'] as List<Map<String, Object>>))
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Answer(
-                          answerText: answer['answerText'] as String,
-                          isSelected: false,
-                          answerTap: (bool? selected) {
-                            _selectAnswer(selected, index);
-                          },
-                        ),
+                    for (int i = 0;
+                        i < (question['answers'] as List).length;
+                        i++)
+                      Answer(
+                        answerText: ((question['answers'] as List?)?[i]
+                                    as Map<String, Object>?)?['answerText']
+                                as String? ??
+                            '',
+                        index: i,
+                        groupValue: _selectedAnswers[index],
+                        answerTap: (value) {
+                          setState(() {
+                            _selectedAnswers[index] = value;
+                          });
+                        },
                       ),
                   ]),
             )),
