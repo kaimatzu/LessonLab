@@ -129,4 +129,79 @@ class QuizPageViewModel extends ChangeNotifier {
   ];
 
   get questions => _questions;
+
+  final _idQuestions = const [
+    {
+      'question': 'What is the capital city of France?',
+      'answer': 'Paris',
+    },
+    {
+      'question': 'Which planet is known as the "Red Planet"?',
+      'answer': 'Mars',
+    },
+    {
+      'question': 'Who wrote the play "Romeo and Juliet"?',
+      'answer': 'William Shakespeare',
+    },
+    {
+      'question': 'What is the chemical symbol for water?',
+      'answer': 'H2O',
+    },
+    {
+      'question': 'Which famous scientist developed the theory of relativity?',
+      'answer': 'Albert Einstein',
+    },
+  ];
+
+  get idQuestions => _idQuestions;
+
+  final _allQuestions = const [
+    {
+      'question': 'What is the capital city of France?',
+      'type': 1,
+      'answer': 'Paris',
+    },
+    {
+      'question': 'Which European country eats the most chocolate per capita?',
+      'type': 2,
+      'answers': [
+        {'answerText': 'Belgium', 'isCorrect': false, 'isSelected': false},
+        {
+          'answerText': 'The Netherlands',
+          'isCorrect': false,
+          'isSelected': false
+        },
+        {'answerText': 'Switzerland', 'isCorrect': true, 'isSelected': false},
+      ],
+    },
+    {
+      'question': 'Which planet is known as the "Red Planet"?',
+      'type': 1,
+      'answer': 'Mars',
+    },
+    {
+      'question': 'Which sea creature has three hearts?',
+      'type': 2,
+      'answers': [
+        {
+          'answerText': 'Great White Sharks',
+          'isCorrect': false,
+          'isSelected': false
+        },
+        {
+          'answerText': 'Killer Whales',
+          'isCorrect': false,
+          'isSelected': false
+        },
+        {'answerText': 'The Octopus', 'isCorrect': true, 'isSelected': false},
+      ],
+    },
+    {
+      'question': 'Who wrote the play "Romeo and Juliet"?',
+      'type': 1,
+      'answer': 'William Shakespeare',
+    },
+  ];
+
+  get allQuestions => _allQuestions;
 }
