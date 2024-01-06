@@ -20,48 +20,57 @@ class LessonSpecificationsView extends StatelessWidget {
     return Scaffold(
       appBar: const LessonLabAppBar(),
         body: Padding(
-          padding: const EdgeInsets.fromLTRB(30.0, 20.0, 30.0, 20.0),
+          padding: const EdgeInsets.fromLTRB(30.0, 20.0, 30.0, 0.0),
           child: Row(
             children: [
             // Left side (scrollable form)
             Expanded(
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(40.0, 32.0, 30.0, 32.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ...lessonSpecificationsViewModel.formFields
-                        .map<Widget?>((formField) {
-                          if (formField.inputField != null) {
-                            return formField.inputField;
-                          } else if (formField.textArea != null) {
-                            return formField.textArea;
-                          } else if (formField.dropdown != null) {
-                            return formField.dropdown;
-                          } else {
-                            return null;
-                          }
-                        })                    
-                        .whereType<Widget>()
-                        .toList(),
-                        const SizedBox(height: 8.0),
-                        PrimaryButton(
-                          handlePress: () {
-                            lessonSpecificationsViewModel.addCustomSpecifications();
-                          },
-                          text: 'Add Custom',
-                          enabled: true,
-                        ),
-                      ],                                       
+              child: Container(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
+                  ),
+                  color: Color.fromARGB(255, 244, 245, 247),
+                ),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(40.0, 32.0, 30.0, 32.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ...lessonSpecificationsViewModel.formFields
+                          .map<Widget?>((formField) {
+                            if (formField.inputField != null) {
+                              return formField.inputField;
+                            } else if (formField.textArea != null) {
+                              return formField.textArea;
+                            } else if (formField.dropdown != null) {
+                              return formField.dropdown;
+                            } else {
+                              return null;
+                            }
+                          })                    
+                          .whereType<Widget>()
+                          .toList(),
+                          const SizedBox(height: 8.0),
+                          PrimaryButton(
+                            handlePress: () {
+                              lessonSpecificationsViewModel.addCustomSpecifications();
+                            },
+                            text: 'Add Custom',
+                            enabled: true,
+                          ),
+                        ],                                       
+                    ),
                   ),
                 ),
               ),
             ),
             // Right side (static buttons)
             Padding(
-              padding: const EdgeInsets.fromLTRB(0.0, 170.0, 0.0, 0.0),
+              padding: const EdgeInsets.fromLTRB(0.0, 170.0, 0.0, 30.0),
               child: SizedBox(
                 width: 420,
                 child: Align(
