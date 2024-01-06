@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/components/text_editor.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/components/title_bar.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +27,7 @@ class LessonResultScreen extends StatelessWidget {
 
     // This is the div for holding the title bar and the text box
     var textEditorContainer = Padding(
-      padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 30.0),
+      padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 0.0),
       child: FutureBuilder<List<String>>(
         // The data sent from rust
         future: Future.wait(
@@ -44,12 +45,9 @@ class LessonResultScreen extends StatelessWidget {
           } else {
             final List<String> contents = snapshot.data!;
             final String title = contents[0];
-            final String mdContent = contents[1];
-            final String cssContent = contents[2];
 
             // developer.log(cssContent, name: 'info');
-            return TextEditor(
-                title: title, mdContents: "", cssContents: cssContent);
+            return TitleBar(title: title);
           }
         },
       ),
@@ -61,6 +59,10 @@ class LessonResultScreen extends StatelessWidget {
         children: [
           header,
           textEditorContainer,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 30.0),
+            child: TextEditor(),
+          )
           // Padding(
           //   padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 30.0),
           //   child: StreamBuilder<RustSignal>(

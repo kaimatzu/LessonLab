@@ -11,6 +11,7 @@ import 'package:lessonlab/messages/results/view_lesson_result/load_lesson.pb.dar
 
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_quill/markdown_quill.dart';
+import 'dart:async';
 
 const List<Widget> icons = <Widget>[
   Icon(Icons.code),
@@ -20,32 +21,50 @@ const List<Widget> icons = <Widget>[
 class TextEditor extends StatefulWidget {
   const TextEditor({
     Key? key,
-    required this.title,
-    required this.mdContents,
-    required this.cssContents,
   }) : super(key: key);
-
-  final String title;
-  final String mdContents;
-  final String cssContents;
 
   @override
   State<TextEditor> createState() => _TextEditor();
 }
 
 class _TextEditor extends State<TextEditor> {
-  final List<bool> _richView = <bool>[true, false];
   var _doneGenerating = false;
   // var mdContentFinal = "a";
   // var htmlContent = "";
   // var noStreamValue = 0;
   // late TextEditingController textController;
   final QuillController _controller = QuillController.basic();
+  late StreamSubscription<RustSignal> streamSubscription;
+  String message = "Nothing received yet";
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Start listening to the stream in initState
+    streamSubscription = rustBroadcaster.stream
+        .where((rustSignal) => rustSignal.resource == streamMessage.ID)
+        .listen((RustSignal rustSignal) {
+      // Handle the stream data here
+      final signal = streamMessage.StateSignal.fromBuffer(rustSignal.message!);
+      final rinfMessage = signal.streamMessage;
+      debugPrint(rinfMessage);
+      if (rinfMessage == "[LL_END_STREAM]") {
+        _doneGenerating = true;
+        // lessonResultViewModel.done = true;
+      } else {
+        _controller.document.insert(_controller.plainTextEditingValue.text.length - 1, rinfMessage);
+      }
+      setState(() {
+        // message = rinfMessage;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final lessonResultViewModel = context.watch<LessonResultViewModel>();
+    // final lessonResultViewModel = context.watch<LessonResultViewModel>();
 
-    
     // var message = "";
 
     var mdDocument = md.Document(
@@ -150,155 +169,62 @@ class _TextEditor extends State<TextEditor> {
           ]),
     );
 
-    var editor = StreamBuilder<RustSignal>(
-        stream: rustBroadcaster.stream.where((rustSignal) {
-      return rustSignal.resource == streamMessage.ID;
-    }), builder: (context, snapshot) {
-      final rustSignal = snapshot.data;
-      if (rustSignal != null) {
-        final signal = streamMessage.StateSignal.fromBuffer(
-          rustSignal.message!,
-        );
-        final rinfMessage = signal.streamMessage;
-        if (rinfMessage == "[LL_END_STREAM]") {
-          _doneGenerating = true;
-          lessonResultViewModel.done = true;
-        } else {
-
-          // _controller.moveCursorToEnd(); // <-- Cant do this because this calls notifyListeners somewhere along its function stack. 
-          // mdContentFinal += rinfMessage;
-          _controller.document.insert(_controller.plainTextEditingValue.text.length - 1, rinfMessage);
-
-        }
-      }
-      return QuillEditor.basic(
-          // Pass the controller to QuillEditor
+    var editor = QuillEditor.basic(
+        // Pass the controller to QuillEditor
         configurations: QuillEditorConfigurations(
-        controller: _controller,
-        autoFocus: true,
-        padding: EdgeInsets.only(left: 30, top: 5, right: 30, bottom: 30),
-        customStyles: DefaultStyles(
-            h1: DefaultTextBlockStyle(
-                TextStyle(
-                    color: Colors.amber,
-                    fontSize: 30,
-                    fontWeight: FontWeight.w700),
-                VerticalSpacing(16, 0),
-                VerticalSpacing(0, 0),
-                null),
-            h2: DefaultTextBlockStyle(
-                TextStyle(
-                    color: Colors.amber,
-                    fontSize: 25,
-                    fontWeight: FontWeight.w500),
-                VerticalSpacing(16, 0),
-                VerticalSpacing(0, 0),
-                null),
-            h3: DefaultTextBlockStyle(
-                TextStyle(
-                    color: Colors.amber,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500),
-                VerticalSpacing(16, 0),
-                VerticalSpacing(0, 0),
-                null),
-            paragraph: DefaultTextBlockStyle(
-                TextStyle(
+      controller: _controller,
+      autoFocus: true,
+      readOnly: !_doneGenerating,
+      padding: EdgeInsets.only(left: 30, top: 5, right: 30, bottom: 30),
+      customStyles: DefaultStyles(
+          h1: DefaultTextBlockStyle(
+              TextStyle(
                   color: Colors.amber,
-                  fontSize: 15,
-                ),
-                VerticalSpacing(16, 0),
-                VerticalSpacing(0, 0),
-                null),
-            strikeThrough: TextStyle(
-                color: Colors.amber, decoration: TextDecoration.lineThrough),
-            sizeSmall: TextStyle(color: Colors.amber),
-            italic: TextStyle(color: Colors.amber, fontStyle: FontStyle.italic),
-            bold: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
-            underline: TextStyle(
-                color: Colors.amber, decoration: TextDecoration.underline),
-            color: Colors.amber),
-      )
-          // textSelectionThemeData: TextSelectionThemeData(selectionColor: Colors.amber)
-          );
-    }
-        // child: QuillEditor.basic(
-        //     // Pass the controller to QuillEditor
-        //   configurations: QuillEditorConfigurations(
-        //   controller: _controller,
-        //   autoFocus: true,
-        //   padding: EdgeInsets.only(left: 30, top: 5, right: 30, bottom: 30),
-        //   customStyles: DefaultStyles(
-        //       h1: DefaultTextBlockStyle(
-        //           TextStyle(
-        //               color: Colors.amber,
-        //               fontSize: 30,
-        //               fontWeight: FontWeight.w700),
-        //           VerticalSpacing(16, 0),
-        //           VerticalSpacing(0, 0),
-        //           null),
-        //       h2: DefaultTextBlockStyle(
-        //           TextStyle(
-        //               color: Colors.amber,
-        //               fontSize: 25,
-        //               fontWeight: FontWeight.w500),
-        //           VerticalSpacing(16, 0),
-        //           VerticalSpacing(0, 0),
-        //           null),
-        //       h3: DefaultTextBlockStyle(
-        //           TextStyle(
-        //               color: Colors.amber,
-        //               fontSize: 20,
-        //               fontWeight: FontWeight.w500),
-        //           VerticalSpacing(16, 0),
-        //           VerticalSpacing(0, 0),
-        //           null),
-        //       paragraph: DefaultTextBlockStyle(
-        //           TextStyle(
-        //               color: Colors.amber,
-        //               fontSize: 15,
-        //           ),
-        //           VerticalSpacing(16, 0),
-        //           VerticalSpacing(0, 0),
-        //       null),
-        //       strikeThrough: TextStyle(
-        //           color: Colors.amber, decoration: TextDecoration.lineThrough),
-        //       sizeSmall: TextStyle(color: Colors.amber),
-        //       italic: TextStyle(color: Colors.amber, fontStyle: FontStyle.italic),
-        //       bold: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
-        //       underline: TextStyle(
-        //           color: Colors.amber, decoration: TextDecoration.underline),
-        //       color: Colors.amber),
-        //   )
-        //     // textSelectionThemeData: TextSelectionThemeData(selectionColor: Colors.amber)
-        // ),
+                  fontSize: 30,
+                  fontWeight: FontWeight.w700),
+              VerticalSpacing(16, 0),
+              VerticalSpacing(0, 0),
+              null),
+          h2: DefaultTextBlockStyle(
+              TextStyle(
+                  color: Colors.amber,
+                  fontSize: 25,
+                  fontWeight: FontWeight.w500),
+              VerticalSpacing(16, 0),
+              VerticalSpacing(0, 0),
+              null),
+          h3: DefaultTextBlockStyle(
+              TextStyle(
+                  color: Colors.amber,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500),
+              VerticalSpacing(16, 0),
+              VerticalSpacing(0, 0),
+              null),
+          paragraph: DefaultTextBlockStyle(
+              TextStyle(
+                color: Colors.amber,
+                fontSize: 15,
+              ),
+              VerticalSpacing(16, 0),
+              VerticalSpacing(0, 0),
+              null),
+          strikeThrough: TextStyle(
+              color: Colors.amber, decoration: TextDecoration.lineThrough),
+          sizeSmall: TextStyle(color: Colors.amber),
+          italic: TextStyle(color: Colors.amber, fontStyle: FontStyle.italic),
+          bold: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+          underline: TextStyle(
+              color: Colors.amber, decoration: TextDecoration.underline),
+          color: Colors.amber),
+    )
+        // textSelectionThemeData: TextSelectionThemeData(selectionColor: Colors.amber)
         );
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          // Render title
-          TextFormField(
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
-            initialValue: widget.title,
-            decoration: const InputDecoration(
-              hintText: 'Enter your title here...',
-              hintStyle: TextStyle(
-                color: Colors.grey,
-                fontWeight: FontWeight.normal,
-              ),
-              filled: true,
-              fillColor: Color.fromARGB(255, 49, 51, 56),
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 30.0),
-
           // Insert text area here
           Center(
               child: Container(
@@ -312,29 +238,21 @@ class _TextEditor extends State<TextEditor> {
               children: [
                 toolbar,
                 // VerticalDivider(width: 2.0, color: Colors.black), // Doesn't seem to work
-                Expanded(child: editor),
+                Expanded(
+                  child: editor,
+                ),
               ],
             ),
           )),
-          // Insert text area here
-
-          const SizedBox(height: 16.0),
         ],
       ),
     );
   }
 
   @override
-  void initState() {
-    super.initState();
-    // textController = TextEditingController(text: widget.mdContents);
-    // QuillController _controller = QuillController.basic();
-    updateHtmlContent(); // Call this to update the HTML content initially
-  }
-
-  void updateHtmlContent() {
-    setState(() {
-      // htmlContent = md.markdownToHtml(textController.text);
-    });
+  void dispose() {
+    // Cancel the stream subscription in dispose
+    streamSubscription.cancel();
+    super.dispose();
   }
 }
