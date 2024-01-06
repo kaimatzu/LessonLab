@@ -20,10 +20,10 @@ class NewMaterialButton extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: yellow.withOpacity(.3),
-            spreadRadius: 2,
+            color: yellow.withOpacity(.2),
+            spreadRadius: 1,
             blurRadius: 8,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
