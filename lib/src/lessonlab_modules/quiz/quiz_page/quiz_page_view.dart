@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
@@ -21,89 +23,167 @@ class QuizPageView extends StatefulWidget {
 //THIS IS MULTIPLE CHOICE QUIZ
 class _QuizPageViewState extends State<QuizPageView> {
   int _questionIndex = 0;
-  bool _isSelected = false;
 
-  int _totalItem = 0;
-  int _currentItem = 1;
+  int _totalItems = 0;
+  int _currentItem = 0;
+
+  List<bool?> _selectedAnswers = List.filled(10, null);
 
   @override
   Widget build(BuildContext context) {
     final quizViewModel = context.watch<QuizPageViewModel>();
-    _totalItem = quizViewModel.questions.length;
+    _totalItems = quizViewModel.questions.length;
 
     return Scaffold(
         appBar: const LessonLabAppBar(),
         body: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Center(
-              child: Column(
-            children: [
-              const SizedBox(height: 20.0),
-              _buildQuestionWidget(
-                  quizViewModel.questions[_questionIndex], _questionIndex + 1),
-              ListView(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  ...(quizViewModel.questions[_questionIndex]['answers']
-                          as List<Map<String, Object>>)
-                      .map(
-                    (answer) => Answer(
-                      answerText: answer['answerText'] as String,
-                      answerColor: _isSelected
-                          ? answer['score'] as bool
-                              ? Colors.green
-                              : Colors.red
-                          : Colors.transparent,
-                      answerTap: () {
-                        _questionAnswered(answer['score'] as bool);
-                      },
+          physics: const AlwaysScrollableScrollPhysics(),
+          scrollDirection: Axis.vertical,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10.0, bottom: 20.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                    margin: const EdgeInsets.only(
+                        left: 50.0, top: 20.0, right: 20.0),
+                    height: 200.0,
+                    width: 150,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 253, 237, 183),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 20.0),
+                      child: Text('Question ${_questionIndex + 1}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 49, 51, 56),
+                          )),
+                    )),
+                Expanded(
+                    child: Padding(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildQuestionWidget(
+                              quizViewModel.questions[_questionIndex],
+                              _questionIndex + 1,
+                              _questionIndex,
+                            ),
+                            const SizedBox(
+                              height: 20.0,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 0.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  PrimaryButton(
+                                      handlePress: () {
+                                        _prevQuestion();
+                                      },
+                                      text: 'prev',
+                                      enabled: true),
+                                  const SizedBox(
+                                    width: 20.0,
+                                  ),
+                                  PrimaryButton(
+                                      handlePress: () {
+                                        _nextQuestion();
+                                      },
+                                      text: 'next',
+                                      enabled: true),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ))),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 40.0),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(top: 20.0),
+                            width: 350.0,
+                            constraints: const BoxConstraints(minHeight: 200.0),
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 253, 237, 183),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 23.5, top: 36.0, bottom: 36.0),
+                              child: Wrap(
+                                spacing: 10.0,
+                                runSpacing: 11.0,
+                                alignment: WrapAlignment.start,
+                                children: [
+                                  ...List.generate(
+                                    _totalItems,
+                                    (index) => InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          _questionIndex = index;
+                                        });
+                                      },
+                                      child: Container(
+                                        height: 50.0,
+                                        width: 35.0,
+                                        decoration: BoxDecoration(
+                                            color: _questionIndex == index
+                                                ? Color.fromARGB(
+                                                    255, 49, 51, 56)
+                                                : Colors.amber,
+                                            border: Border.all(
+                                                color: Colors.amber)),
+                                        child: Align(
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            '${index + 1}',
+                                            style: TextStyle(
+                                                color: _questionIndex == index
+                                                    ? Colors.amber
+                                                    : Color.fromARGB(
+                                                        255, 49, 51, 56),
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20.0),
+                            child: PrimaryButton(
+                                handlePress: () {
+                                  Navigator.restorablePushNamed(
+                                      context, '/quiz_result');
+                                },
+                                text: 'Finish Attempt',
+                                enabled: true),
+                          )
+                        ]),
                   ),
-                ],
-              ),
-              const SizedBox(
-                height: 20.0,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    PrimaryButton(
-                        handlePress: () {
-                          _prevQuestion();
-                        },
-                        text: 'Prev',
-                        enabled: true),
-                    const SizedBox(
-                      height: 20.0,
-                      width: 20.0,
-                    ),
-                    PrimaryButton(
-                        handlePress: () {
-                          _nextQuestion();
-                        },
-                        text: 'Next',
-                        enabled: true),
-                  ],
                 ),
-              ),
-              Container(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Text(
-                    '$_currentItem/$_totalItem',
-                    style: const TextStyle(
-                        fontSize: 40.0, fontWeight: FontWeight.bold),
-                  ))
-            ],
-          )),
+              ],
+            ),
+          ),
         ));
   }
 
-  void _questionAnswered(bool answer) {
+  void _selectAnswer(bool? answer, int questionIndex) {
     setState(() {
-      _isSelected = true;
+      _selectedAnswers[questionIndex] = answer;
     });
   }
 
@@ -117,44 +197,91 @@ class _QuizPageViewState extends State<QuizPageView> {
   }
 
   void _nextQuestion() {
-    if (_questionIndex + 1 < _totalItem) {
+    if (_questionIndex + 1 < _totalItems) {
       setState(() {
         _questionIndex++;
         _currentItem++;
-        _isSelected = false;
       });
     }
 
-    if (_questionIndex >= _totalItem) _resetQuiz();
+    if (_questionIndex >= _totalItems) _resetQuiz();
   }
 
   void _resetQuiz() {
     setState(() {
       _questionIndex = 0;
-      _totalItem = 0;
+      _totalItems = 0;
+      _selectedAnswers = List.filled(_totalItems, null);
     });
   }
 
+  double _calculateHorizontalPadding(String questionText) {
+    // Adjust this logic based on your requirements
+    // You might consider calculating padding based on the length of the text
+    return max(20.0, min(questionText.length.toDouble(), 50.0));
+  }
+
   Widget _buildQuestionWidget(
-      Map<String, dynamic> questionData, int questionNumber) {
-    return Container(
-        width: double.infinity,
-        height: 130.0,
-        margin: const EdgeInsets.only(bottom: 10.0, left: 30.0, right: 30.0),
-        padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0),
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 49, 51, 56),
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: Center(
-          child: Text(
-            'Question $questionNumber: ${questionData['question']}',
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-                fontSize: 20.0,
-                color: Colors.amber,
-                fontWeight: FontWeight.bold),
-          ),
-        ));
+      Map<String, Object> question, int questionNumber, int index) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+            margin: const EdgeInsets.only(
+              bottom: 10.0,
+            ),
+            height: 350.0,
+            width: 600.0,
+            constraints: const BoxConstraints(
+              minHeight: 350.0,
+              maxHeight: 350.0,
+              maxWidth: 600.0,
+            ),
+            padding: EdgeInsets.symmetric(
+              horizontal:
+                  _calculateHorizontalPadding(question['question'] as String),
+              vertical: 20.0,
+            ),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 253, 237, 183),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 20.0,
+                    ),
+                    Text(
+                      '${question['question']}',
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                        fontSize: 15.0,
+                        color: Color.fromARGB(255, 49, 51, 56),
+                      ),
+                      softWrap: true,
+                      maxLines: null,
+                    ),
+                    const SizedBox(
+                      height: 40.0,
+                    ),
+                    for (Map<String, Object> answer
+                        in (question['answers'] as List<Map<String, Object>>))
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Answer(
+                          answerText: answer['answerText'] as String,
+                          isSelected: false,
+                          answerTap: (bool? selected) {
+                            _selectAnswer(selected, index);
+                          },
+                        ),
+                      ),
+                  ]),
+            )),
+      ],
+    );
   }
 }

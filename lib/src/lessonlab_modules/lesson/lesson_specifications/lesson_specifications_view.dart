@@ -95,7 +95,7 @@ class LessonSpecificationsView extends StatelessWidget {
                           ),
                           const SizedBox(width: 2.0),
                           SizedBox(
-                            width: 200,
+                            width: 240,
                             height: 50,
                             child: TextField(
                               controller: lessonSpecificationsViewModel.saveTargetController,
@@ -103,7 +103,12 @@ class LessonSpecificationsView extends StatelessWidget {
                               decoration: const InputDecoration(
                                 filled: true,
                                 fillColor: Color.fromARGB(255, 49, 51, 56),
-                                border: OutlineInputBorder(),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(15.0),
+                                    bottomRight: Radius.circular(15.0),
+                                  ),
+                                ),
                                 hintText: 'No save directory',
                                 hintStyle: TextStyle(
                                   fontFamily: 'Roboto, Inter, Arial',
