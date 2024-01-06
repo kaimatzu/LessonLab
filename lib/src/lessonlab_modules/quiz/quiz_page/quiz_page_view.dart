@@ -28,6 +28,7 @@ class _QuizPageViewState extends State<QuizPageView> {
   int _currentItem = 0;
 
   List<int> _selectedAnswers = [];
+  List<TextEditingController> _identificationControllers = [];
 
   @override
   void initState() {
@@ -37,7 +38,13 @@ class _QuizPageViewState extends State<QuizPageView> {
       final quizViewModel = context.read<QuizPageViewModel>();
       setState(() {
         _totalItems = quizViewModel.allQuestions.length;
+
         _selectedAnswers = List.filled(_totalItems, -1);
+
+        _identificationControllers = List.generate(
+          _totalItems,
+          (index) => TextEditingController(),
+        );
       });
     });
   }
@@ -274,33 +281,49 @@ class _QuizPageViewState extends State<QuizPageView> {
                       height: 40.0,
                     ),
                     if (question['type'] == 1)
-                      _buildIdentification()
+                      _buildIdentification(index)
                     else if (question['type'] == 2)
-                      for (int i = 0;
-                          i < (question['answers'] as List).length;
-                          i++)
-                        Answer(
-                          answerText: ((question['answers'] as List?)?[i]
-                                      as Map<String, Object>?)?['answerText']
-                                  as String? ??
-                              '',
-                          index: i,
-                          groupValue: _selectedAnswers[index],
-                          answerTap: (value) {
-                            setState(() {
-                              _selectedAnswers[index] = value;
-                            });
-                          },
-                        ),
+                      _buildMultipleChoice(question, index)
                   ]),
             )),
       ],
     );
   }
 
-  Widget _buildIdentification() {
+  Widget _buildIdentification(int index) {
     return Column(
-      children: [TextField()],
+      children: [
+        TextField(
+          controller: _getController(index),
+        )
+      ],
+    );
+  }
+
+  TextEditingController _getController(int index) {
+    while (_identificationControllers.length <= index) {
+      _identificationControllers.add(TextEditingController());
+    }
+    return _identificationControllers[index];
+  }
+
+  Widget _buildMultipleChoice(Map<String, Object> question, int index) {
+    return Column(
+      children: [
+        for (int i = 0; i < (question['answers'] as List).length; i++)
+          Answer(
+            answerText: ((question['answers'] as List?)?[i]
+                    as Map<String, Object>?)?['answerText'] as String? ??
+                '',
+            index: i,
+            groupValue: _selectedAnswers[index],
+            answerTap: (value) {
+              setState(() {
+                _selectedAnswers[index] = value;
+              });
+            },
+          ),
+      ],
     );
   }
 }
