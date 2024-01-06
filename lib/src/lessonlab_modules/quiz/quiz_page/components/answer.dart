@@ -1,39 +1,41 @@
 import 'package:flutter/material.dart';
 
-class Answer extends StatelessWidget {
+class Answer extends StatefulWidget {
   final String answerText;
-  final bool isSelected;
-  final Function(bool?) answerTap;
+  final int index;
+  final int groupValue;
+  final Function(int) answerTap;
 
   Answer({
     required this.answerText,
-    required this.isSelected,
+    required this.index,
+    required this.groupValue,
     required this.answerTap,
   });
 
   @override
+  State<Answer> createState() => _AnswerState();
+}
+
+class _AnswerState extends State<Answer> {
+  @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        Radio<bool?>(
-          value: isSelected,
-          groupValue:
-              isSelected, // You might need to manage the group value accordingly
-          onChanged: (bool? selected) {
-            answerTap(selected);
+        RadioListTile<int>(
+          title: Text(
+            widget.answerText,
+            style: const TextStyle(
+              fontSize: 15.0,
+              color: Color.fromARGB(255, 49, 51, 56),
+            ),
+          ),
+          value: widget.index,
+          groupValue: widget.groupValue,
+          onChanged: (value) {
+            widget.answerTap(value!);
           },
         ),
-        Container(
-            padding: const EdgeInsets.all(15.0), // Adjust the right padding
-            margin: const EdgeInsets.only(bottom: 10.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                answerText,
-                style: const TextStyle(
-                    fontSize: 15.0, color: Color.fromARGB(255, 49, 51, 56)),
-              ),
-            )),
       ],
     );
   }
