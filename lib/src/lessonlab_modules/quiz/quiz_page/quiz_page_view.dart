@@ -29,6 +29,7 @@ class _QuizPageViewState extends State<QuizPageView> {
 
   List<int> _selectedAnswers = [];
   List<TextEditingController> _identificationControllers = [];
+  List<Map<String, dynamic>> _results = [];
 
   @override
   void initState() {
@@ -185,8 +186,9 @@ class _QuizPageViewState extends State<QuizPageView> {
                             padding: const EdgeInsets.only(top: 20.0),
                             child: PrimaryButton(
                                 handlePress: () {
-                                  Navigator.restorablePushNamed(
-                                      context, '/quiz_result');
+                                  _checkAllAnswers();
+                                  // Navigator.restorablePushNamed(
+                                  //     context, '/quiz_result');
                                 },
                                 text: 'Finish Attempt',
                                 enabled: true),
@@ -325,5 +327,57 @@ class _QuizPageViewState extends State<QuizPageView> {
           ),
       ],
     );
+  }
+
+  void _checkAllAnswers() {
+    final quizViewModel = context.read<QuizPageViewModel>();
+
+    for (int i = 0; i < _totalItems; i++) {
+      bool isCorrect;
+
+      if (quizViewModel.allQuestions[i]['type'] == 1) {
+        // Identification question
+        String correctAnswer = quizViewModel.allQuestions[i]['answer'];
+        String userAnswer = _identificationControllers[i].text;
+
+        isCorrect = userAnswer.toLowerCase() == correctAnswer.toLowerCase();
+      } else {
+        // Multiple choice question
+        List<Map<String, Object>> answers =
+            (quizViewModel.allQuestions[i]['answers'] as List)
+                .cast<Map<String, Object>>();
+
+        isCorrect = true;
+        for (int j = 0; j < answers.length; j++) {
+          bool isSelected = _selectedAnswers[i] == j;
+          bool isAnswerCorrect = answers[j]['isCorrect'] == true;
+
+          if ((isSelected && !isAnswerCorrect) ||
+              (!isSelected && isAnswerCorrect)) {
+            isCorrect = false;
+            break;
+          }
+        }
+      }
+
+      // Store the result
+      _results.add({
+        'question': quizViewModel.allQuestions[i]['question'],
+        'userAnswer': quizViewModel.allQuestions[i]['type'] == 1
+            ? _identificationControllers[i].text
+            : _selectedAnswers[i],
+        'isCorrect': isCorrect,
+      });
+    }
+
+    // Print the score in the logs
+    print('Score: ${_calculateScore()} / $_totalItems');
+
+    // You can navigate to the result page or provide feedback to the user
+    //Navigator.restorablePushNamed(context, '/quiz_result');
+  }
+
+  int _calculateScore() {
+    return _results.where((result) => result['isCorrect']).length;
   }
 }
