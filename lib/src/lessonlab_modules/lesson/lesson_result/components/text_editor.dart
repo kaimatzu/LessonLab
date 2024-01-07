@@ -39,6 +39,7 @@ class _TextEditor extends State<TextEditor> {
 
   @override
   void initState() {
+    // final lessonResultViewModel = context.watch<LessonResultViewModel>(); // PROBLEM HERE
     super.initState();
 
     // Start listening to the stream in initState
@@ -63,9 +64,13 @@ class _TextEditor extends State<TextEditor> {
 
   @override
   Widget build(BuildContext context) {
-    // final lessonResultViewModel = context.watch<LessonResultViewModel>();
-
+    final lessonResultViewModel = context.watch<LessonResultViewModel>();
+    
     // var message = "";
+    lessonResultViewModel.lessonContent = _controller.document.toPlainText();
+    if(_doneGenerating) {
+      lessonResultViewModel.done = true;
+    }
 
     var mdDocument = md.Document(
         encodeHtml: false,
