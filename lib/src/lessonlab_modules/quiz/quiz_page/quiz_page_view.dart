@@ -28,6 +28,8 @@ class _QuizPageViewState extends State<QuizPageView> {
   int _currentItem = 0;
 
   List<int> _selectedAnswers = [];
+  List<TextEditingController> _identificationControllers = [];
+  List<Map<String, dynamic>> _results = [];
 
   @override
   void initState() {
@@ -36,8 +38,14 @@ class _QuizPageViewState extends State<QuizPageView> {
     Future.delayed(Duration.zero, () {
       final quizViewModel = context.read<QuizPageViewModel>();
       setState(() {
-        _totalItems = quizViewModel.questions.length;
+        _totalItems = quizViewModel.allQuestions.length;
+
         _selectedAnswers = List.filled(_totalItems, -1);
+
+        _identificationControllers = List.generate(
+          _totalItems,
+          (index) => TextEditingController(),
+        );
       });
     });
   }
@@ -45,7 +53,7 @@ class _QuizPageViewState extends State<QuizPageView> {
   @override
   Widget build(BuildContext context) {
     final quizViewModel = context.watch<QuizPageViewModel>();
-    _totalItems = quizViewModel.questions.length;
+    _totalItems = quizViewModel.allQuestions.length;
     return Scaffold(
         appBar: const LessonLabAppBar(),
         body: SingleChildScrollView(
@@ -82,7 +90,7 @@ class _QuizPageViewState extends State<QuizPageView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildQuestionWidget(
-                              quizViewModel.questions[_questionIndex],
+                              quizViewModel.allQuestions[_questionIndex],
                               _questionIndex + 1,
                               _questionIndex,
                             ),
@@ -178,8 +186,9 @@ class _QuizPageViewState extends State<QuizPageView> {
                             padding: const EdgeInsets.only(top: 20.0),
                             child: PrimaryButton(
                                 handlePress: () {
-                                  Navigator.restorablePushNamed(
-                                      context, '/quiz_result');
+                                  _checkAllAnswers();
+                                  // Navigator.restorablePushNamed(
+                                  //     context, '/quiz_result');
                                 },
                                 text: 'Finish Attempt',
                                 enabled: true),
@@ -273,25 +282,102 @@ class _QuizPageViewState extends State<QuizPageView> {
                     const SizedBox(
                       height: 40.0,
                     ),
-                    for (int i = 0;
-                        i < (question['answers'] as List).length;
-                        i++)
-                      Answer(
-                        answerText: ((question['answers'] as List?)?[i]
-                                    as Map<String, Object>?)?['answerText']
-                                as String? ??
-                            '',
-                        index: i,
-                        groupValue: _selectedAnswers[index],
-                        answerTap: (value) {
-                          setState(() {
-                            _selectedAnswers[index] = value;
-                          });
-                        },
-                      ),
+                    if (question['type'] == 1)
+                      _buildIdentification(index)
+                    else if (question['type'] == 2)
+                      _buildMultipleChoice(question, index)
                   ]),
             )),
       ],
     );
+  }
+
+  Widget _buildIdentification(int index) {
+    return Column(
+      children: [
+        TextField(
+          controller: _getController(index),
+        )
+      ],
+    );
+  }
+
+  TextEditingController _getController(int index) {
+    while (_identificationControllers.length <= index) {
+      _identificationControllers.add(TextEditingController());
+    }
+    return _identificationControllers[index];
+  }
+
+  Widget _buildMultipleChoice(Map<String, Object> question, int index) {
+    return Column(
+      children: [
+        for (int i = 0; i < (question['answers'] as List).length; i++)
+          Answer(
+            answerText: ((question['answers'] as List?)?[i]
+                    as Map<String, Object>?)?['answerText'] as String? ??
+                '',
+            index: i,
+            groupValue: _selectedAnswers[index],
+            answerTap: (value) {
+              setState(() {
+                _selectedAnswers[index] = value;
+              });
+            },
+          ),
+      ],
+    );
+  }
+
+  void _checkAllAnswers() {
+    final quizViewModel = context.read<QuizPageViewModel>();
+
+    for (int i = 0; i < _totalItems; i++) {
+      bool isCorrect;
+
+      if (quizViewModel.allQuestions[i]['type'] == 1) {
+        // Identification question
+        String correctAnswer = quizViewModel.allQuestions[i]['answer'];
+        String userAnswer = _identificationControllers[i].text;
+
+        isCorrect = userAnswer.toLowerCase() == correctAnswer.toLowerCase();
+      } else {
+        // Multiple choice question
+        List<Map<String, Object>> answers =
+            (quizViewModel.allQuestions[i]['answers'] as List)
+                .cast<Map<String, Object>>();
+
+        isCorrect = true;
+        for (int j = 0; j < answers.length; j++) {
+          bool isSelected = _selectedAnswers[i] == j;
+          bool isAnswerCorrect = answers[j]['isCorrect'] == true;
+
+          if ((isSelected && !isAnswerCorrect) ||
+              (!isSelected && isAnswerCorrect)) {
+            isCorrect = false;
+            break;
+          }
+        }
+      }
+
+      // Store the result
+      _results.add({
+        'question': quizViewModel.allQuestions[i]['question'],
+        'userAnswer': quizViewModel.allQuestions[i]['type'] == 1
+            ? _identificationControllers[i].text
+            : _selectedAnswers[i],
+        'isCorrect': isCorrect,
+      });
+    }
+
+    // Print the score in the logs
+    print('Score: ${_calculateScore()} / $_totalItems');
+
+    // You can navigate to the result page or provide feedback to the user
+    //Navigator.restorablePushNamed(context, '/quiz_result');
+  }
+
+  int _calculateScore() {
+    return _results.where((result) => result['isCorrect']).length;
   }
 }
