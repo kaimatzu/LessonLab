@@ -18,6 +18,11 @@ class LessonResultViewModel with ChangeNotifier {
     // notifyListeners();
   }
 
+  String _lessonContent = "";
+  String get lessonContent => _lessonContent;
+  set lessonContent(String value) {
+    _lessonContent = value;
+  }
   LessonResultModel get lessonResultModel => _lessonResultModel;
 
   LessonResultViewModel() {
@@ -30,7 +35,10 @@ class LessonResultViewModel with ChangeNotifier {
   //   developer.log(">>> regenerate");
   // }
 
-  void returnToMenu(BuildContext context) {
+  Future<void> returnToMenu(BuildContext context) async {
+    await _lessonResultConnectionOrchestrator.saveLesson(lessonContent);
+    developer.log("Lesson content: $lessonContent");
+    // ignore: use_build_context_synchronously
     Navigator.restorablePushNamed(
       context,
       MenuView.routeName,
