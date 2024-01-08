@@ -19,10 +19,10 @@ class LessonResultView extends StatelessWidget {
       handlePress: () {
         if (lessonResultViewModel.done) {
           // lessonResultViewModel.regenerate();
-          lessonResultViewModel.loadViewContent();
+          // lessonResultViewModel.loadViewContent();
         }
       },
-      text: 'Regenerate',
+      text: 'Save and Export Lesson',
       enabled: lessonResultViewModel.done,
     );
 
@@ -32,7 +32,7 @@ class LessonResultView extends StatelessWidget {
           lessonResultViewModel.returnToMenu(context);
         }
       },
-      text: 'Finish',
+      text: 'Save and Finish',
       enabled: lessonResultViewModel.done,
     );
 

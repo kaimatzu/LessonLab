@@ -27,6 +27,10 @@ dependencies:
   shared_preferences: ^2.2.2
   path_provider: ^2.0.14
   flutter_quill: ^9.2.2
+  htmltopdfwidgets: ^0.0.9
+  quill_pdf_converter: ^9.2.2
+  quill_html_converter: ^9.2.2
+  pdf: ^3.10.7
 
 dev_dependencies:
   flutter_test:

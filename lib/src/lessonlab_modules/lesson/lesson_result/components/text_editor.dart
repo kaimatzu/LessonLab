@@ -1,16 +1,26 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view_model.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:provider/provider.dart';
+import 'package:quill_html_converter/quill_html_converter.dart';
 import 'package:rinf/rinf.dart';
 import 'package:lessonlab/messages/results/view_lesson_result/load_lesson.pb.dart'
     as streamMessage;
 
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_quill/markdown_quill.dart';
+import 'package:htmltopdfwidgets/htmltopdfwidgets.dart' as htmlToPdf;
+import 'package:quill_html_converter/quill_html_converter.dart'; 
+import 'package:quill_pdf_converter/quill_pdf_converter.dart'; 
+// import 'package:pdf/src/widgets/page_theme.dart' as pdfTheme;
+// import 'package:pdf/pdf.dart' as pdf;
+import 'package:pdf/widgets.dart' as pw;
+
 import 'dart:async';
 
 const List<Widget> icons = <Widget>[
@@ -36,11 +46,21 @@ class _TextEditor extends State<TextEditor> {
   final QuillController _controller = QuillController.basic();
   late StreamSubscription<RustSignal> streamSubscription;
   String message = "Nothing received yet";
-
+  var markdownContent = "";
   @override
   void initState() {
     // final lessonResultViewModel = context.watch<LessonResultViewModel>(); // PROBLEM HERE
     super.initState();
+    
+    var mdDocument = md.Document(
+        encodeHtml: false,
+        extensionSet: md.ExtensionSet.gitHubFlavored,
+        // you can add custom syntax.
+        blockSyntaxes: [const EmbeddableTableSyntax()]);
+
+    final mdToDelta = MarkdownToDelta(
+      markdownDocument: mdDocument,
+    );
 
     // Start listening to the stream in initState
     streamSubscription = rustBroadcaster.stream
@@ -54,7 +74,11 @@ class _TextEditor extends State<TextEditor> {
         _doneGenerating = true;
         // lessonResultViewModel.done = true;
       } else {
-        _controller.document.insert(_controller.plainTextEditingValue.text.length - 1, rinfMessage);
+        markdownContent += rinfMessage;
+        if(markdownContent.isNotEmpty) {
+          _controller.document = Document.fromDelta(mdToDelta.convert(markdownContent));
+        }
+        // _controller.document.insert(_controller.plainTextEditingValue.text.length - 1, rinfMessage);
       }
       setState(() {
         // message = rinfMessage;
@@ -170,6 +194,39 @@ class _TextEditor extends State<TextEditor> {
                 onPressed: () {
                   // quillPageNotifier.regenerateSection(_controller);
                   debugPrint("Continue");
+                }),
+            QuillToolbarCustomButtonOptions(
+                icon: Icon(Icons.picture_as_pdf_outlined),
+                tooltip: "Create PDF from lesson",
+                onPressed: () async {
+                    debugPrint(_controller.document.toDelta().toHtml());
+                    var widgets = await _controller.document.toDelta().toPdf();
+                    var filePath = './test/example.pdf';
+                    var file = File(filePath);
+                    final newpdf = htmlToPdf.Document();
+                    newpdf.addPage(htmlToPdf.MultiPage(
+                        maxPages: 200,
+                        theme: pw.ThemeData(
+                          defaultTextStyle: pw.TextStyle(fontSize: 12),
+                          paragraphStyle: pw.TextStyle(fontSize: 12),
+                          header0: pw.TextStyle(fontSize: 28, fontWeight: pw.FontWeight.bold),
+                          header1: pw.TextStyle(fontSize: 25, fontWeight: pw.FontWeight.bold),
+                          header2: pw.TextStyle(fontSize: 23, fontWeight: pw.FontWeight.bold),
+                          header3: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+                          header4: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+                          header5: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+                          bulletStyle: pw.TextStyle(fontSize: 12),
+                          tableHeader: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+                          tableCell: pw.TextStyle(fontSize: 12),
+                          softWrap: true,
+                          textAlign: pw.TextAlign.left,
+                          overflow: pw.TextOverflow.clip,
+                          maxLines: null, // Unlimited lines
+                        ),
+                        build: (context) {
+                          return widgets;
+                        }));
+                    await file.writeAsBytes(await newpdf.save());
                 }),
           ]),
     );
