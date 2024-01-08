@@ -20,7 +20,7 @@ class LessonSpecificationsView extends StatelessWidget {
     return Scaffold(
       appBar: const LessonLabAppBar(),
         body: Padding(
-          padding: const EdgeInsets.fromLTRB(30.0, 20.0, 30.0, 0.0),
+          padding: const EdgeInsets.fromLTRB(20.0, 20.0, 30.0, 0.0),
           child: Row(
             children: [
             // Left side (scrollable form)
