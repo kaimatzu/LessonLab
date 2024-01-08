@@ -17,7 +17,7 @@ class UploadScreen extends StatelessWidget {
 
     const noFilesStyle = TextStyle(color: Colors.grey);
     const fileNameTextStyle =
-        TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold);
+        TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(70, 70, 70, 1));
     const emptyPadding = EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0);
     const filePadding = EdgeInsets.fromLTRB(14.0, 0.0, 14.0, 4.0);
 
