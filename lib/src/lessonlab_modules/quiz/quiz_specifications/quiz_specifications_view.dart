@@ -62,7 +62,7 @@ class QuizSpecificationsView extends StatelessWidget {
             ),
             // Right side (Ha o mukidashite pa-ppa-ppa)
             Padding(
-              padding: const EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 30.0),
+              padding: const EdgeInsets.fromLTRB(50.0, 0.0, 50.0, 30.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -74,6 +74,7 @@ class QuizSpecificationsView extends StatelessWidget {
                           quizSpecificationsViewModel.cancelQuiz(context);
                         },
                         text: 'Cancel',
+                        width: 120.0
                       ),
                       // const SizedBox(width: 30.0),
                       // PrimaryButton(

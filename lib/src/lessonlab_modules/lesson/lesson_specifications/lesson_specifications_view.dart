@@ -133,6 +133,7 @@ class LessonSpecificationsView extends StatelessWidget {
                                     lessonSpecificationsViewModel.cancelLesson(context);
                                   },
                                   text: 'Cancel',
+                                  width: 120.0,
                                 ),
                                 const SizedBox(width: 8.0),
                                 PrimaryButton(
