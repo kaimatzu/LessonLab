@@ -150,6 +150,7 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
 
   void generateQuiz(BuildContext context) {
     // Navigator.restorablePushNamed(context, LessonResultView.routeName);
+    // TODO: send quiz specs to backend using orchestrator
     Navigator.restorablePushNamed(context, QuizPageView.routeName);
   }
 }
