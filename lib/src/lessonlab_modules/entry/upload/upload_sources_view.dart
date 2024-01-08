@@ -21,6 +21,7 @@ class UploadSourcesView extends StatelessWidget {
     var cancel = SecondaryButton(
       handlePress: () => uploadViewModel.cancelUpload(context),
       text: 'Cancel',
+      width: 120,
     );
     var newLesson = PrimaryButton(
       handlePress: () {
@@ -46,7 +47,7 @@ class UploadSourcesView extends StatelessWidget {
           Expanded(
             flex: 3,
             child: Padding(
-                padding: const EdgeInsets.fromLTRB(30.0, 30.0, 0.0, 0.0),
+                padding: const EdgeInsets.fromLTRB(20.0, 30.0, 0.0, 0.0),
                 child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15.0),
