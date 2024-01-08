@@ -13,3 +13,12 @@ message ReadResponse {
 }
 
 message StateSignal { string stream_message = 1; }
+
+
+message CreateRequest {
+    string lesson_content = 1;
+}
+
+message CreateResponse {
+    uint32 status_code = 1;
+}

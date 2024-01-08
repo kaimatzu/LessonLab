@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view_model.dart';
@@ -7,6 +9,10 @@ import 'package:rinf/rinf.dart';
 import 'package:lessonlab/messages/results/view_lesson_result/load_lesson.pb.dart'
     as streamMessage;
 
+import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_quill/markdown_quill.dart';
+import 'dart:async';
+
 const List<Widget> icons = <Widget>[
   Icon(Icons.code),
   Icon(Icons.html),
@@ -15,204 +21,243 @@ const List<Widget> icons = <Widget>[
 class TextEditor extends StatefulWidget {
   const TextEditor({
     Key? key,
-    required this.title,
-    required this.mdContents,
-    required this.cssContents,
   }) : super(key: key);
-
-  final String title;
-  final String mdContents;
-  final String cssContents;
 
   @override
   State<TextEditor> createState() => _TextEditor();
 }
 
 class _TextEditor extends State<TextEditor> {
-  final List<bool> _richView = <bool>[true, false];
   var _doneGenerating = false;
-  var mdContentFinal = "";
-  var htmlContent = "";
+  // var mdContentFinal = "a";
+  // var htmlContent = "";
   // var noStreamValue = 0;
-  late TextEditingController textController;
+  // late TextEditingController textController;
+  final QuillController _controller = QuillController.basic();
+  late StreamSubscription<RustSignal> streamSubscription;
+  String message = "Nothing received yet";
+
+  @override
+  void initState() {
+    // final lessonResultViewModel = context.watch<LessonResultViewModel>(); // PROBLEM HERE
+    super.initState();
+
+    // Start listening to the stream in initState
+    streamSubscription = rustBroadcaster.stream
+        .where((rustSignal) => rustSignal.resource == streamMessage.ID)
+        .listen((RustSignal rustSignal) {
+      // Handle the stream data here
+      final signal = streamMessage.StateSignal.fromBuffer(rustSignal.message!);
+      final rinfMessage = signal.streamMessage;
+      debugPrint(rinfMessage);
+      if (rinfMessage == "[LL_END_STREAM]") {
+        _doneGenerating = true;
+        // lessonResultViewModel.done = true;
+      } else {
+        _controller.document.insert(_controller.plainTextEditingValue.text.length - 1, rinfMessage);
+      }
+      setState(() {
+        // message = rinfMessage;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final lessonResultViewModel = context.watch<LessonResultViewModel>();
+    
+    // var message = "";
+    lessonResultViewModel.lessonContent = _controller.document.toPlainText();
+    if(_doneGenerating) {
+      lessonResultViewModel.done = true;
+    }
 
-    // the main component of this view is the stack where it will hold both
-    // raw markdown text and formatted markdown text for display
-    // ---- Stack ----
-    /// A widget that positions its children relative to the edges of its box.
-    ///
-    /// This class is useful if you want to overlap several children in a simple
-    /// way, for example having some text and an image, overlaid with a gradient and
-    /// a button attached to the bottom.
+    var mdDocument = md.Document(
+        encodeHtml: false,
+        extensionSet: md.ExtensionSet.gitHubFlavored,
+        // you can add custom syntax.
+        blockSyntaxes: [const EmbeddableTableSyntax()]);
 
-    // there are three things in the stack
-    // 2 are Visibility and 1 is Position
-    // `html`, `rawMd` = Visibility
-    // `viewSelector` = Positioned
-    // the `viewSelector` = is an absolute position widget at the top right of the text-view/editor
-    // which you can use two switch between the 2 visibilities
-    // the two Visibility variables in the stack
-    // `html` is the formatted text of a markdown
-    // `rawMd` is the pre-formatted text of a markdown
+    final mdToDelta = MarkdownToDelta(
+      markdownDocument: mdDocument,
 
-    // This the EDIT view
-    var rawMd = Visibility(
-      visible: _richView[0],
-      child: Container(
-          // Render Placeholder when _richview is set to [false, true]
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 49, 51, 56),
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: StreamBuilder<RustSignal>(
-            stream: rustBroadcaster.stream.where((rustSignal) {
-              return rustSignal.resource == streamMessage.ID;
-            }),
-            builder: (context, snapshot) {
-              final rustSignal = snapshot.data;
-              if (rustSignal != null) {
-                final signal = streamMessage.StateSignal.fromBuffer(
-                  rustSignal.message!,
-                );
-                final rinfMessage = signal.streamMessage;
-                if (rinfMessage == "[LL_END_STREAM]") {
-                  _doneGenerating = true;
-                  lessonResultViewModel.done = true;
-                } else {
-                  textController.text += rinfMessage;
-                  htmlContent = md.markdownToHtml(textController.text);
-                }
-                // mdContentFinal += rinfMessage;
-              }
-              return TextFormField(
-                controller: textController,
-                onChanged: (_) => updateHtmlContent(),
-                readOnly: !_doneGenerating,
-                style: const TextStyle(
-                    color: Colors.white, fontSize: 16, height: 1.6),
-                maxLines: null,
-                decoration: const InputDecoration(
-                  hintText: 'Enter your text here...',
-                  hintStyle: TextStyle(
-                    color: Colors.grey,
+      // // you can add custom attributes based on tags
+      // customElementToBlockAttribute: {
+      //   'h4': (element) => [HeaderAttribute(level: 4)],
+      // },
+      // // custom embed
+      // customElementToEmbeddable: {
+      //   EmbeddableTable.tableType: EmbeddableTable.fromMdSyntax,
+      // },
+    );
+
+    // const markdown = "# test";
+
+    // var html = md.markdownToHtml(markdown);
+
+    var toolbar = QuillToolbar.simple(
+      configurations: QuillSimpleToolbarConfigurations(
+          controller: _controller,
+          buttonOptions: QuillSimpleToolbarButtonOptions(
+              base: QuillToolbarBaseButtonOptions(
+                iconTheme: QuillIconTheme(
+                  iconButtonSelectedData: IconButtonData(
+                    color: Colors.amber,
+                    style: IconButton.styleFrom(
+                      foregroundColor: Colors.amberAccent,
+                    ),
                   ),
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 49, 51, 56),
-                  border: OutlineInputBorder(),
+                  iconButtonUnselectedData: IconButtonData(
+                    color: Colors.amber,
+                    style: IconButton.styleFrom(
+                      foregroundColor: Colors.amberAccent,
+                    ),
+                  ),
                 ),
-              );
-            },
-          )),
-    );
-
-    // this the SWITCH at the top right of the textview/texteditor
-    var viewSelector = Positioned(
-      top: 10,
-      right: 10,
-      child: ToggleButtons(
-        direction: Axis.horizontal,
-        onPressed: (int index) {
-          if (_doneGenerating) {
-            updateHtmlContent();
-            setState(() {
-              // The button that is tapped is set to true, and the others to false.
-              for (int i = 0; i < _richView.length; i++) {
-                _richView[i] = i == index;
-              }
-            });
-          }
-        },
-        constraints: const BoxConstraints(
-          minHeight: 20.0,
-          minWidth: 40.0,
-        ),
-        borderRadius: const BorderRadius.all(Radius.circular(8)),
-        borderColor: Colors.amber,
-        selectedBorderColor: Colors.amber,
-        selectedColor: Colors.white,
-        fillColor: Colors.amber,
-        color: Colors.amber,
-        isSelected: _richView,
-        children: icons,
-      ),
-    );
-
-    // This the DISPLAY view
-    var html = Visibility(
-      visible: _richView[1],
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 49, 51, 56),
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Builder(
-          builder: (context) {
-            // SelectableText.rich()
-            return SelectionArea(
-              child: Html(
-                data: '<div class="markdown-body">$htmlContent</div>',
-                style: Style.fromCss(widget.cssContents, (css, errors) => null),
               ),
-            );
-          },
-        ),
-      ),
+              selectHeaderStyleButtons:
+                  QuillToolbarSelectHeaderStyleButtonsOptions(
+                      iconTheme: QuillIconTheme(
+                iconButtonSelectedData: IconButtonData(
+                  color: Colors.amber,
+                  style: IconButton.styleFrom(
+                    foregroundColor: Colors.amberAccent,
+                  ),
+                ),
+                iconButtonUnselectedData: IconButtonData(
+                  color: Colors.amber,
+                  style: IconButton.styleFrom(
+                    foregroundColor: Colors.amberAccent,
+                  ),
+                ),
+              )),
+              selectHeaderStyleDropdownButton:
+                  QuillToolbarSelectHeaderStyleDropdownButtonOptions(
+                      textStyle: TextStyle(color: Colors.amber))),
+          headerStyleType: HeaderStyleType.original,
+          // Maybe re-add these once things are figured out, but disable it for now.
+          showFontSize: false,
+          showSuperscript: false,
+          showSubscript: false,
+          showFontFamily: false,
+          showColorButton: false,
+          showBackgroundColorButton: false,
+          customButtons: [
+            QuillToolbarCustomButtonOptions(
+                icon: Icon(Icons.restart_alt),
+                tooltip: "Regenerate",
+                iconTheme: QuillIconTheme(
+                  iconButtonSelectedData: IconButtonData(
+                    color: Colors.amber,
+                    style: IconButton.styleFrom(
+                      foregroundColor: Colors.amberAccent,
+                    ),
+                  ),
+                  iconButtonUnselectedData: IconButtonData(
+                    color: Colors.amber,
+                    style: IconButton.styleFrom(
+                      foregroundColor: Colors.amberAccent,
+                    ),
+                  ),
+                ),
+                onPressed: () {
+                  // quillPageNotifier.regenerateSection(_controller);
+                  debugPrint("Regenerate section of text");
+                }),
+            QuillToolbarCustomButtonOptions(
+                icon: Icon(Icons.add_outlined),
+                tooltip: "Continue lesson from this point",
+                onPressed: () {
+                  // quillPageNotifier.regenerateSection(_controller);
+                  debugPrint("Continue");
+                }),
+          ]),
     );
 
-    // ======= THE STACK =======
-    var stack = Stack(
-      children: [
-        rawMd, // -> Visibility
-        html, // -> Visibility
-        viewSelector, // -> Positioned
-      ],
-    );
+    var editor = QuillEditor.basic(
+        // Pass the controller to QuillEditor
+        configurations: QuillEditorConfigurations(
+      controller: _controller,
+      autoFocus: true,
+      readOnly: !_doneGenerating,
+      padding: EdgeInsets.only(left: 30, top: 5, right: 30, bottom: 30),
+      customStyles: DefaultStyles(
+          h1: DefaultTextBlockStyle(
+              TextStyle(
+                  color: Colors.amber,
+                  fontSize: 30,
+                  fontWeight: FontWeight.w700),
+              VerticalSpacing(16, 0),
+              VerticalSpacing(0, 0),
+              null),
+          h2: DefaultTextBlockStyle(
+              TextStyle(
+                  color: Colors.amber,
+                  fontSize: 25,
+                  fontWeight: FontWeight.w500),
+              VerticalSpacing(16, 0),
+              VerticalSpacing(0, 0),
+              null),
+          h3: DefaultTextBlockStyle(
+              TextStyle(
+                  color: Colors.amber,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500),
+              VerticalSpacing(16, 0),
+              VerticalSpacing(0, 0),
+              null),
+          paragraph: DefaultTextBlockStyle(
+              TextStyle(
+                color: Colors.amber,
+                fontSize: 15,
+              ),
+              VerticalSpacing(16, 0),
+              VerticalSpacing(0, 0),
+              null),
+          strikeThrough: TextStyle(
+              color: Colors.amber, decoration: TextDecoration.lineThrough),
+          sizeSmall: TextStyle(color: Colors.amber),
+          italic: TextStyle(color: Colors.amber, fontStyle: FontStyle.italic),
+          bold: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+          underline: TextStyle(
+              color: Colors.amber, decoration: TextDecoration.underline),
+          color: Colors.amber),
+    )
+        // textSelectionThemeData: TextSelectionThemeData(selectionColor: Colors.amber)
+        );
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          // Render title
-          TextFormField(
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
+          // Insert text area here
+          Center(
+              child: Container(
+            height:
+                400, // TODO: Need to change this into dynamic depending on screen size
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 49, 51, 56),
+              borderRadius: BorderRadius.circular(8.0),
             ),
-            initialValue: widget.title,
-            decoration: const InputDecoration(
-              hintText: 'Enter your title here...',
-              hintStyle: TextStyle(
-                color: Colors.grey,
-                fontWeight: FontWeight.normal,
-              ),
-              filled: true,
-              fillColor: Color.fromARGB(255, 49, 51, 56),
-              border: OutlineInputBorder(),
+            child: Column(
+              children: [
+                toolbar,
+                // VerticalDivider(width: 2.0, color: Colors.black), // Doesn't seem to work
+                Expanded(
+                  child: editor,
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 30.0),
-          stack,
-          const SizedBox(height: 16.0),
+          )),
         ],
       ),
     );
   }
 
   @override
-  void initState() {
-    super.initState();
-    textController = TextEditingController(text: widget.mdContents);
-    updateHtmlContent(); // Call this to update the HTML content initially
-  }
-
-  void updateHtmlContent() {
-    setState(() {
-      htmlContent = md.markdownToHtml(textController.text);
-    });
+  void dispose() {
+    // Cancel the stream subscription in dispose
+    streamSubscription.cancel();
+    super.dispose();
   }
 }
