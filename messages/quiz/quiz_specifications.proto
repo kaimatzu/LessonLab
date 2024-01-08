@@ -1,0 +1,35 @@
+syntax = "proto3";
+package quiz_specifications;
+
+message CreateRequest {
+    repeated string quiz_specifications = 1;
+}
+
+message CreateResponse {
+    uint32 status_code = 1; 
+}
+
+message ReadRequest {
+    bool req = 1;
+}
+  
+message ReadResponse {
+    uint32 status_code = 1;
+    repeated string quiz_specifications = 2;
+}
+
+message UpdateRequest {
+    bool req = 1;
+}
+
+message UpdateResponse {
+    uint32 status_code = 1;
+}
+
+message DeleteRequest {
+    bool req = 1;
+}
+
+message DeleteResponse {
+    uint32 status_code = 1;
+}

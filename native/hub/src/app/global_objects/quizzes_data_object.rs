@@ -1,15 +1,40 @@
 use serde::{Deserialize, Serialize};
 
+use crate::app::results::lesson_result_data_object::Sources;
+
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Quiz{
     pub id: u32,
+    // pub quiz_type: i32, // 1 = Identification | 2 = Multiple Choice 
     pub title: String,
     pub target_path: String,
-    pub questions: Vec<Question>
+    pub questions: Vec<Question>,
+    pub sources: Sources // Sources from lesson_result_data_object
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum Question{
+    Identification(IdentificationQuestion),
+    MultipleChoice(MultipleChoiceQuestion)
+}
+
+impl Default for Question {
+    fn default() -> Self {
+        Self::MultipleChoice(MultipleChoiceQuestion{
+            question: "Question".to_string(),
+            choices: Vec::new()
+        })
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
-pub struct Question{
+pub struct IdentificationQuestion{
+    pub question: String,
+    pub answer: String
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+pub struct MultipleChoiceQuestion{
     pub question: String,
     pub choices: Vec<Choice>
 }

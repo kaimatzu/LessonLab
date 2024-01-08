@@ -26,11 +26,24 @@ message QuizModel {
 	string title = 2;
 	repeated QuestionModel questions = 3;
 	string location = 4;
+    Sources sources = 5;
 }
 
 message QuestionModel {
 	string question = 1;
-	repeated ChoiceModel choices = 2;
+    uint32 type = 2;
+    oneof question_type {
+        IdentificationQuestionModel identification = 3;
+        MultipleChoiceQuestionModel multipleChoice = 4;
+    }
+}
+
+message IdentificationQuestionModel {
+    string answer = 1;
+}
+
+message MultipleChoiceQuestionModel {
+    repeated ChoiceModel choices = 1;
 }
 
 message ChoiceModel {

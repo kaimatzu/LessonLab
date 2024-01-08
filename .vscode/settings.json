@@ -1,8 +1,9 @@
 {
-    "vscord.enabled": true,
-	"liveshare.allowGuestDebugControl": true,
-	"liveshare.allowGuestTaskControl": true,
-	"liveshare.languages.allowGuestCommandControl": true,
-	"liveshare.openSharedServers": false,
-	"liveshare.publishWorkspaceInfo": true,
+  "vscord.enabled": true,
+  "liveshare.allowGuestDebugControl": true,
+  "liveshare.allowGuestTaskControl": true,
+  "liveshare.languages.allowGuestCommandControl": true,
+  "liveshare.openSharedServers": false,
+  "liveshare.publishWorkspaceInfo": true,
+  "rust-analyzer.linkedProjects": [".\\native\\hub\\Cargo.toml"]
 }

@@ -9,17 +9,31 @@ import 'package:lessonlab/messages/lesson/lesson_specifications.pb.dart'
     as RinfInterface;
 import 'package:lessonlab/src/lessonlab_modules/quiz/components/number_field.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/components/text_area.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_connection_orchestrator.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view.dart';
 // import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 import 'package:rinf/rinf.dart';
 
 class QuizPageViewModel extends ChangeNotifier {
-  QuizPageViewModel() {}
+  QuizPageViewModel();
+  final QuizPageConnectionOrchestrator orchestrator =
+      QuizPageConnectionOrchestrator();
+  final QuizPageModel model = QuizPageModel();
 
-  //TODO: GET QUESTIONS FROM BACKEND
+  // TODO: GET QUESTIONS FROM BACKEND
 
+  get questions => model.quiz.questions;
+
+  void getQuizModel() {
+    orchestrator.getQuizModel().then((value) => model.quiz = value);
+  }
+}
+
+/*
   final _questions = const [
     {
+      // `QuestionModel`
       'question': 'How long is New Zealand’s Ninety Mile Beach?',
       'answers': [
         {
@@ -128,5 +142,4 @@ class QuizPageViewModel extends ChangeNotifier {
     },
   ];
 
-  get questions => _questions;
-}
+*/

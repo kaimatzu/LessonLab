@@ -18,7 +18,7 @@ class LessonResultView extends StatelessWidget {
     var regenerate = PrimaryButton(
       handlePress: () {
         if (lessonResultViewModel.done) {
-          // lessonResultViewModel.regenerate();
+          // run loadViewContent() function to regenerate
           lessonResultViewModel.loadViewContent();
         }
       },
