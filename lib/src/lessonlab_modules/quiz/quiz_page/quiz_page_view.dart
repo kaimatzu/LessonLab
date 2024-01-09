@@ -3,9 +3,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
+import 'package:lessonlab/src/global_models/choice_model.dart';
+import 'package:lessonlab/src/global_models/question_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/components/answer.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view_model.dart';
 import 'package:provider/provider.dart';
+
+import 'dart:developer' as developer;
 
 class QuizPageView extends StatefulWidget {
   const QuizPageView({
@@ -18,9 +22,9 @@ class QuizPageView extends StatefulWidget {
   State<QuizPageView> createState() => _QuizPageViewState();
 }
 
-//TODO: MAKE IDENTIFICATION TYPE QUIZ
+// TODO: MAKE IDENTIFICATION TYPE QUIZ
 
-//THIS IS MULTIPLE CHOICE QUIZ
+// THIS IS MULTIPLE CHOICE QUIZ
 class _QuizPageViewState extends State<QuizPageView> {
   int _questionIndex = 0;
 
@@ -33,6 +37,9 @@ class _QuizPageViewState extends State<QuizPageView> {
   Widget build(BuildContext context) {
     final quizViewModel = context.watch<QuizPageViewModel>();
     _totalItems = quizViewModel.questions.length;
+
+    developer.log("questions.length: ${quizViewModel.questions.length}",
+        name: "build");
 
     return Scaffold(
         appBar: const LessonLabAppBar(),
@@ -50,7 +57,7 @@ class _QuizPageViewState extends State<QuizPageView> {
                     height: 200.0,
                     width: 150,
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 253, 237, 183),
+                      color: const Color.fromARGB(255, 253, 237, 183),
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     child: Container(
@@ -70,7 +77,8 @@ class _QuizPageViewState extends State<QuizPageView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildQuestionWidget(
-                              quizViewModel.questions[_questionIndex],
+                              quizViewModel.questions[_questionIndex]!,
+                              // questionsMap[_questionIndex],
                               _questionIndex + 1,
                               _questionIndex,
                             ),
@@ -114,7 +122,7 @@ class _QuizPageViewState extends State<QuizPageView> {
                             width: 350.0,
                             constraints: const BoxConstraints(minHeight: 200.0),
                             decoration: BoxDecoration(
-                              color: Color.fromARGB(255, 253, 237, 183),
+                              color: const Color.fromARGB(255, 253, 237, 183),
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                             child: Padding(
@@ -138,7 +146,7 @@ class _QuizPageViewState extends State<QuizPageView> {
                                         width: 35.0,
                                         decoration: BoxDecoration(
                                             color: _questionIndex == index
-                                                ? Color.fromARGB(
+                                                ? const Color.fromARGB(
                                                     255, 49, 51, 56)
                                                 : Colors.amber,
                                             border: Border.all(
@@ -150,7 +158,7 @@ class _QuizPageViewState extends State<QuizPageView> {
                                             style: TextStyle(
                                                 color: _questionIndex == index
                                                     ? Colors.amber
-                                                    : Color.fromARGB(
+                                                    : const Color.fromARGB(
                                                         255, 49, 51, 56),
                                                 fontWeight: FontWeight.bold),
                                           ),
@@ -222,65 +230,69 @@ class _QuizPageViewState extends State<QuizPageView> {
   }
 
   Widget _buildQuestionWidget(
-      Map<String, Object> question, int questionNumber, int index) {
+      QuestionModel question, int questionNumber, int index) {
+    // Map<String, Object> question, int questionNumber, int index) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-            margin: const EdgeInsets.only(
-              bottom: 10.0,
-            ),
-            height: 350.0,
-            width: 600.0,
-            constraints: const BoxConstraints(
-              minHeight: 350.0,
-              maxHeight: 350.0,
-              maxWidth: 600.0,
-            ),
-            padding: EdgeInsets.symmetric(
-              horizontal:
-                  _calculateHorizontalPadding(question['question'] as String),
-              vertical: 20.0,
-            ),
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 253, 237, 183),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 20.0,
+          margin: const EdgeInsets.only(
+            bottom: 10.0,
+          ),
+          height: 350.0,
+          width: 600.0,
+          constraints: const BoxConstraints(
+            minHeight: 350.0,
+            maxHeight: 350.0,
+            maxWidth: 600.0,
+          ),
+          padding: EdgeInsets.symmetric(
+            horizontal: _calculateHorizontalPadding(question.question),
+            vertical: 20.0,
+          ),
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 253, 237, 183),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: 20.0,
+                ),
+                Text(
+                  question.question,
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(
+                    fontSize: 15.0,
+                    color: Color.fromARGB(255, 49, 51, 56),
+                  ),
+                  softWrap: true,
+                  maxLines: null,
+                ),
+                const SizedBox(
+                  height: 40.0,
+                ),
+                for (ChoiceModel choice
+                    in (question as MultipleChoiceQuestionModel).choices)
+                  // for (Map<String, Object> answer
+                  // in (question['answers'] as List<Map<String, Object>>))
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Answer(
+                      answerText: choice.content,
+                      isSelected: false,
+                      answerTap: (bool? selected) {
+                        _selectAnswer(selected, index);
+                      },
                     ),
-                    Text(
-                      '${question['question']}',
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        fontSize: 15.0,
-                        color: Color.fromARGB(255, 49, 51, 56),
-                      ),
-                      softWrap: true,
-                      maxLines: null,
-                    ),
-                    const SizedBox(
-                      height: 40.0,
-                    ),
-                    for (Map<String, Object> answer
-                        in (question['answers'] as List<Map<String, Object>>))
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Answer(
-                          answerText: answer['answerText'] as String,
-                          isSelected: false,
-                          answerTap: (bool? selected) {
-                            _selectAnswer(selected, index);
-                          },
-                        ),
-                      ),
-                  ]),
-            )),
+                  ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }

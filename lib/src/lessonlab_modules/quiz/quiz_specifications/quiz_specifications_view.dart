@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_components/secondary_button.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications/quiz_specifications_view_model.dart';
 // import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 import 'package:provider/provider.dart';
+
+import 'dart:developer' as developer;
 
 class QuizSpecificationsView extends StatelessWidget {
   const QuizSpecificationsView({
@@ -17,6 +20,7 @@ class QuizSpecificationsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final quizSpecificationsViewModel =
         context.watch<QuizSpecificationsViewModel>();
+    final quizPageViewModel = context.watch<QuizPageViewModel>();
 
     return Scaffold(
       appBar: const LessonLabAppBar(),
@@ -67,7 +71,10 @@ class QuizSpecificationsView extends StatelessWidget {
             PrimaryButton(
               handlePress: () {
                 //quizSpecificationsViewModel.collectFormTextValues();
-                quizSpecificationsViewModel.generateQuiz(context);
+                quizPageViewModel.loadQuizModel();
+                developer.log("quiz model loaded");
+                quizSpecificationsViewModel.generateQuiz(
+                    context, quizPageViewModel);
                 // lessonSpecificationsViewModel.sendData();
                 // lessonSpecificationsViewModel.getData();
               },
