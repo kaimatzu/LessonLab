@@ -50,7 +50,7 @@ pub mod lesson_result_data_handlers {
         use crate::messages::results::view_lesson_result::load_lesson::{CreateRequest, CreateResponse, ReadRequest, ReadResponse};
         
         // TODO: MAKE THIS GLOBAL
-        let release = true; // DEBUG MODE
+        // let release = true; // DEBUG MODE
     
         match rust_request.operation {
             RustOperation::Create => {
@@ -58,10 +58,11 @@ pub mod lesson_result_data_handlers {
                 let request_message = CreateRequest::decode(message_bytes.as_slice()).unwrap();
 
                 let lesson_content = request_message.lesson_content;
-                
-                let sanitized_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone().replace(" ", "_");
-                
-                // File path of config.json
+
+                let sanitized_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone();
+                let sanitized_title = sanitized_title.split_at(8).1;
+
+                crate::debug_print!("Lesson Title: {}", sanitized_title);
                 let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
                 
                 // File path of target/output.md
@@ -156,8 +157,10 @@ pub mod lesson_result_data_handlers {
                     sources.source_texts.push(text.clone())
                 }
                 
-                let sanitized_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone().replace(" ", "_");
-                
+                let sanitized_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone();
+                let sanitized_title = sanitized_title.split_at(8).1;
+
+                crate::debug_print!("Lesson Title: {}", sanitized_title);
                 // File path of config.json
                 let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
                 
@@ -181,7 +184,7 @@ pub mod lesson_result_data_handlers {
                     id: i,
                     sources,
                     target_path: target_folder_path.to_owned(),
-                    title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone()
+                    title: sanitized_title.to_string()
                 };
                 
                 // TODO: Move inside write_lesson_to_config_file
@@ -255,10 +258,12 @@ pub mod lesson_result_data_handlers {
                 //         blob: None,
                 //     }
                 // }   
+                // let ui_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone();
+                // let ui_title = ui_title.split_at(8).1.to_string();
 
                 let response_message = ReadResponse {
                     status_code: StatusCode::OK.as_u16() as u32,
-                    title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+                    title: sanitized_title.to_string(),
                     md_content: "MOVED LESSON GENERATION".to_string(), // TODO: Need to remove this from rinf
                     error_string: String::from("No error")
                 };
