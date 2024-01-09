@@ -20,26 +20,26 @@ pub mod lesson_result_data_handlers {
     
     use crate::app::global_objects::lessons_data_object::{Lesson, LessonsDataObject};
     
-    impl LessonsDataObject{
-        fn create_lesson(&mut self, new_lesson: Lesson) {
-            // Check for duplicate target_path before adding
-            if !self.lessons.iter().any(|lesson| lesson.target_path == new_lesson.target_path) {
-                self.lessons.push(new_lesson);
-                crate::debug_print!("Lesson added successfully!");
-            } else {
-                crate::debug_print!("Error: Duplicate target_path found. Lesson not added.");
-            }
-        }
+    // impl LessonsDataObject{
+    //     fn create_lesson(&mut self, new_lesson: Lesson) {
+    //         // Check for duplicate target_path before adding
+    //         if !self.lessons.iter().any(|lesson| lesson.target_path == new_lesson.target_path) {
+    //             self.lessons.push(new_lesson);
+    //             crate::debug_print!("Lesson added successfully!");
+    //         } else {
+    //             crate::debug_print!("Error: Duplicate target_path found. Lesson not added.");
+    //         }
+    //     }
     
-        fn remove_lesson(&mut self, target_path: &str) {
-            if let Some(index) = self.lessons.iter().position(|lesson| lesson.target_path == target_path) {
-                self.lessons.remove(index);
-                crate::debug_print!("Lesson with target_path '{}' removed successfully!", target_path);
-            } else {
-                crate::debug_print!("Error: Lesson with target_path '{}' not found.", target_path);
-            }
-        }
-    }
+    //     fn remove_lesson(&mut self, target_path: &str) {
+    //         if let Some(index) = self.lessons.iter().position(|lesson| lesson.target_path == target_path) {
+    //             self.lessons.remove(index);
+    //             crate::debug_print!("Lesson with target_path '{}' removed successfully!", target_path);
+    //         } else {
+    //             crate::debug_print!("Error: Lesson with target_path '{}' not found.", target_path);
+    //         }
+    //     }
+    // }
     
     // Handler functions
     pub async fn handle_lesson_generation(rust_request: RustRequest,
@@ -50,7 +50,7 @@ pub mod lesson_result_data_handlers {
         use crate::messages::results::view_lesson_result::load_lesson::{CreateRequest, CreateResponse, ReadRequest, ReadResponse};
         
         // TODO: MAKE THIS GLOBAL
-        let release = true; // DEBUG MODE
+        // let release = true; // DEBUG MODE
     
         match rust_request.operation {
             RustOperation::Create => {
@@ -58,10 +58,11 @@ pub mod lesson_result_data_handlers {
                 let request_message = CreateRequest::decode(message_bytes.as_slice()).unwrap();
 
                 let lesson_content = request_message.lesson_content;
-                
-                let sanitized_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone().replace(" ", "_");
-                
-                // File path of config.json
+
+                let sanitized_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone();
+                let sanitized_title = sanitized_title.split_at(8).1;
+
+                crate::debug_print!("Lesson Title: {}", sanitized_title);
                 let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
                 
                 // File path of target/output.md
@@ -107,7 +108,7 @@ pub mod lesson_result_data_handlers {
     
                 let mut string_payload: String = String::new();
                 
-                let mut lessons_json = LessonsDataObject { lessons: Vec::new() };
+                // let mut lessons_json = LessonsDataObject { lessons: Vec::new() };
                 let mut sources = Sources::default();
                 
                 string_payload.push_str("Lesson Specifications \n");
@@ -156,8 +157,10 @@ pub mod lesson_result_data_handlers {
                     sources.source_texts.push(text.clone())
                 }
                 
-                let sanitized_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone().replace(" ", "_");
-                
+                let sanitized_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone();
+                let sanitized_title = sanitized_title.split_at(8).1;
+
+                crate::debug_print!("Lesson Title: {}", sanitized_title);
                 // File path of config.json
                 let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
                 
@@ -181,7 +184,7 @@ pub mod lesson_result_data_handlers {
                     id: i,
                     sources,
                     target_path: target_folder_path.to_owned(),
-                    title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone()
+                    title: sanitized_title.to_string()
                 };
                 
                 // TODO: Move inside write_lesson_to_config_file
@@ -192,7 +195,7 @@ pub mod lesson_result_data_handlers {
                 }
 
                 // Spwaning the thread for creating the lesson
-                tokio::spawn(create_thread_handles());
+                tokio::spawn(create_thread_handles(upload_data_object.file_paths.clone(), upload_data_object.urls.clone(), target_folder_path, lesson_specifications_data_object.lesson_specifications.clone()));
                 
                 // if release {
                 //     match lesson_generator::generate(string_payload) {
@@ -255,10 +258,12 @@ pub mod lesson_result_data_handlers {
                 //         blob: None,
                 //     }
                 // }   
+                // let ui_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone();
+                // let ui_title = ui_title.split_at(8).1.to_string();
 
                 let response_message = ReadResponse {
                     status_code: StatusCode::OK.as_u16() as u32,
-                    title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+                    title: sanitized_title.to_string(),
                     md_content: "MOVED LESSON GENERATION".to_string(), // TODO: Need to remove this from rinf
                     error_string: String::from("No error")
                 };
@@ -336,7 +341,7 @@ pub mod lesson_result_data_handlers {
 
     // runs the lesson_generation in python using a thread
     // runs streaming in different thread
-    pub async fn create_thread_handles() {
+    pub async fn create_thread_handles(files: Vec<String>, urls: Vec<String>, index_path: String, lesson_specifications: Vec<String>) {
         // Create a thread for reading inproc stream concurrently
         let stream_handle = std::thread::spawn(move || {
             let _ = read_tcp_stream();
@@ -345,7 +350,7 @@ pub mod lesson_result_data_handlers {
     
         // Create a thread for generating the lesson
         let generation_handle = std::thread::spawn(move || {
-            if let Err(err) = lesson_generator::generate_lesson_stream() {
+            if let Err(err) = lesson_generator::generate_lesson_stream(files, urls, index_path, lesson_specifications) {
                 eprintln!("Error generating lesson stream: {}\n", err);
                 // Handle the error as needed
             }
