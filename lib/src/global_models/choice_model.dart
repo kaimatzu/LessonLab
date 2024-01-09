@@ -3,7 +3,7 @@ import 'package:lessonlab/messages/quiz/quiz_page.pb.dart'
     as RinfInterface;
 
 class ChoiceModel {
-  late String content;
+  late String content; // AnswerText
   late bool isCorrect;
   late bool isSelected;
 

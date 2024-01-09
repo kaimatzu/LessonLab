@@ -1,14 +1,16 @@
 import 'dart:math';
 
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
+import 'package:lessonlab/src/global_models/choice_model.dart';
+import 'package:lessonlab/src/global_models/question_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/components/answer.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_result/quiz_result_view_model.dart';
 import 'package:provider/provider.dart';
+
+import 'dart:developer' as developer;
 
 class QuizPageView extends StatefulWidget {
   const QuizPageView({
@@ -41,7 +43,7 @@ class _QuizPageViewState extends State<QuizPageView> {
     Future.delayed(Duration.zero, () {
       final quizViewModel = context.read<QuizPageViewModel>();
       setState(() {
-        _totalItems = quizViewModel.allQuestions.length;
+        _totalItems = quizViewModel.questions.length;
 
         _selectedAnswers = List.filled(_totalItems, -1);
 
@@ -56,7 +58,11 @@ class _QuizPageViewState extends State<QuizPageView> {
   @override
   Widget build(BuildContext context) {
     final quizViewModel = context.watch<QuizPageViewModel>();
-    _totalItems = quizViewModel.allQuestions.length;
+    _totalItems = quizViewModel.questions.length;
+
+    developer.log("questions.length: ${quizViewModel.questions.length}",
+        name: "build");
+
     return Scaffold(
         appBar: const LessonLabAppBar(),
         body: SingleChildScrollView(
@@ -93,7 +99,8 @@ class _QuizPageViewState extends State<QuizPageView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildQuestionWidget(
-                              quizViewModel.allQuestions[_questionIndex],
+                              quizViewModel.questions[_questionIndex]!,
+                              // questionsMap[_questionIndex],
                               _questionIndex + 1,
                               _questionIndex,
                             ),
@@ -240,7 +247,7 @@ class _QuizPageViewState extends State<QuizPageView> {
   }
 
   Widget _buildQuestionWidget(
-      Map<String, Object> question, int questionNumber, int index) {
+      QuestionModel question, int questionNumber, int index) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -256,8 +263,7 @@ class _QuizPageViewState extends State<QuizPageView> {
               maxWidth: 600.0,
             ),
             padding: EdgeInsets.symmetric(
-              horizontal:
-                  _calculateHorizontalPadding(question['question'] as String),
+              horizontal: _calculateHorizontalPadding(question.question),
               vertical: 20.0,
             ),
             decoration: BoxDecoration(
@@ -273,7 +279,7 @@ class _QuizPageViewState extends State<QuizPageView> {
                       height: 20.0,
                     ),
                     Text(
-                      '${question['question']}',
+                      question.question,
                       textAlign: TextAlign.left,
                       style: const TextStyle(
                         fontSize: 15.0,
@@ -285,9 +291,9 @@ class _QuizPageViewState extends State<QuizPageView> {
                     const SizedBox(
                       height: 40.0,
                     ),
-                    if (question['type'] == 1)
+                    if (question.type == 1)
                       _buildIdentification(index)
-                    else if (question['type'] == 2)
+                    else if (question.type == 2)
                       _buildMultipleChoice(question, index)
                   ]),
             )),
@@ -312,14 +318,16 @@ class _QuizPageViewState extends State<QuizPageView> {
     return _identificationControllers[index];
   }
 
-  Widget _buildMultipleChoice(Map<String, Object> question, int index) {
+  Widget _buildMultipleChoice(QuestionModel question, int index) {
     return Column(
       children: [
-        for (int i = 0; i < (question['answers'] as List).length; i++)
+        for (int i = 0; i < (question.question as List).length; i++)
           Answer(
-            answerText: ((question['answers'] as List?)?[i]
-                    as Map<String, Object>?)?['answerText'] as String? ??
-                '',
+            // answerText: ((question as MultipleChoiceQuestionModel).choices?[i]
+            //         as Map<String, Object>?)?['content'] as String? ??
+            //     '',
+            answerText:
+                (question as MultipleChoiceQuestionModel).choices[i].content,
             index: i,
             groupValue: _selectedAnswers[index],
             answerTap: (value) {
@@ -340,22 +348,26 @@ class _QuizPageViewState extends State<QuizPageView> {
     for (int i = 0; i < _totalItems; i++) {
       bool isCorrect;
 
-      if (quizViewModel.allQuestions[i]['type'] == 1) {
+      if (quizViewModel.questions[i]?.type == 1) {
         // Identification question
-        String correctAnswer = quizViewModel.allQuestions[i]['answer'];
+        String correctAnswer =
+            (quizViewModel.questions[i] as IdentificationQuestionModel).answer;
         String userAnswer = _identificationControllers[i].text;
 
         isCorrect = userAnswer.toLowerCase() == correctAnswer.toLowerCase();
       } else {
         // Multiple choice question
-        List<Map<String, Object>> answers =
-            (quizViewModel.allQuestions[i]['answers'] as List)
-                .cast<Map<String, Object>>();
+        // List<Map<String, Object>> answers =
+        //     ((quizViewModel.questions[i] as MultipleChoiceQuestionModel).choices)
+        //         .cast<Map<String, Object>>();
+
+        List<ChoiceModel> answers =
+            (quizViewModel.questions[i] as MultipleChoiceQuestionModel).choices;
 
         isCorrect = true;
         for (int j = 0; j < answers.length; j++) {
           bool isSelected = _selectedAnswers[i] == j;
-          bool isAnswerCorrect = answers[j]['isCorrect'] == true;
+          bool isAnswerCorrect = answers[j].isCorrect == true;
 
           if ((isSelected && !isAnswerCorrect) ||
               (!isSelected && isAnswerCorrect)) {
@@ -366,8 +378,8 @@ class _QuizPageViewState extends State<QuizPageView> {
       }
 
       results.add({
-        'question': quizViewModel.allQuestions[i]['question'],
-        'userAnswer': quizViewModel.allQuestions[i]['type'] == 1
+        'question': quizViewModel.questions[i]?.question,
+        'userAnswer': quizViewModel.questions[i]?.type == 1
             ? _identificationControllers[i].text
             : _selectedAnswers[i],
         'isCorrect': isCorrect,
