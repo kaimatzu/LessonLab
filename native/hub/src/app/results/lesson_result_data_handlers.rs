@@ -18,40 +18,58 @@ use crate::app::results::lesson_result_data_object::{LessonResultDataObject, Sou
 
 use crate::app::global_objects::lessons_data_object::{Lesson, LessonsDataObject};
 
-impl LessonsDataObject{
-    fn create_lesson(&mut self, new_lesson: Lesson) {
-        // Check for duplicate target_path before adding
-        if !self.lessons.iter().any(|lesson| lesson.target_path == new_lesson.target_path) {
-            self.lessons.push(new_lesson);
-            crate::debug_print!("Lesson added successfully!");
-        } else {
-            crate::debug_print!("Error: Duplicate target_path found. Lesson not added.");
-        }
-    }
-
-    fn remove_lesson(&mut self, target_path: &str) {
-        if let Some(index) = self.lessons.iter().position(|lesson| lesson.target_path == target_path) {
-            self.lessons.remove(index);
-            crate::debug_print!("Lesson with target_path '{}' removed successfully!", target_path);
-        } else {
-            crate::debug_print!("Error: Lesson with target_path '{}' not found.", target_path);
-        }
-    }
-}
-
 // Handler functions
 pub async fn handle_lesson_generation(rust_request: RustRequest,
     upload_sources_data_object: &mut tokio::sync::MutexGuard<'_, UploadSourcesDataObject>,
     lesson_specifications_data_object: &mut tokio::sync::MutexGuard<'_, LessonSpecificationsDataObject>,
     settings_save_directory_data_object: &mut tokio::sync::MutexGuard<'_, SettingsDataObject>,
     menu_data_object: &mut tokio::sync::MutexGuard<'_, MenuDataObject>) -> RustResponse {
-    use crate::messages::results::view_lesson_result::load_lesson::{ReadRequest, ReadResponse};
-    
-    // TODO: MAKE THIS GLOBAL
-    let release = true; // DEBUG MODE
+    use crate::messages::results::view_lesson_result::load_lesson::{CreateRequest, CreateResponse, ReadRequest, ReadResponse};
 
     match rust_request.operation {
-        RustOperation::Create => RustResponse::default(),
+        RustOperation::Create => {
+            let message_bytes = rust_request.message.unwrap();
+            let request_message = CreateRequest::decode(message_bytes.as_slice()).unwrap();
+            
+            let lesson_content = request_message.lesson_content;
+
+            let sanitized_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone();
+            let sanitized_title = sanitized_title.split_at(8).1;
+
+            crate::debug_print!("Lesson Title: {}", sanitized_title);
+            let config_file_path = settings_save_directory_data_object.save_directory.clone();
+
+            // File path of target/output.md
+            let target_folder_path = format!("{}\\{}", &config_file_path, &sanitized_title);
+
+            match write_lesson_to_target_path(&lesson_content, &target_folder_path) {
+                Ok(_) => {
+                    crate::debug_print!("Wrote to lesson target file path at {}", target_folder_path);
+                }
+                Err(error) => {
+                    crate::debug_print!("Failed to write lesson to target: {}", error);
+                    let response_message = CreateResponse{
+                        status_code: StatusCode::BAD_REQUEST.as_u16() as u32,
+                    };
+
+                    return RustResponse {
+                        successful: false,
+                        message: Some(response_message.encode_to_vec()),
+                        blob: None,
+                    }
+                }
+            }
+
+            let response_message = CreateResponse{
+                status_code: StatusCode::OK.as_u16() as u32,
+            };
+
+            RustResponse {
+                successful: true,
+                message: Some(response_message.encode_to_vec()),
+                blob: None,
+            }
+        },
         RustOperation::Read => {
             // Handles the lesson generation
             let message_bytes = rust_request.message.unwrap();
@@ -59,61 +77,23 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
 
             let _ = request_message;
 
-            // let response_message;
-
-            let mut string_payload: String = String::new();
-            
-            let mut lessons_json = LessonsDataObject { lessons: Vec::new() };
             let mut sources = Sources::default();
             
-            string_payload.push_str("Lesson Specifications \n");
-
-            for lesson_specification in &lesson_specifications_data_object.lesson_specifications {
-                string_payload.push_str(&lesson_specification);
-                string_payload.push_str("\n"); 
-                crate::debug_print!("Lesson Spec: {}", &lesson_specification);
-            }
-
-            string_payload.push_str("------------------------------- \n");
 
             for file_path in &upload_sources_data_object.file_paths {
-                if file_path.to_lowercase().ends_with(".pdf") {
-                    // TODO: Implement other scrapers for other text file formats
-                    match scrapers::scrape_pdf(file_path.to_string()) {
-                        Ok(pdf_content) => {
-                            string_payload.push_str(&pdf_content);
-                            string_payload.push_str("\n"); 
-                            sources.source_files.push(file_path.clone())
-                        }
-                        Err(err) => {
-                            crate::debug_print!("[Scraper] >>> {} ", err);
-                        }
-                    }
-                }
+                sources.source_files.push(file_path.clone());
             }
 
             for url in &upload_sources_data_object.urls {
-                match scrapers::scrape_url(url.to_string()) {
-                    Ok(web_content) => {
-                        string_payload.push_str(&web_content);
-                        string_payload.push_str("\n"); 
-                        sources.source_urls.push(url.clone())
-                    }
-                    Err(err) => {
-                        crate::debug_print!("[Scraper] >>> {} ", err);
-                    }
-                }
+                sources.source_urls.push(url.clone());
             }
 
             for text in &upload_sources_data_object.text_files {
-                string_payload.push_str(&text.title);
-                string_payload.push_str("\n"); 
-                string_payload.push_str(&text.content);
-                string_payload.push_str("\n"); 
                 sources.source_texts.push(text.clone())
             }
             
-            let sanitized_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone().replace(" ", "_");
+            let sanitized_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone();
+            let sanitized_title = sanitized_title.split_at(8).1;
             // File path of config.json
             let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
             // File path of target/output.md
@@ -145,90 +125,27 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
                 crate::debug_print!("Failed to write to config file: {}", error);
             }
 
-                // Spwaning the thread for creating the lesson
-                tokio::spawn(create_thread_handles(upload_sources_data_object.file_paths.clone(), upload_sources_data_object.urls.clone(), target_folder_path, lesson_specifications_data_object.lesson_specifications.clone()));
-                
-                // if release {
-                //     match lesson_generator::generate(string_payload) {
-                //         Ok(md_content) => {
-                //             // write to file here
-                //             if let Err(error) = write_lesson_to_target_path(&md_content, &target_folder_path) {
-                //                 crate::debug_print!("Failed to write to target file: {}", error);
-                //             }
+            // Spwaning the thread for creating the lesson
+            tokio::spawn(create_thread_handles(upload_sources_data_object.file_paths.clone(), upload_sources_data_object.urls.clone(), target_folder_path, lesson_specifications_data_object.lesson_specifications.clone()));
 
-                //             response_message = ReadResponse {
-                //                 status_code: StatusCode::OK.as_u16() as u32,
-                //                 title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                //                 md_content,
-                //                 error_string: String::from("No error")
-                //             };
-                //         }
-                //         Err(error) => {
-                //             response_message = ReadResponse {
-                //                 status_code: StatusCode::NOT_FOUND.as_u16() as u32,
-                //                 title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                //                 md_content: String::from("No content"),
-                //                 error_string: error.to_string()
-                //             };
-                //         }
-                //     }
-                //     // response_message = ReadResponse {
-                //     //     status_code: StatusCode::OK.as_u16() as u32,
-                //     //     title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                //     //     md_content: "MOVED LESSON GENERATION".to_string(),
-                //     //     error_string: String::from("No error")
-                //     // };
-                // }
-                // else {
-                //     // write to file here
-                //     if let Err(error) = write_lesson_to_target_path("Debug Mode: Dummy Content", &target_folder_path) {
-                //         crate::debug_print!("Failed to write to target file: {}", error);
-                //     }
-                    
-                //     response_message = ReadResponse {
-                //         status_code: StatusCode::OK.as_u16() as u32,
-                //         title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                //         md_content: "Debug Mode: Dummy Content".to_string(),
-                //         error_string: String::from("No error")
-                //     };
-                // }
-                
-                
-    
-                // if response_message.status_code == StatusCode::OK.as_u16() as u32 {
-                //     RustResponse {
-                //         successful: true,
-                //         message: Some(response_message.encode_to_vec()),
-                //         blob: None,
-                //     }
-                // }
-                // else {
-                //     RustResponse {
-                //         successful: false,
-                //         message: Some(response_message.encode_to_vec()),
-                //         blob: None,
-                //     }
-                // }   
-                // let ui_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone();
-                // let ui_title = ui_title.split_at(8).1.to_string();
 
-                let response_message = ReadResponse {
-                    status_code: StatusCode::OK.as_u16() as u32,
-                    title: sanitized_title.to_string(),
-                    md_content: "MOVED LESSON GENERATION".to_string(), // TODO: Need to remove this from rinf
-                    error_string: String::from("No error")
-                };
+            let response_message = ReadResponse {
+                status_code: StatusCode::OK.as_u16() as u32,
+                title: sanitized_title.to_string(),
+                md_content: "MOVED LESSON GENERATION".to_string(), // TODO: Need to remove this from rinf
+                error_string: String::from("No error")
+            };
 
-                RustResponse {
-                    successful: true,
-                    message: Some(response_message.encode_to_vec()),
-                    blob: None,
-                }
-            },
-            RustOperation::Update => RustResponse::default(),
-            RustOperation::Delete => RustResponse::default(),
-        }
+            RustResponse {
+                successful: true,
+                message: Some(response_message.encode_to_vec()),
+                blob: None,
+            }
+        },
+        RustOperation::Update => RustResponse::default(),
+        RustOperation::Delete => RustResponse::default(),
     }
+}
 
 pub fn read_tcp_stream() -> Result<(), Box<dyn std::error::Error>> {
     use crate::messages::results::view_lesson_result::load_lesson::{StateSignal, ID};

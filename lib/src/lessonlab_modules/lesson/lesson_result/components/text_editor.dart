@@ -45,13 +45,15 @@ class _TextEditor extends State<TextEditor> {
   // late TextEditingController textController;
   final QuillController _controller = QuillController.basic();
   late StreamSubscription<RustSignal> streamSubscription;
+  late ScrollController _scrollController;
+
   String message = "Nothing received yet";
   var markdownContent = "";
   @override
   void initState() {
     // final lessonResultViewModel = context.watch<LessonResultViewModel>(); // PROBLEM HERE
     super.initState();
-    
+    _scrollController = ScrollController();
     var mdDocument = md.Document(
         encodeHtml: false,
         extensionSet: md.ExtensionSet.gitHubFlavored,
@@ -77,11 +79,15 @@ class _TextEditor extends State<TextEditor> {
         markdownContent += rinfMessage;
         if(markdownContent.isNotEmpty) {
           _controller.document = Document.fromDelta(mdToDelta.convert(markdownContent));
+          _controller.moveCursorToEnd();
         }
         // _controller.document.insert(_controller.plainTextEditingValue.text.length - 1, rinfMessage);
       }
       setState(() {
         // message = rinfMessage;
+        // _scrollController.jumpTo(
+        //   _scrollController.position.maxScrollExtent,
+        // );
       });
     });
   }
@@ -91,10 +97,7 @@ class _TextEditor extends State<TextEditor> {
     final lessonResultViewModel = context.watch<LessonResultViewModel>();
     
     // var message = "";
-    lessonResultViewModel.lessonContent = _controller.document.toPlainText();
-    if(_doneGenerating) {
-      lessonResultViewModel.done = true;
-    }
+    
 
     var mdDocument = md.Document(
         encodeHtml: false,
@@ -114,6 +117,13 @@ class _TextEditor extends State<TextEditor> {
       //   EmbeddableTable.tableType: EmbeddableTable.fromMdSyntax,
       // },
     );
+
+    final deltaToMd = DeltaToMarkdown();
+
+    lessonResultViewModel.lessonContent = deltaToMd.convert(_controller.document.toDelta());
+    if(_doneGenerating) {
+      lessonResultViewModel.done = true;
+    }
 
     // const markdown = "# test";
 
@@ -232,6 +242,7 @@ class _TextEditor extends State<TextEditor> {
     );
 
     var editor = QuillEditor.basic(
+      scrollController: _scrollController,
         // Pass the controller to QuillEditor
         configurations: QuillEditorConfigurations(
       controller: _controller,
