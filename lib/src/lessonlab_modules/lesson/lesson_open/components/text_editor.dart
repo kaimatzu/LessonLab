@@ -4,12 +4,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/lesson_open_view_model.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:provider/provider.dart';
 import 'package:quill_html_converter/quill_html_converter.dart';
 import 'package:rinf/rinf.dart';
-import 'package:lessonlab/messages/results/view_lesson_result/load_lesson.pb.dart'
+import 'package:lessonlab/messages/results/open_finished_lesson/open_lesson.pb.dart'
     as streamMessage;
 
 import 'package:flutter_quill/flutter_quill.dart';
@@ -52,7 +52,7 @@ class _TextEditor extends State<TextEditor> {
   var markdownContent = "";
   @override
   void initState() {
-    // final lessonResultViewModel = context.watch<LessonResultViewModel>(); // PROBLEM HERE
+    // final lessonOpenViewModel = context.watch<LessonOpenViewModel>(); // PROBLEM HERE
     super.initState();
     
     var mdDocument = md.Document(
@@ -93,12 +93,12 @@ class _TextEditor extends State<TextEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final lessonResultViewModel = context.watch<LessonResultViewModel>();
+    final lessonOpenViewModel = context.watch<LessonOpenViewModel>();
     
     // var message = "";
-    lessonResultViewModel.lessonContent = _controller.document.toPlainText();
+    lessonOpenViewModel.lessonContent = _controller.document.toPlainText();
     if(_doneGenerating) {
-      lessonResultViewModel.done = true;
+      lessonOpenViewModel.done = true;
     }
 
     var mdDocument = md.Document(

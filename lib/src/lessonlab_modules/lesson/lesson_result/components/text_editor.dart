@@ -45,13 +45,16 @@ class _TextEditor extends State<TextEditor> {
   // late TextEditingController textController;
   final QuillController _controller = QuillController.basic();
   late StreamSubscription<RustSignal> streamSubscription;
+  late ScrollController _scrollController;
+
   String message = "Nothing received yet";
   var markdownContent = "";
   @override
   void initState() {
     // final lessonResultViewModel = context.watch<LessonResultViewModel>(); // PROBLEM HERE
     super.initState();
-    
+    _scrollController = ScrollController();
+
     var mdDocument = md.Document(
         encodeHtml: false,
         extensionSet: md.ExtensionSet.gitHubFlavored,
@@ -82,6 +85,9 @@ class _TextEditor extends State<TextEditor> {
       }
       setState(() {
         // message = rinfMessage;
+        _scrollController.jumpTo(
+          _scrollController.position.maxScrollExtent,
+        );
       });
     });
   }
@@ -232,6 +238,7 @@ class _TextEditor extends State<TextEditor> {
     );
 
     var editor = QuillEditor.basic(
+      scrollController: _scrollController,
         // Pass the controller to QuillEditor
         configurations: QuillEditorConfigurations(
       controller: _controller,
