@@ -22,79 +22,186 @@ class QuizPageViewModel extends ChangeNotifier {
     {
       'question': 'How long is New Zealand’s Ninety Mile Beach?',
       'answers': [
-        {'answerText': '88km, so 55 miles long.', 'score': true},
-        {'answerText': '55km, so 34 miles long.', 'score': false},
-        {'answerText': '90km, so 56 miles long.', 'score': false},
+        {
+          'answerText': '88km, so 55 miles long.',
+          'isCorrect': true,
+          'isSelected': false
+        },
+        {
+          'answerText': '55km, so 34 miles long.',
+          'isCorrect': false,
+          'isSelected': false
+        },
+        {
+          'answerText': '90km, so 56 miles long.',
+          'isCorrect': false,
+          'isSelected': false
+        },
       ],
     },
     {
       'question':
           'In which month does the German festival of Oktoberfest mostly take place?',
       'answers': [
-        {'answerText': 'January', 'score': false},
-        {'answerText': 'October', 'score': false},
-        {'answerText': 'September', 'score': true},
+        {'answerText': 'January', 'isCorrect': false, 'isSelected': false},
+        {'answerText': 'October', 'isCorrect': false, 'isSelected': false},
+        {'answerText': 'September', 'isCorrect': true, 'isSelected': false},
       ],
     },
     {
       'question': 'Who composed the music for Sonic the Hedgehog 3?',
       'answers': [
-        {'answerText': 'Britney Spears', 'score': false},
-        {'answerText': 'Timbaland', 'score': false},
-        {'answerText': 'Michael Jackson', 'score': true},
+        {
+          'answerText': 'Britney Spears',
+          'isCorrect': false,
+          'isSelected': false
+        },
+        {'answerText': 'Timbaland', 'isCorrect': false, 'isSelected': false},
+        {
+          'answerText': 'Michael Jackson',
+          'isCorrect': true,
+          'isSelected': false
+        },
       ],
     },
     {
       'question':
           'In Georgia (the state), it’s illegal to eat what with a fork?',
       'answers': [
-        {'answerText': 'Hamburgers', 'score': false},
-        {'answerText': 'Fried chicken', 'score': true},
-        {'answerText': 'Pizza', 'score': false},
+        {'answerText': 'Hamburgers', 'isCorrect': false, 'isSelected': false},
+        {'answerText': 'Fried chicken', 'isCorrect': true, 'isSelected': false},
+        {'answerText': 'Pizza', 'isCorrect': false, 'isSelected': false},
       ],
     },
     {
       'question':
           'Which part of his body did musician Gene Simmons from Kiss insure for one million dollars?',
       'answers': [
-        {'answerText': 'His tongue', 'score': true},
-        {'answerText': 'His leg', 'score': false},
-        {'answerText': 'His butt', 'score': false},
+        {'answerText': 'His tongue', 'isCorrect': true, 'isSelected': false},
+        {'answerText': 'His leg', 'isCorrect': false, 'isSelected': false},
+        {'answerText': 'His butt', 'isCorrect': false, 'isSelected': false},
       ],
     },
     {
       'question': 'In which country are Panama hats made?',
       'answers': [
-        {'answerText': 'Ecuador', 'score': true},
-        {'answerText': 'Panama (duh)', 'score': false},
-        {'answerText': 'Portugal', 'score': false},
+        {'answerText': 'Ecuador', 'isCorrect': true, 'isSelected': false},
+        {'answerText': 'Panama (duh)', 'isCorrect': false, 'isSelected': false},
+        {'answerText': 'Portugal', 'isCorrect': false, 'isSelected': false},
       ],
     },
     {
       'question': 'From which country do French fries originate?',
       'answers': [
-        {'answerText': 'Belgium', 'score': true},
-        {'answerText': 'France (duh)', 'score': false},
-        {'answerText': 'Switzerland', 'score': false},
+        {'answerText': 'Belgium', 'isCorrect': true, 'isSelected': false},
+        {'answerText': 'France (duh)', 'isCorrect': false, 'isSelected': false},
+        {'answerText': 'Switzerland', 'isCorrect': false, 'isSelected': false},
       ],
     },
     {
       'question': 'Which sea creature has three hearts?',
       'answers': [
-        {'answerText': 'Great White Sharks', 'score': false},
-        {'answerText': 'Killer Whales', 'score': false},
-        {'answerText': 'The Octopus', 'score': true},
+        {
+          'answerText': 'Great White Sharks',
+          'isCorrect': false,
+          'isSelected': false
+        },
+        {
+          'answerText': 'Killer Whales',
+          'isCorrect': false,
+          'isSelected': false
+        },
+        {'answerText': 'The Octopus', 'isCorrect': true, 'isSelected': false},
       ],
     },
     {
       'question': 'Which European country eats the most chocolate per capita?',
       'answers': [
-        {'answerText': 'Belgium', 'score': false},
-        {'answerText': 'The Netherlands', 'score': false},
-        {'answerText': 'Switzerland', 'score': true},
+        {'answerText': 'Belgium', 'isCorrect': false, 'isSelected': false},
+        {
+          'answerText': 'The Netherlands',
+          'isCorrect': false,
+          'isSelected': false
+        },
+        {'answerText': 'Switzerland', 'isCorrect': true, 'isSelected': false},
       ],
     },
   ];
 
   get questions => _questions;
+
+  final _idQuestions = const [
+    {
+      'question': 'What is the capital city of France?',
+      'answer': 'Paris',
+    },
+    {
+      'question': 'Which planet is known as the "Red Planet"?',
+      'answer': 'Mars',
+    },
+    {
+      'question': 'Who wrote the play "Romeo and Juliet"?',
+      'answer': 'William Shakespeare',
+    },
+    {
+      'question': 'What is the chemical symbol for water?',
+      'answer': 'H2O',
+    },
+    {
+      'question': 'Which famous scientist developed the theory of relativity?',
+      'answer': 'Albert Einstein',
+    },
+  ];
+
+  get idQuestions => _idQuestions;
+
+  final _allQuestions = const [
+    {
+      'question': 'What is the capital city of France?',
+      'type': 1,
+      'answer': 'Paris',
+    },
+    {
+      'question': 'Which European country eats the most chocolate per capita?',
+      'type': 2,
+      'answers': [
+        {'answerText': 'Belgium', 'isCorrect': false, 'isSelected': false},
+        {
+          'answerText': 'The Netherlands',
+          'isCorrect': false,
+          'isSelected': false
+        },
+        {'answerText': 'Switzerland', 'isCorrect': true, 'isSelected': false},
+      ],
+    },
+    {
+      'question': 'Which planet is known as the "Red Planet"?',
+      'type': 1,
+      'answer': 'Mars',
+    },
+    {
+      'question': 'Which sea creature has three hearts?',
+      'type': 2,
+      'answers': [
+        {
+          'answerText': 'Great White Sharks',
+          'isCorrect': false,
+          'isSelected': false
+        },
+        {
+          'answerText': 'Killer Whales',
+          'isCorrect': false,
+          'isSelected': false
+        },
+        {'answerText': 'The Octopus', 'isCorrect': true, 'isSelected': false},
+      ],
+    },
+    {
+      'question': 'Who wrote the play "Romeo and Juliet"?',
+      'type': 1,
+      'answer': 'William Shakespeare',
+    },
+  ];
+
+  get allQuestions => _allQuestions;
 }
