@@ -619,6 +619,8 @@ packages:
       name: platform
       sha256: "12220bb4b65720483f8fa9450b4332347737cf8213dd2840d8b2c823e47243ec"
       url: "https://pub.flutter-io.cn"
+      sha256: "12220bb4b65720483f8fa9450b4332347737cf8213dd2840d8b2c823e47243ec"
+      url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.1.4"
   plugin_platform_interface:

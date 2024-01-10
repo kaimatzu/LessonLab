@@ -23,9 +23,9 @@ class QuizPageView extends StatefulWidget {
   State<QuizPageView> createState() => _QuizPageViewState();
 }
 
-//TODO: MAKE IDENTIFICATION TYPE QUIZ
+// TODO: MAKE IDENTIFICATION TYPE QUIZ
 
-//THIS IS MULTIPLE CHOICE QUIZ
+// THIS IS MULTIPLE CHOICE QUIZ
 class _QuizPageViewState extends State<QuizPageView> {
   int _questionIndex = 0;
 
@@ -79,7 +79,7 @@ class _QuizPageViewState extends State<QuizPageView> {
                     height: 200.0,
                     width: 150,
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 253, 237, 183),
+                      color: const Color.fromARGB(255, 253, 237, 183),
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     child: Container(
@@ -144,7 +144,7 @@ class _QuizPageViewState extends State<QuizPageView> {
                             width: 350.0,
                             constraints: const BoxConstraints(minHeight: 200.0),
                             decoration: BoxDecoration(
-                              color: Color.fromARGB(255, 253, 237, 183),
+                              color: const Color.fromARGB(255, 253, 237, 183),
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                             child: Padding(
@@ -168,7 +168,7 @@ class _QuizPageViewState extends State<QuizPageView> {
                                         width: 35.0,
                                         decoration: BoxDecoration(
                                             color: _questionIndex == index
-                                                ? Color.fromARGB(
+                                                ? const Color.fromARGB(
                                                     255, 49, 51, 56)
                                                 : Colors.amber,
                                             border: Border.all(
@@ -180,7 +180,7 @@ class _QuizPageViewState extends State<QuizPageView> {
                                             style: TextStyle(
                                                 color: _questionIndex == index
                                                     ? Colors.amber
-                                                    : Color.fromARGB(
+                                                    : const Color.fromARGB(
                                                         255, 49, 51, 56),
                                                 fontWeight: FontWeight.bold),
                                           ),
