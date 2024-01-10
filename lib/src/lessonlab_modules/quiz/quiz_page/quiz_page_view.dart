@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
@@ -228,7 +230,15 @@ class _QuizPageViewState extends State<QuizPageView> {
       _questionIndex = 0;
       _totalItems = 0;
       _selectedAnswers = List.filled(_totalItems, -1);
+      _totalItems = 0;
+      _selectedAnswers = List.filled(_totalItems, -1);
     });
+  }
+
+  double _calculateHorizontalPadding(String questionText) {
+    // Adjust this logic based on your requirements
+    // You might consider calculating padding based on the length of the text
+    return max(20.0, min(questionText.length.toDouble(), 50.0));
   }
 
   double _calculateHorizontalPadding(String questionText) {
