@@ -195,13 +195,14 @@ class _QuizPageViewState extends State<QuizPageView> {
                           Padding(
                             padding: const EdgeInsets.only(top: 20.0),
                             child: PrimaryButton(
-                                handlePress: () {
-                                  _checkAllAnswers();
-                                  Navigator.restorablePushNamed(
-                                      context, '/quiz_result');
-                                },
-                                text: 'Finish Attempt',
-                                enabled: true),
+                              handlePress: () {
+                                _checkAllAnswers();
+                                Navigator.restorablePushNamed(
+                                    context, '/quiz_result');
+                              },
+                              text: 'Finish Attempt',
+                              enabled: true,
+                            ),
                           )
                         ]),
                   ),
