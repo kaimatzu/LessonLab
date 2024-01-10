@@ -241,12 +241,6 @@ class _QuizPageViewState extends State<QuizPageView> {
     return max(20.0, min(questionText.length.toDouble(), 50.0));
   }
 
-  double _calculateHorizontalPadding(String questionText) {
-    // Adjust this logic based on your requirements
-    // You might consider calculating padding based on the length of the text
-    return max(20.0, min(questionText.length.toDouble(), 50.0));
-  }
-
   Widget _buildQuestionWidget(
       Map<String, Object> question, int questionNumber, int index) {
     return Column(
