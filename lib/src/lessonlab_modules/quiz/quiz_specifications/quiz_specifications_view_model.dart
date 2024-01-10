@@ -10,6 +10,7 @@ import 'package:lessonlab/messages/lesson/lesson_specifications.pb.dart'
 import 'package:lessonlab/src/lessonlab_modules/quiz/components/number_field.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/components/text_area.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view_model.dart';
 // import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 import 'package:rinf/rinf.dart';
 
@@ -73,7 +74,7 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
   }
 
   var formFields = <FormField>[];
-  var lessonSpecifications = <String>[];
+  var quizSpecifications = <String>[];
   var statusCode = 0;
 
   // Future<void> sendData() async {
@@ -148,8 +149,14 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
     Navigator.restorablePushNamed(context, UploadSourcesView.routeName);
   }
 
-  void generateQuiz(BuildContext context) {
+  void generateQuiz(
+      BuildContext context, QuizPageViewModel quizPageViewModel) async {
     // Navigator.restorablePushNamed(context, LessonResultView.routeName);
+    // TODO: send quiz specs to backend using orchestrator
+    // developer.log("generate quiz clicked");
+    // quizPageViewModel.loadQuizModel();
+    // developer.log("quiz model loaded");
     Navigator.restorablePushNamed(context, QuizPageView.routeName);
+    developer.log("page changed");
   }
 }

@@ -1,0 +1,83 @@
+syntax = "proto3";
+package quiz_page;
+
+// Sources
+message TextFile {
+    string title = 1;
+    string content = 2;
+}
+
+message Sources {
+    repeated string files = 1;
+    repeated string urls = 2;
+    repeated TextFile texts = 3;
+}
+
+// Models
+message QuestionModel {
+    string question = 1;
+    uint32 type = 2;
+    oneof question_type {
+        IdentificationQuestionModel identification = 3;
+        MultipleChoiceQuestionModel multipleChoice = 4;
+    }
+}
+
+message IdentificationQuestionModel {
+    string answer = 1;
+}
+
+message MultipleChoiceQuestionModel {
+    repeated ChoiceModel choices = 1;
+}
+
+message ChoiceModel {
+    string content = 1;
+    bool is_correct = 2;
+}
+
+message QuizModel {
+    uint32 id = 1;
+    string title = 2;
+    string target_path = 3;
+    repeated QuestionModel questions = 4;
+    Sources sources = 5;
+}
+
+message QuizPageModel {
+    QuizModel quiz = 1;
+}
+
+// HTTP
+message CreateRequest {
+    repeated string quiz_specifications = 1;
+}
+
+message CreateResponse {
+    uint32 status_code = 1; 
+}
+
+message ReadRequest {
+    bool req = 1;
+}
+  
+message ReadResponse {
+    uint32 status_code = 1;
+    QuizModel quiz_model = 2;
+}
+
+message UpdateRequest {
+    bool req = 1;
+}
+  
+message UpdateResponse {
+    uint32 status_code = 1;
+}
+
+message DeleteRequest {
+    bool req = 1;
+}
+  
+message DeleteResponse {
+    uint32 status_code = 1;
+}
