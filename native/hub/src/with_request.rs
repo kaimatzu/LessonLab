@@ -10,15 +10,10 @@ use crate::app::quiz::quiz_specifications_data_handlers::*;
 use crate::app::quiz::quiz_page_data_handlers::*;
 use crate::app::results::lesson_result_data_handlers::*;
 use crate::app::settings::settings_data_handlers::*;
+use crate::app::open_lesson::lesson_open_data_handlers::*;
 
 // Data objects
 use crate::app::entry::menu::menu_data_object::MenuDataObject;
-use crate::app::entry::menu::menu_data_handlers::menu_data_handlers::*;
-use crate::app::entry::upload::upload_sources_data_handlers::upload_sources_data_handlers::*;
-use crate::app::lesson::lesson_specifications_data_handlers::lesson_specifications_data_handlers::*;
-use crate::app::open_lesson::lesson_open_data_handlers::lesson_open_data_handlers::handle_lesson_open;
-use crate::app::results::lesson_result_data_handlers::lesson_result_data_handlers::*;
-use crate::app::settings::settings_data_handlers::settings_data_handlers::*;
 use crate::app::lesson::lesson_specifications_data_object::LessonSpecificationsDataObject;
 use crate::app::quiz::quiz_specifications_data_object::QuizSpecificationsDataObject;
 use crate::app::quiz::quiz_page_data_object::QuizPageDataObject;
@@ -61,7 +56,7 @@ pub async fn handle_request(request_unique: RustRequestUnique,
                 menu_data_object).await
         }
         messages::results::open_finished_lesson::open_lesson::ID => {
-            handle_lesson_open(rust_request, save_directory_model, menu_data_object).await
+            handle_lesson_open(rust_request, settings_save_directory_data_object, menu_data_object).await
         }
         messages::settings::save_directory::ID =>{
             handle_choose_directory(rust_request, settings_save_directory_data_object).await
