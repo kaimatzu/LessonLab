@@ -36,6 +36,10 @@ class _QuizPageViewState extends State<QuizPageView> {
   List<TextEditingController> _identificationControllers = [];
   List<Map<String, dynamic>> results = [];
 
+  _QuizPageViewState() {
+    developer.log("contstructor call quizpageviewstate");
+  }
+
   @override
   void initState() {
     super.initState();
@@ -322,7 +326,9 @@ class _QuizPageViewState extends State<QuizPageView> {
   Widget _buildMultipleChoice(QuestionModel question, int index) {
     return Column(
       children: [
-        for (int i = 0; i < (question.question as List).length; i++)
+        for (int i = 0;
+            i < ((question as MultipleChoiceQuestionModel).choices).length;
+            i++)
           Answer(
             // answerText: ((question as MultipleChoiceQuestionModel).choices?[i]
             //         as Map<String, Object>?)?['content'] as String? ??
@@ -330,7 +336,8 @@ class _QuizPageViewState extends State<QuizPageView> {
             answerText:
                 (question as MultipleChoiceQuestionModel).choices[i].content,
             index: i,
-            groupValue: _selectedAnswers[index],
+            groupValue:
+                _selectedAnswers.length > index ? _selectedAnswers[index] : 0,
             answerTap: (value) {
               setState(() {
                 _selectedAnswers[index] = value;

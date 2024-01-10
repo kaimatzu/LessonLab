@@ -74,7 +74,7 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
   }
 
   var formFields = <FormField>[];
-  var lessonSpecifications = <String>[];
+  var quizSpecifications = <String>[];
   var statusCode = 0;
 
   // Future<void> sendData() async {

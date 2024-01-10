@@ -298,12 +298,19 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
             for i in 0..3 {
                 test_questions.push(QuestionModel {
                     question: "Rust test question ".to_string() + &i.to_string(),
-                    r#type: 1,
+                    r#type: 2,
                     question_type: Some(QuestionType::MultipleChoice(MultipleChoiceQuestionModel{
                         choices: test_choices.clone(),
                     })),
                 });
             }
+            test_questions.push(QuestionModel {
+                question: "Test identification question".to_string(),
+                r#type: 1,
+                question_type: Some(QuestionType::Identification(IdentificationQuestionModel{
+                    answer: "Test identification answer".to_string(),
+                })),
+            });
             RustResponse {
                 successful: true,
                 message: Some(ReadResponse {

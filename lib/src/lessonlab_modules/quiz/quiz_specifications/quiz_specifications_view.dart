@@ -90,7 +90,9 @@ class QuizSpecificationsView extends StatelessWidget {
                     PrimaryButton(
                         handlePress: () {
                           //quizSpecificationsViewModel.collectFormTextValues();
-                          quizSpecificationsViewModel.generateQuiz(context);
+                          quizPageViewModel.loadQuizModel();
+                          quizSpecificationsViewModel.generateQuiz(
+                              context, quizPageViewModel);
                           // lessonSpecificationsViewModel.sendData();
                           // lessonSpecificationsViewModel.getData();
                         },

@@ -59,7 +59,7 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
 
             let _ = request_message;
 
-            let response_message;
+            // let response_message;
 
             let mut string_payload: String = String::new();
             
@@ -146,7 +146,7 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
             }
 
                 // Spwaning the thread for creating the lesson
-                tokio::spawn(create_thread_handles(upload_data_object.file_paths.clone(), upload_data_object.urls.clone(), target_folder_path, lesson_specifications_data_object.lesson_specifications.clone()));
+                tokio::spawn(create_thread_handles(upload_sources_data_object.file_paths.clone(), upload_sources_data_object.urls.clone(), target_folder_path, lesson_specifications_data_object.lesson_specifications.clone()));
                 
                 // if release {
                 //     match lesson_generator::generate(string_payload) {
