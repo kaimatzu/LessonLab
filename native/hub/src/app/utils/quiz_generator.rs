@@ -4,7 +4,7 @@ use pyo3::{
     exceptions,
 };
 
-// TODO:change this accordingly
+// TODO: change this accordingly
 use crate::app::utils::scrapers;
 
 pub fn generate(quiz_source: String) -> PyResult<String> {
@@ -23,6 +23,7 @@ pub fn generate(quiz_source: String) -> PyResult<String> {
         .call((quiz_source,), None)?
         .extract()?;
 
+        // return JSON string
         Ok(generated_quiz)
     })
 }
