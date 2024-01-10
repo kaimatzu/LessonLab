@@ -236,8 +236,6 @@ class _QuizPageViewState extends State<QuizPageView> {
   }
 
   double _calculateHorizontalPadding(String questionText) {
-    // Adjust this logic based on your requirements
-    // You might consider calculating padding based on the length of the text
     return max(20.0, min(questionText.length.toDouble(), 50.0));
   }
 
@@ -336,7 +334,8 @@ class _QuizPageViewState extends State<QuizPageView> {
 
   void _checkAllAnswers() {
     final quizViewModel = context.read<QuizPageViewModel>();
-    final quizResultViewModel = Provider.of<QuizResultViewModel>(context);
+    final quizResultViewModel =
+        Provider.of<QuizResultViewModel>(context, listen: false);
 
     for (int i = 0; i < _totalItems; i++) {
       bool isCorrect;

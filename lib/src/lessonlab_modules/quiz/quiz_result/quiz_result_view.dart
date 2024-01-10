@@ -38,7 +38,7 @@ class QuizResultView extends StatelessWidget {
                     width: 200,
                     height: 200,
                     padding: const EdgeInsets.only(top: 30.0),
-                    child: const Column(
+                    child: Column(
                       children: [
                         Text(
                           'Your Score:',
@@ -53,7 +53,7 @@ class QuizResultView extends StatelessWidget {
                                 right: 100.0,
                                 child: Text(
                                   // User's Score
-                                  '8',
+                                  '$totalCorrectAnswers',
                                   style: TextStyle(fontSize: 60),
                                 )),
                             Align(
@@ -71,7 +71,7 @@ class QuizResultView extends StatelessWidget {
                               left: 100.0,
                               child: Text(
                                 // Total Score
-                                '10',
+                                '${quizResult.length}',
                                 style: TextStyle(fontSize: 60),
                               ),
                             ),
