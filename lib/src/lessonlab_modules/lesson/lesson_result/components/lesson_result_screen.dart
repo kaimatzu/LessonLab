@@ -63,34 +63,8 @@ class LessonResultScreen extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 30.0),
             child: TextEditor(),
           )
-          // Padding(
-          //   padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 30.0),
-          //   child: StreamBuilder<RustSignal>(
-          //     stream: rustBroadcaster.stream.where((rustSignal) {
-          //       return rustSignal.resource == streamMessage.ID;
-          //     }),
-          //     builder: (context, snapshot) {
-          //       final rustSignal = snapshot.data;
-          //       if (rustSignal == null) {
-          //         return Text("Nothing received yet");
-          //       } else {
-          //         final signal = streamMessage.StateSignal.fromBuffer(
-          //           rustSignal.message!,
-          //         );
-          //         final rinfMessage = signal.streamMessage;
-          //         message += rinfMessage;
-          //         return Text(message);
-          //       }
-          //     },
-          //   ),
-          // )
         ],
       ),
     );
   }
 }
-
-// return TextEditor(
-//                       title: title,
-//                       mdContents: message,
-//                       cssContents: cssContent);
