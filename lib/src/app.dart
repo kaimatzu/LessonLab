@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/lesson_open_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -69,6 +70,8 @@ class MyApp extends StatelessWidget {
                     return MenuView();
                   case '/upload':
                     return const UploadSourcesView();
+                  case '/lesson_open':
+                    return const LessonOpenView();
                   case '/lesson_result':
                     return const LessonResultView();
                   case '/specifications':

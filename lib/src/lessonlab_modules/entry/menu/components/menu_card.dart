@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/lesson_open_view.dart';
 
 import 'package:provider/provider.dart';
 
@@ -66,15 +67,28 @@ class MenuCard extends StatelessWidget {
       ),
     );
 
-    return Card(
-      color: const Color.fromARGB(255, 49, 51, 56),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      elevation: 8.0,
-      child: Stack(
-        children: [
-          child,
-          icon,
-        ],
+    return GestureDetector(
+      onTap: () {
+        // Handle click on the entire background
+        debugPrint('Card clicked');
+        debugPrint('Card title: $title');
+        debugPrint('Card id: $id');
+        Navigator.restorablePushNamed(
+          context,
+          LessonOpenView.routeName,
+          arguments: id,
+        );
+      },
+      child: Card(
+        color: const Color.fromARGB(255, 49, 51, 56),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        elevation: 8.0,
+        child: Stack(
+          children: [
+            child,
+            icon,
+          ],
+        ),
       ),
     );
   }

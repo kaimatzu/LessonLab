@@ -8,15 +8,6 @@ use pyo3::{
 use crate::app::utils::scrapers;
 
 pub fn generate_lesson_stream(files: Vec<String>, urls: Vec<String>, index_path: String, lesson_specifications: Vec<String>) -> PyResult<String> {
-    let lesson_source = match scrapers::scrape_pdf(String::from("C:/Users/karlj/OneDrive/Documents/Proxy Design Pattern Summary.pdf")) {
-        Ok(source) => {
-            println!("{}", source);
-            println!("\nGenerated Lesson:_______________________________________________________________\n");
-            source
-        }
-        Err(_) => return Err(PyErr::new::<exceptions::PyException, _>("Failed to scrape PDF")),
-    };
-
     pyo3::prepare_freethreaded_python();
     Python::with_gil(|py| {
 
