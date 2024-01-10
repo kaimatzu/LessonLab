@@ -5,6 +5,7 @@ import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/components/answer.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_result/quiz_result_view_model.dart';
 import 'package:provider/provider.dart';
 
 class QuizPageView extends StatefulWidget {
@@ -29,7 +30,7 @@ class _QuizPageViewState extends State<QuizPageView> {
 
   List<int> _selectedAnswers = [];
   List<TextEditingController> _identificationControllers = [];
-  List<Map<String, dynamic>> _results = [];
+  List<Map<String, dynamic>> results = [];
 
   @override
   void initState() {
@@ -331,6 +332,7 @@ class _QuizPageViewState extends State<QuizPageView> {
 
   void _checkAllAnswers() {
     final quizViewModel = context.read<QuizPageViewModel>();
+    final quizResultViewModel = Provider.of<QuizResultViewModel>(context);
 
     for (int i = 0; i < _totalItems; i++) {
       bool isCorrect;
@@ -360,8 +362,7 @@ class _QuizPageViewState extends State<QuizPageView> {
         }
       }
 
-      // Store the result
-      _results.add({
+      results.add({
         'question': quizViewModel.allQuestions[i]['question'],
         'userAnswer': quizViewModel.allQuestions[i]['type'] == 1
             ? _identificationControllers[i].text
@@ -370,14 +371,13 @@ class _QuizPageViewState extends State<QuizPageView> {
       });
     }
 
-    // Print the score in the logs
     print('Score: ${_calculateScore()} / $_totalItems');
 
-    // You can navigate to the result page or provide feedback to the user
+    quizResultViewModel.setResults(results);
     //Navigator.restorablePushNamed(context, '/quiz_result');
   }
 
   int _calculateScore() {
-    return _results.where((result) => result['isCorrect']).length;
+    return results.where((result) => result['isCorrect']).length;
   }
 }

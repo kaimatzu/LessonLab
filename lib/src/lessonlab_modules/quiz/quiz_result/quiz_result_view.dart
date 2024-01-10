@@ -17,6 +17,9 @@ class QuizResultView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final quizResultViewModel = context.watch<QuizResultViewModel>();
+    final List<Map<String, dynamic>> quizResult = quizResultViewModel.results;
+    int totalCorrectAnswers =
+        quizResult.where((result) => result['isCorrect'] == true).length;
 
     var paddingBetweenButtons = const SizedBox(height: 5.0);
 
