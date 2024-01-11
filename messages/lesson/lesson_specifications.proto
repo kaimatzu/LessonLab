@@ -16,5 +16,3 @@ message ReadRequest {
 message ReadResponse {
     repeated string lesson_specifications = 1;
 }
-
-

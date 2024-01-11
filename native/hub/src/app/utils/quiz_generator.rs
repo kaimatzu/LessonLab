@@ -18,7 +18,7 @@ pub fn generate(quiz_source: String) -> PyResult<String> {
             "quiz_generator",
         )?;
 
-        let generated_quiz: String = quiz_generator
+        let generated_quiz: String = quiz_generator // this will return JSON
         .getattr("generate_quiz")?
         .call((quiz_source,), None)?
         .extract()?;

@@ -17,6 +17,8 @@ pub async fn handle_quiz_specifications(rust_request: RustRequest,
             // will be used in quiz_page_handler for quiz generation later
             quiz_specifications_data_object.quiz_specifications = request_message.quiz_specifications;
 
+            crate::debug_print!("{:?}", quiz_specifications_data_object.quiz_specifications);
+
             let response_message;
             if quiz_specifications_data_object.quiz_specifications.len() > 0 {
                 response_message = CreateResponse {

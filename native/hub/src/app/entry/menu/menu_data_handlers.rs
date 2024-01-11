@@ -89,6 +89,7 @@ pub async fn handle_menu_content_loading(
         // and the returned value of this function is passed to the MenuConnectionOrchestrator in Dart
         // @see menu_connection_orchestrator.dart
         RustOperation::Read => {
+            crate::debug_print!("Menu: Read operation");
             // Debug purposes. Just to check if the uploaded files are stored in main().
             let message_bytes = rust_request.message.unwrap();
             let request_message = ReadRequest::decode(message_bytes.as_slice()).unwrap();
@@ -100,14 +101,26 @@ pub async fn handle_menu_content_loading(
             file_path.push_str("\\config.json");
 
             // Get lesson and quiz data from saved files
-            let temp_menu_data_object = load_menu_data_from_file(file_path.as_str());
-            menu_data_object.lessons_data_object = temp_menu_data_object.lessons_data_object;
-            menu_data_object.quizzes_data_object = temp_menu_data_object.quizzes_data_object; 
-
-            // Create message
-            let response_message = ReadResponse {
-                menu_model: serialize_menu_model(menu_data_object)
-            };
+            let response_message;
+            match load_menu_data_from_file(file_path.as_str()) {
+                Some(temp_menu_data_object) => {
+                    menu_data_object.lessons_data_object = temp_menu_data_object.lessons_data_object;
+                    menu_data_object.quizzes_data_object = temp_menu_data_object.quizzes_data_object; 
+                    // Create message
+                    response_message = ReadResponse {
+                        menu_model: serialize_menu_model(menu_data_object)
+                    };
+                },
+                None => {
+                    // Create empty model as message
+                    response_message = ReadResponse {
+                        menu_model: Some(RinfMenuModel {
+                            lessons: Vec::new(),
+                            quizzes: Vec::new(),
+                        }),
+                    };
+                },
+            }
 
             // Create rust response to send to dart
             RustResponse {
@@ -267,22 +280,38 @@ fn deserialize_menu_model(menu_model: RinfMenuModel) -> Option<MenuDataObject>{
     })
 }
 
-fn load_menu_data_from_file(file_path: &str) -> MenuDataObject {
+fn load_menu_data_from_file(file_path: &str) -> Option<MenuDataObject> {
     // Open config.json file
-    let mut file = File::open(file_path).expect("Failed to open file");
+    let mut file = match File::open(file_path) {
+        Ok(output) => output,
+        Err(err) => {
+            crate::debug_print!("Error: {:?}", err);
+            return None;
+        },
+    };
 
     // Read the file content into a string
     let mut json_content = String::new();
-    file.read_to_string(&mut json_content)
-        .expect("Failed to read file content");
+    match file.read_to_string(&mut json_content) {
+        Ok(_) => {},
+        Err(err) => {
+            crate::debug_print!("Error: {:?}", err);
+            return None;
+        },
+    };
 
-    // Deserialize the JSON content into a MenuDataObject
-    let root: Root = serde_json::from_str(&json_content).expect("Failed to deserialize JSON");
+    let root: Root = match serde_json::from_str(&json_content) {
+        Ok(output) => output,
+        Err(err) => {
+            crate::debug_print!("Error: {:?}", err);
+            return None;
+        },
+    };
 
     // let menu_data: MenuDataObject = root.menu_data_object;
 
     // menu_data
-    root.menu_data_object
+    Some(root.menu_data_object)
 }
 
 fn update_lesson_file(file_path: &str, menu_data_object: &mut MenuDataObject, lesson_model: RinfLessonModel) -> std::io::Result<()> {

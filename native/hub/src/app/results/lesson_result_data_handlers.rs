@@ -145,90 +145,88 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
                 crate::debug_print!("Failed to write to config file: {}", error);
             }
 
-                // Spwaning the thread for creating the lesson
-                tokio::spawn(create_thread_handles(upload_sources_data_object.file_paths.clone(), upload_sources_data_object.urls.clone(), target_folder_path, lesson_specifications_data_object.lesson_specifications.clone()));
-                
-                // if release {
-                //     match lesson_generator::generate(string_payload) {
-                //         Ok(md_content) => {
-                //             // write to file here
-                //             if let Err(error) = write_lesson_to_target_path(&md_content, &target_folder_path) {
-                //                 crate::debug_print!("Failed to write to target file: {}", error);
-                //             }
+            // Spwaning the thread for creating the lesson
+            tokio::spawn(create_thread_handles(upload_sources_data_object.file_paths.clone(), upload_sources_data_object.urls.clone(), target_folder_path, lesson_specifications_data_object.lesson_specifications.clone()));
+            
+            // if release {
+            //     match lesson_generator::generate(string_payload) {
+            //         Ok(md_content) => {
+            //             // write to file here
+            //             if let Err(error) = write_lesson_to_target_path(&md_content, &target_folder_path) {
+            //                 crate::debug_print!("Failed to write to target file: {}", error);
+            //             }
 
-                //             response_message = ReadResponse {
-                //                 status_code: StatusCode::OK.as_u16() as u32,
-                //                 title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                //                 md_content,
-                //                 error_string: String::from("No error")
-                //             };
-                //         }
-                //         Err(error) => {
-                //             response_message = ReadResponse {
-                //                 status_code: StatusCode::NOT_FOUND.as_u16() as u32,
-                //                 title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                //                 md_content: String::from("No content"),
-                //                 error_string: error.to_string()
-                //             };
-                //         }
-                //     }
-                //     // response_message = ReadResponse {
-                //     //     status_code: StatusCode::OK.as_u16() as u32,
-                //     //     title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                //     //     md_content: "MOVED LESSON GENERATION".to_string(),
-                //     //     error_string: String::from("No error")
-                //     // };
-                // }
-                // else {
-                //     // write to file here
-                //     if let Err(error) = write_lesson_to_target_path("Debug Mode: Dummy Content", &target_folder_path) {
-                //         crate::debug_print!("Failed to write to target file: {}", error);
-                //     }
-                    
-                //     response_message = ReadResponse {
-                //         status_code: StatusCode::OK.as_u16() as u32,
-                //         title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
-                //         md_content: "Debug Mode: Dummy Content".to_string(),
-                //         error_string: String::from("No error")
-                //     };
-                // }
+            //             response_message = ReadResponse {
+            //                 status_code: StatusCode::OK.as_u16() as u32,
+            //                 title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+            //                 md_content,
+            //                 error_string: String::from("No error")
+            //             };
+            //         }
+            //         Err(error) => {
+            //             response_message = ReadResponse {
+            //                 status_code: StatusCode::NOT_FOUND.as_u16() as u32,
+            //                 title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+            //                 md_content: String::from("No content"),
+            //                 error_string: error.to_string()
+            //             };
+            //         }
+            //     }
+            //     // response_message = ReadResponse {
+            //     //     status_code: StatusCode::OK.as_u16() as u32,
+            //     //     title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+            //     //     md_content: "MOVED LESSON GENERATION".to_string(),
+            //     //     error_string: String::from("No error")
+            //     // };
+            // }
+            // else {
+            //     // write to file here
+            //     if let Err(error) = write_lesson_to_target_path("Debug Mode: Dummy Content", &target_folder_path) {
+            //         crate::debug_print!("Failed to write to target file: {}", error);
+            //     }
                 
-                
-    
-                // if response_message.status_code == StatusCode::OK.as_u16() as u32 {
-                //     RustResponse {
-                //         successful: true,
-                //         message: Some(response_message.encode_to_vec()),
-                //         blob: None,
-                //     }
-                // }
-                // else {
-                //     RustResponse {
-                //         successful: false,
-                //         message: Some(response_message.encode_to_vec()),
-                //         blob: None,
-                //     }
-                // }   
-                // let ui_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone();
-                // let ui_title = ui_title.split_at(8).1.to_string();
+            //     response_message = ReadResponse {
+            //         status_code: StatusCode::OK.as_u16() as u32,
+            //         title: lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone(),
+            //         md_content: "Debug Mode: Dummy Content".to_string(),
+            //         error_string: String::from("No error")
+            //     };
+            // }
 
-                let response_message = ReadResponse {
-                    status_code: StatusCode::OK.as_u16() as u32,
-                    title: sanitized_title.to_string(),
-                    md_content: "MOVED LESSON GENERATION".to_string(), // TODO: Need to remove this from rinf
-                    error_string: String::from("No error")
-                };
+            // if response_message.status_code == StatusCode::OK.as_u16() as u32 {
+            //     RustResponse {
+            //         successful: true,
+            //         message: Some(response_message.encode_to_vec()),
+            //         blob: None,
+            //     }
+            // }
+            // else {
+            //     RustResponse {
+            //         successful: false,
+            //         message: Some(response_message.encode_to_vec()),
+            //         blob: None,
+            //     }
+            // }   
+            // let ui_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone();
+            // let ui_title = ui_title.split_at(8).1.to_string();
 
-                RustResponse {
-                    successful: true,
-                    message: Some(response_message.encode_to_vec()),
-                    blob: None,
-                }
-            },
-            RustOperation::Update => RustResponse::default(),
-            RustOperation::Delete => RustResponse::default(),
-        }
+            let response_message = ReadResponse {
+                status_code: StatusCode::OK.as_u16() as u32,
+                title: sanitized_title.to_string(),
+                md_content: "MOVED LESSON GENERATION".to_string(), // TODO: Need to remove this from rinf
+                error_string: String::from("No error")
+            };
+
+            RustResponse {
+                successful: true,
+                message: Some(response_message.encode_to_vec()),
+                blob: None,
+            }
+        },
+        RustOperation::Update => RustResponse::default(),
+        RustOperation::Delete => RustResponse::default(),
     }
+}
 
 pub fn read_tcp_stream() -> Result<(), Box<dyn std::error::Error>> {
     use crate::messages::results::view_lesson_result::load_lesson::{StateSignal, ID};

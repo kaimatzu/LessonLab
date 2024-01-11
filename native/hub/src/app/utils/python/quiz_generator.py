@@ -8,7 +8,9 @@ client = OpenAI(api_key = os.getenv("API_KEY"))
 
 def generate_quiz(source):
 
-    prompt = "Make a JSON for a quiz with " + source
+    prompt = "Make a JSON for a quiz with this source:" + source
+    
+    
 
     response = client.chat.completions.create(
         model = "gpt-3.5-turbo",

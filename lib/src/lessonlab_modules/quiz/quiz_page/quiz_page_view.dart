@@ -37,7 +37,7 @@ class _QuizPageViewState extends State<QuizPageView> {
   List<Map<String, dynamic>> results = [];
 
   _QuizPageViewState() {
-    developer.log("contstructor call quizpageviewstate");
+    developer.log("constructor call quizpageviewstate");
   }
 
   @override
@@ -68,153 +68,161 @@ class _QuizPageViewState extends State<QuizPageView> {
         name: "build");
 
     return Scaffold(
-        appBar: const LessonLabAppBar(),
-        body: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          scrollDirection: Axis.vertical,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 10.0, bottom: 20.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                    margin: const EdgeInsets.only(
-                        left: 50.0, top: 20.0, right: 20.0),
-                    height: 200.0,
-                    width: 150,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 253, 237, 183),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 20.0),
-                      child: Text('Question ${_questionIndex + 1}',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 49, 51, 56),
-                          )),
-                    )),
-                Expanded(
-                    child: Padding(
-                        padding: const EdgeInsets.only(top: 20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildQuestionWidget(
-                              quizViewModel.questions[_questionIndex]!,
-                              // questionsMap[_questionIndex],
-                              _questionIndex + 1,
-                              _questionIndex,
-                            ),
-                            const SizedBox(
-                              height: 20.0,
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 0.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  PrimaryButton(
-                                      handlePress: () {
-                                        _prevQuestion();
-                                      },
-                                      text: 'prev',
-                                      enabled: true),
-                                  const SizedBox(
-                                    width: 20.0,
-                                  ),
-                                  PrimaryButton(
-                                      handlePress: () {
-                                        _nextQuestion();
-                                      },
-                                      text: 'next',
-                                      enabled: true),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ))),
-                Expanded(
+      appBar: const LessonLabAppBar(),
+      body: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        scrollDirection: Axis.vertical,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 10.0, bottom: 20.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                  margin:
+                      const EdgeInsets.only(left: 50.0, top: 20.0, right: 20.0),
+                  height: 200.0,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 253, 237, 183),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 20.0),
+                    child: Text('Question ${_questionIndex + 1}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 49, 51, 56),
+                        )),
+                  )),
+              Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 40.0),
-                    child: Column(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            margin: const EdgeInsets.only(top: 20.0),
-                            width: 350.0,
-                            constraints: const BoxConstraints(minHeight: 200.0),
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 253, 237, 183),
-                              borderRadius: BorderRadius.circular(10.0),
+                          _buildQuestionWidget(
+                            quizViewModel.questions[_questionIndex]!,
+                            // questionsMap[_questionIndex],
+                            _questionIndex + 1,
+                            _questionIndex,
+                          ),
+                          const SizedBox(
+                            height: 20.0,
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 0.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                PrimaryButton(
+                                    handlePress: () {
+                                      _prevQuestion();
+                                    },
+                                    text: 'prev',
+                                    enabled: true),
+                                const SizedBox(
+                                  width: 20.0,
+                                ),
+                                PrimaryButton(
+                                  handlePress: () {
+                                    _nextQuestion();
+                                  },
+                                  text: 'next',
+                                  enabled: true,
+                                ),
+                              ],
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 23.5, top: 36.0, bottom: 36.0),
-                              child: Wrap(
-                                spacing: 10.0,
-                                runSpacing: 11.0,
-                                alignment: WrapAlignment.start,
-                                children: [
-                                  ...List.generate(
-                                    _totalItems,
-                                    (index) => InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          _questionIndex = index;
-                                        });
-                                      },
-                                      child: Container(
-                                        height: 50.0,
-                                        width: 35.0,
-                                        decoration: BoxDecoration(
-                                            color: _questionIndex == index
-                                                ? const Color.fromARGB(
-                                                    255, 49, 51, 56)
-                                                : Colors.amber,
-                                            border: Border.all(
-                                                color: Colors.amber)),
-                                        child: Align(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            '${index + 1}',
-                                            style: TextStyle(
-                                                color: _questionIndex == index
-                                                    ? Colors.amber
-                                                    : const Color.fromARGB(
-                                                        255, 49, 51, 56),
-                                                fontWeight: FontWeight.bold),
-                                          ),
+                          ),
+                        ],
+                      ))),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 40.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 20.0),
+                        width: 350.0,
+                        constraints: const BoxConstraints(minHeight: 200.0),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 253, 237, 183),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 23.5, top: 36.0, bottom: 36.0),
+                          child: Wrap(
+                            spacing: 10.0,
+                            runSpacing: 11.0,
+                            alignment: WrapAlignment.start,
+                            children: [
+                              ...List.generate(
+                                _totalItems,
+                                (index) => InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      _questionIndex = index;
+                                    });
+                                  },
+                                  child: Container(
+                                    height: 50.0,
+                                    width: 35.0,
+                                    decoration: BoxDecoration(
+                                        color: _questionIndex == index
+                                            ? const Color.fromARGB(
+                                                255, 49, 51, 56)
+                                            : Colors.amber,
+                                        border:
+                                            Border.all(color: Colors.amber)),
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        '${index + 1}',
+                                        style: TextStyle(
+                                          color: _questionIndex == index
+                                              ? Colors.amber
+                                              : const Color.fromARGB(
+                                                  255,
+                                                  49,
+                                                  51,
+                                                  56,
+                                                ),
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 20.0),
-                            child: PrimaryButton(
-                              handlePress: () {
-                                _checkAllAnswers();
-                                Navigator.restorablePushNamed(
-                                    context, '/quiz_result');
-                              },
-                              text: 'Finish Attempt',
-                              enabled: true,
-                            ),
-                          )
-                        ]),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: PrimaryButton(
+                          handlePress: () {
+                            _checkAllAnswers();
+                            Navigator.restorablePushNamed(
+                                context, '/quiz_result');
+                          },
+                          text: 'Finish Attempt',
+                          enabled: true,
+                        ),
+                      )
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   void _prevQuestion() {
@@ -257,51 +265,53 @@ class _QuizPageViewState extends State<QuizPageView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-            margin: const EdgeInsets.only(
-              bottom: 10.0,
+          margin: const EdgeInsets.only(
+            bottom: 10.0,
+          ),
+          height: 350.0,
+          width: 600.0,
+          constraints: const BoxConstraints(
+            minHeight: 350.0,
+            maxHeight: 350.0,
+            maxWidth: 600.0,
+          ),
+          padding: EdgeInsets.symmetric(
+            horizontal: _calculateHorizontalPadding(question.question),
+            vertical: 20.0,
+          ),
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 253, 237, 183),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: 20.0,
+                ),
+                Text(
+                  question.question,
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(
+                    fontSize: 15.0,
+                    color: Color.fromARGB(255, 49, 51, 56),
+                  ),
+                  softWrap: true,
+                  maxLines: null,
+                ),
+                const SizedBox(
+                  height: 40.0,
+                ),
+                if (question.type == 1)
+                  _buildIdentification(index)
+                else if (question.type == 2)
+                  _buildMultipleChoice(question, index)
+              ],
             ),
-            height: 350.0,
-            width: 600.0,
-            constraints: const BoxConstraints(
-              minHeight: 350.0,
-              maxHeight: 350.0,
-              maxWidth: 600.0,
-            ),
-            padding: EdgeInsets.symmetric(
-              horizontal: _calculateHorizontalPadding(question.question),
-              vertical: 20.0,
-            ),
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 253, 237, 183),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    Text(
-                      question.question,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        fontSize: 15.0,
-                        color: Color.fromARGB(255, 49, 51, 56),
-                      ),
-                      softWrap: true,
-                      maxLines: null,
-                    ),
-                    const SizedBox(
-                      height: 40.0,
-                    ),
-                    if (question.type == 1)
-                      _buildIdentification(index)
-                    else if (question.type == 2)
-                      _buildMultipleChoice(question, index)
-                  ]),
-            )),
+          ),
+        ),
       ],
     );
   }
@@ -333,8 +343,7 @@ class _QuizPageViewState extends State<QuizPageView> {
             // answerText: ((question as MultipleChoiceQuestionModel).choices?[i]
             //         as Map<String, Object>?)?['content'] as String? ??
             //     '',
-            answerText:
-                (question as MultipleChoiceQuestionModel).choices[i].content,
+            answerText: question.choices[i].content,
             index: i,
             groupValue:
                 _selectedAnswers.length > index ? _selectedAnswers[index] : 0,
@@ -394,7 +403,7 @@ class _QuizPageViewState extends State<QuizPageView> {
       });
     }
 
-    print('Score: ${_calculateScore()} / $_totalItems');
+    developer.log('Score: ${_calculateScore()} / $_totalItems');
 
     quizResultViewModel.setResults(results);
     //Navigator.restorablePushNamed(context, '/quiz_result');
