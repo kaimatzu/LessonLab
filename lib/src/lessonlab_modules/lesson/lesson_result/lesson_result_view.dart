@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/components/lesson_result_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view_model.dart';
@@ -12,6 +13,7 @@ class LessonResultView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lessonResultViewModel = context.watch<LessonResultViewModel>();
+    final menuViewModel = context.watch<MenuViewModel>();
     // final lessonSpecificationsViewModel =
     //     context.watch<LessonSpecificationsViewModel>();
 
@@ -29,7 +31,7 @@ class LessonResultView extends StatelessWidget {
     var finish = PrimaryButton(
       handlePress: () {
         if (lessonResultViewModel.done) {
-          lessonResultViewModel.returnToMenu(context);
+          lessonResultViewModel.returnToMenu(context, menuViewModel);
         }
       },
       text: 'Save and Finish',

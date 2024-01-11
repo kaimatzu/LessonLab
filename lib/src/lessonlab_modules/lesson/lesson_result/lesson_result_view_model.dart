@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_connection_orchestrator.dart';
 import 'dart:developer' as developer;
 
@@ -23,6 +24,7 @@ class LessonResultViewModel with ChangeNotifier {
   set lessonContent(String value) {
     _lessonContent = value;
   }
+
   LessonResultModel get lessonResultModel => _lessonResultModel;
 
   LessonResultViewModel() {
@@ -35,10 +37,13 @@ class LessonResultViewModel with ChangeNotifier {
   //   developer.log(">>> regenerate");
   // }
 
-  Future<void> returnToMenu(BuildContext context) async {
+  Future<void> returnToMenu(
+      BuildContext context, MenuViewModel menuViewModel) async {
+    await menuViewModel.loadViewContent();
     await _lessonResultConnectionOrchestrator.saveLesson(lessonContent);
     developer.log("Lesson content: $lessonContent");
-    // ignore: use_build_context_synchronously
+
+    if (!context.mounted) return;
     Navigator.restorablePushNamed(
       context,
       MenuView.routeName,
