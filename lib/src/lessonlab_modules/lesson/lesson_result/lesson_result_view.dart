@@ -15,15 +15,39 @@ class LessonResultView extends StatelessWidget {
     // final lessonSpecificationsViewModel =
     //     context.watch<LessonSpecificationsViewModel>();
 
-    var regenerate = PrimaryButton(
-      handlePress: () {
-        if (lessonResultViewModel.done) {
-          // run loadViewContent() function to regenerate
-          lessonResultViewModel.loadViewContent();
+    var export = FutureBuilder<String>(
+      future: lessonResultViewModel.lessonResultModel.lesson.title,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return PrimaryButton(
+            handlePress: () {
+              debugPrint("Title not yet loaded");
+            },
+            text: 'Save and Export Lesson',
+            enabled: lessonResultViewModel.done,
+          );
+        } else if (snapshot.hasError) {
+          return PrimaryButton(
+            handlePress: () {
+              debugPrint("Error loading lesson title");
+            },
+            text: 'Save and Export Lesson',
+            enabled: lessonResultViewModel.done,
+          );
+        } else {
+          final String lessonTitle = snapshot.data!;
+
+          return PrimaryButton(
+            handlePress: () {
+              if (lessonResultViewModel.done) {
+                lessonResultViewModel.exportLesson(lessonTitle);
+              }
+            },
+            text: 'Save and Export Lesson',
+            enabled: lessonResultViewModel.done,
+          );
         }
-      },
-      text: 'Save and Export Lesson',
-      enabled: lessonResultViewModel.done,
+      }
     );
 
     var finish = PrimaryButton(
@@ -44,7 +68,7 @@ class LessonResultView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           // TODO: add functionality to buttons
           children: [
-            regenerate,
+            export,
             const SizedBox(width: 30.0),
             finish,
           ],
