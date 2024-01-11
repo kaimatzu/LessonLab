@@ -3,16 +3,19 @@ import 'package:lessonlab/src/global_models/lesson_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_connection_orchestrator.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view.dart';
+import 'package:file_selector/file_selector.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_import_export/lesson_import_connection_orchestrator.dart';
 
 class MenuViewModel with ChangeNotifier {
   late final MenuModel _menuModel;
   late final MenuConnectionOrchestrator _menuConnectionOrchestrator;
-
+  late final LessonImportConnectionOrchestrator _lessonImportConnectionOrchestrator;
   MenuModel get menuModel => _menuModel;
 
   MenuViewModel() {
     _menuModel = MenuModel.initialize();
     _menuConnectionOrchestrator = MenuConnectionOrchestrator();
+    _lessonImportConnectionOrchestrator = LessonImportConnectionOrchestrator();
     loadViewContent();
     // for (int i = 0; i < 4; i++) {
     //   lesson.add(LessonModel(i, 'Title $i', 'Content $i'));
@@ -78,5 +81,19 @@ class MenuViewModel with ChangeNotifier {
     lesson.id.then((id) => _menuConnectionOrchestrator.deleteLesson(id));
 
     notifyListeners();
+  }
+
+  Future<void> importLesson() async {
+    const XTypeGroup typeGroup =  XTypeGroup(
+      label: "LessonLab file (.lela)",
+      extensions: [".lela"]
+    );
+
+    final XFile? file = await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+    if(file != null) {
+      debugPrint(file.path);
+      debugPrint(file.name);
+      _lessonImportConnectionOrchestrator.importLesson(file.path, file.name);
+    }
   }
 }

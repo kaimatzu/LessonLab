@@ -5,6 +5,7 @@
 // Data handlers
 use crate::app::entry::menu::menu_data_handlers::*;
 use crate::app::entry::upload::upload_sources_data_handlers::*;
+use crate::app::import::import_data_handlers::handle_import_lesson;
 use crate::app::lesson::lesson_specifications_data_handlers::*;
 use crate::app::quiz::quiz_specifications_data_handlers::*;
 use crate::app::quiz::quiz_page_data_handlers::*;
@@ -60,7 +61,10 @@ pub async fn handle_request(request_unique: RustRequestUnique,
             handle_lesson_open(rust_request, settings_save_directory_data_object, menu_data_object).await
         }
         messages::export::export_material_as_custom_type::ID => {
-            handle_export_lesson(rust_request).await
+            handle_export_lesson(rust_request, settings_save_directory_data_object).await
+        }
+        messages::import::import_material::ID => {
+            handle_import_lesson(rust_request, settings_save_directory_data_object, menu_data_object).await
         }
         messages::settings::save_directory::ID =>{
             handle_choose_directory(rust_request, settings_save_directory_data_object).await

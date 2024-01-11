@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_export/lesson_export_connection_orchestrator.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_import_export/lesson_export_connection_orchestrator.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_connection_orchestrator.dart';
 import 'package:file_selector/file_selector.dart';
 import 'dart:developer' as developer;

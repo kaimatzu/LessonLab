@@ -52,7 +52,10 @@ class LessonResultView extends StatelessWidget {
 
     var finish = PrimaryButton(
       handlePress: () {
+        debugPrint("Finished");
+        debugPrint(lessonResultViewModel.done.toString());
         if (lessonResultViewModel.done) {
+          debugPrint("Return");
           lessonResultViewModel.returnToMenu(context);
         }
       },
@@ -66,7 +69,6 @@ class LessonResultView extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(0.0, 30.0, 180.0, 60.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
-          // TODO: add functionality to buttons
           children: [
             export,
             const SizedBox(width: 30.0),

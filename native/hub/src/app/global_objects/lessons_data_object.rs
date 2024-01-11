@@ -6,7 +6,7 @@ pub struct Lesson{
     pub id: u32,
     pub title: String,
     pub target_path: String,
-    pub sources: Sources
+    // pub sources: Sources
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
