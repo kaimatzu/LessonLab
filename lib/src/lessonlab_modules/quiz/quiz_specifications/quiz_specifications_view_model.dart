@@ -151,11 +151,8 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
 
   void generateQuiz(
       BuildContext context, QuizPageViewModel quizPageViewModel) async {
-    // Navigator.restorablePushNamed(context, LessonResultView.routeName);
-    // TODO: send quiz specs to backend using orchestrator
-    // developer.log("generate quiz clicked");
-    // quizPageViewModel.loadQuizModel();
-    // developer.log("quiz model loaded");
+    await quizPageViewModel.loadQuizModel();
+    if (!context.mounted) return;
     Navigator.restorablePushNamed(context, QuizPageView.routeName);
     developer.log("page changed");
   }
