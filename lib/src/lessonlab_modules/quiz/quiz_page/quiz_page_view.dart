@@ -5,6 +5,7 @@ import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_models/choice_model.dart';
 import 'package:lessonlab/src/global_models/question_model.dart';
+import 'package:lessonlab/src/global_components/secondary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/components/question.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/components/quiz_navigator.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/components/show_dialog.dart';
