@@ -13,7 +13,7 @@ class LessonOpenScreen extends StatelessWidget {
 
     // This is the "Lesson" text at the top left of the screen
     const header = Padding(
-      padding: EdgeInsets.fromLTRB(90.0, 45.0, 45.0, 45.0),
+      padding: EdgeInsets.fromLTRB(100.0, 30.0, 45.0, 30.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -52,23 +52,21 @@ class LessonOpenScreen extends StatelessWidget {
             children: [
               header,
               Padding(
-                padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 0.0),
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                 child: TitleBar(title: title),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 30.0),
+                padding: const EdgeInsets.only(
+                    left: 20.0, right: 20.0, bottom: 20.0),
                 child: TextEditor(contents: mdContent),
               )
-    
             ],
           );
         }
       },
     );
 
-    return SingleChildScrollView(
-      child: textEditorContainer
-    );
+    return SingleChildScrollView(child: textEditorContainer);
   }
 }
 

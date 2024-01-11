@@ -14,7 +14,7 @@ class LessonOpenView extends StatelessWidget {
     final int? id = ModalRoute.of(context)!.settings.arguments as int?;
 
     final lessonOpenViewModel = context.watch<LessonOpenViewModel>();
-    if(id != null) {
+    if (id != null) {
       debugPrint("Here");
       lessonOpenViewModel.loadViewContent(id);
     }
@@ -22,17 +22,19 @@ class LessonOpenView extends StatelessWidget {
     //     context.watch<LessonSpecificationsViewModel>();
 
     var regenerate = PrimaryButton(
+      width: 150.0,
       handlePress: () {
         if (lessonOpenViewModel.done) {
           // lessonOpenViewModel.regenerate();
           // lessonOpenViewModel.loadViewContent();
         }
       },
-      text: 'Save and Export Lesson',
+      text: 'Save and Export',
       enabled: lessonOpenViewModel.done,
     );
 
     var finish = PrimaryButton(
+      width: 150.0,
       handlePress: () {
         if (lessonOpenViewModel.done) {
           lessonOpenViewModel.returnToMenu(context);
@@ -42,14 +44,25 @@ class LessonOpenView extends StatelessWidget {
       enabled: lessonOpenViewModel.done,
     );
 
+    var back = PrimaryButton(
+      width: 150.0,
+      handlePress: () {
+        Navigator.pop(context);
+      },
+      text: 'Back',
+      enabled: true,
+    );
+
     return Scaffold(
       body: const LessonOpenScreen(),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(0.0, 30.0, 180.0, 60.0),
+        padding: const EdgeInsets.only(top: 20.0, right: 35.0, bottom: 35.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           // TODO: add functionality to buttons
           children: [
+            back,
+            const SizedBox(width: 30.0),
             regenerate,
             const SizedBox(width: 30.0),
             finish,
