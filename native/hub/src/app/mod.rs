@@ -3,6 +3,7 @@ pub mod lesson;
 pub mod quiz;
 pub mod utils;
 pub mod export;
+pub mod import;
 // pub mod quiz;
 pub mod open_lesson;
 pub mod results;

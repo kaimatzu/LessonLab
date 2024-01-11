@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_export/lesson_export_connection_orchestrator.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_import_export/lesson_export_connection_orchestrator.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/lesson_open_connection_orchestrator.dart';
 import 'package:file_selector/file_selector.dart';
 import 'dart:developer' as developer;
@@ -48,7 +48,7 @@ class LessonOpenViewModel with ChangeNotifier {
   // }
 
   Future<void> returnToMenu(BuildContext context) async {
-    await _lessonOpenConnectionOrchestrator.saveLesson(lessonContent);
+    // await _lessonOpenConnectionOrchestrator.saveLesson(lessonContent); // TODO: Fix later
     developer.log("Lesson content: $lessonContent");
     // ignore: use_build_context_synchronously
     Navigator.restorablePushNamed(

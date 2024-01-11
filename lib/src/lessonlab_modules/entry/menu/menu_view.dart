@@ -31,6 +31,15 @@ class MenuView extends StatelessWidget {
       text: 'Create',
     );
 
+    var importButton = NewMaterialButton(
+      onPressed: () {
+        _menuViewModel.importLesson();
+      },
+      icon: const Icon(Icons.import_export),
+      text: 'Import',
+    );
+
+
     var grid = FutureBuilder<List<Object>>(
       future: Future.wait([
         _menuViewModel.menuModel.lessons,
@@ -128,7 +137,13 @@ class MenuView extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                newMaterialButton,
+                Row(
+                  children: [
+                    importButton,
+                    const SizedBox(width: 16.0),
+                    newMaterialButton,
+                  ],
+                ),
               ],
             ),
             const SizedBox(height: 16.0),
@@ -138,6 +153,6 @@ class MenuView extends StatelessWidget {
           ],
         ),
       ),
-    );
+);
   }
 }
