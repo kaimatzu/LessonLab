@@ -5,6 +5,8 @@ import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/components/
 import 'package:provider/provider.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view_model.dart';
 
+import 'dart:developer' as developer;
+
 class LessonResultView extends StatelessWidget {
   const LessonResultView({Key? key}) : super(key: key);
 
@@ -30,6 +32,8 @@ class LessonResultView extends StatelessWidget {
 
     var finish = PrimaryButton(
       handlePress: () {
+        developer.log("finish clicked ${lessonResultViewModel.done}",
+            name: "finished");
         if (lessonResultViewModel.done) {
           lessonResultViewModel.returnToMenu(context, menuViewModel);
         }

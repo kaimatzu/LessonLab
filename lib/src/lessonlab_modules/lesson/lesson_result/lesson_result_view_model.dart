@@ -16,7 +16,6 @@ class LessonResultViewModel with ChangeNotifier {
   bool get done => _done;
   set done(bool value) {
     _done = value;
-    // notifyListeners();
   }
 
   String _lessonContent = "";
@@ -39,11 +38,14 @@ class LessonResultViewModel with ChangeNotifier {
 
   Future<void> returnToMenu(
       BuildContext context, MenuViewModel menuViewModel) async {
+    developer.log("returnToMenu 1");
     await menuViewModel.loadViewContent();
+    developer.log("returnToMenu 2");
     await _lessonResultConnectionOrchestrator.saveLesson(lessonContent);
-    developer.log("Lesson content: $lessonContent");
+    developer.log("Lesson content: $lessonContent", name: "returnToMenu");
 
-    if (!context.mounted) return;
+    // if (!context.mounted) return;
+    // ignore: use_build_context_synchronously
     Navigator.restorablePushNamed(
       context,
       MenuView.routeName,
