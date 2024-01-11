@@ -23,7 +23,6 @@ class QuizPageView extends StatefulWidget {
   State<QuizPageView> createState() => _QuizPageViewState();
 }
 
-// THIS IS MULTIPLE CHOICE QUIZ
 class _QuizPageViewState extends State<QuizPageView> {
   int _questionIndex = 0;
 
@@ -197,9 +196,10 @@ class _QuizPageViewState extends State<QuizPageView> {
                             padding: const EdgeInsets.only(top: 20.0),
                             child: PrimaryButton(
                               handlePress: () {
-                                _checkAllAnswers();
-                                Navigator.restorablePushNamed(
-                                    context, '/quiz_result');
+                                _showConfirmationDialog();
+                                // _checkAllAnswers();
+                                // Navigator.restorablePushNamed(
+                                //     context, '/quiz_result');
                               },
                               text: 'Finish Attempt',
                               enabled: true,
@@ -230,18 +230,6 @@ class _QuizPageViewState extends State<QuizPageView> {
         _currentItem++;
       });
     }
-
-    if (_questionIndex >= _totalItems) _resetQuiz();
-  }
-
-  void _resetQuiz() {
-    setState(() {
-      _questionIndex = 0;
-      _totalItems = 0;
-      _selectedAnswers = List.filled(_totalItems, -1);
-      _totalItems = 0;
-      _selectedAnswers = List.filled(_totalItems, -1);
-    });
   }
 
   double _calculateHorizontalPadding(String questionText) {
@@ -344,56 +332,107 @@ class _QuizPageViewState extends State<QuizPageView> {
     );
   }
 
+  void _showConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: Text('Are you sure you want to finish the quiz attempt?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _finishAttempt();
+              },
+              child: Text('Finish'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _finishAttempt() {
+    results.clear();
+    _checkAllAnswers();
+    Navigator.restorablePushNamed(context, '/quiz_result');
+  }
+
   void _checkAllAnswers() {
     final quizViewModel = context.read<QuizPageViewModel>();
     final quizResultViewModel =
         Provider.of<QuizResultViewModel>(context, listen: false);
 
     for (int i = 0; i < _totalItems; i++) {
-      bool isCorrect;
+      bool isCorrect = false;
+      dynamic userAnswer;
 
       if (quizViewModel.questions[i]?.type == 1) {
         // Identification question
         String correctAnswer =
             (quizViewModel.questions[i] as IdentificationQuestionModel).answer;
-        String userAnswer = _identificationControllers[i].text;
 
+        userAnswer = _identificationControllers[i].text;
         isCorrect = userAnswer.toLowerCase() == correctAnswer.toLowerCase();
-      } else {
-        // Multiple choice question
-        // List<Map<String, Object>> answers =
-        //     ((quizViewModel.questions[i] as MultipleChoiceQuestionModel).choices)
-        //         .cast<Map<String, Object>>();
 
-        List<ChoiceModel> answers =
+        results.add({
+          'question': quizViewModel.questions[i]?.question,
+          'type': quizViewModel.questions[i]?.type,
+          'userAnswer': userAnswer,
+          'isCorrect': isCorrect,
+          'correctAnswer': correctAnswer,
+        });
+      } else {
+        List<ChoiceModel> choices =
             (quizViewModel.questions[i] as MultipleChoiceQuestionModel).choices;
 
-        isCorrect = true;
-        for (int j = 0; j < answers.length; j++) {
-          bool isSelected = _selectedAnswers[i] == j;
-          bool isAnswerCorrect = answers[j].isCorrect == true;
+        int selectedChoiceIndex = _selectedAnswers[i];
+        bool hasSelectedChoice = selectedChoiceIndex >= 0;
+        //String selectedChoiceContent = choices[selectedChoiceIndex].content;
+        String selectedChoiceContent = hasSelectedChoice
+            ? choices[selectedChoiceIndex].content
+            : 'No Answer';
 
-          if ((isSelected && !isAnswerCorrect) ||
-              (!isSelected && isAnswerCorrect)) {
-            isCorrect = false;
-            break;
-          }
-        }
+        isCorrect = hasSelectedChoice
+            ? choices[selectedChoiceIndex].isCorrect == true
+            : false;
+
+        userAnswer = {
+          'index': selectedChoiceIndex as int,
+          'content': selectedChoiceContent,
+        };
+
+        List<Map<String, dynamic>> choicesData = choices
+            .map((choice) => {
+                  'index': choices.indexOf(choice),
+                  'content': choice.content,
+                })
+            .toList();
+
+        results.add({
+          'question': quizViewModel.questions[i]?.question,
+          'type': quizViewModel.questions[i]?.type,
+          'userAnswer': userAnswer,
+          'isCorrect': isCorrect,
+          'choices': choicesData,
+          'correctAnswer':
+              choices.firstWhere((choice) => choice.isCorrect).content,
+          'correctAnswerIndex':
+              choices.indexWhere((choice) => choice.isCorrect),
+        });
       }
-
-      results.add({
-        'question': quizViewModel.questions[i]?.question,
-        'userAnswer': quizViewModel.questions[i]?.type == 1
-            ? _identificationControllers[i].text
-            : _selectedAnswers[i],
-        'isCorrect': isCorrect,
-      });
     }
 
     developer.log('Score: ${_calculateScore()} / $_totalItems');
 
     quizResultViewModel.setResults(results);
-    //Navigator.restorablePushNamed(context, '/quiz_result');
   }
 
   int _calculateScore() {

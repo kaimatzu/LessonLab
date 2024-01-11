@@ -113,7 +113,7 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
             
             let lesson = Lesson{
                 id: i,
-                sources,
+                // sources,
                 target_path: target_folder_path.to_owned(),
                 title: sanitized_title.to_string()
             };
@@ -178,7 +178,7 @@ pub fn read_tcp_stream() -> Result<(), Box<dyn std::error::Error>> {
         
         crate::debug_print!("{}", message);
 
-        
+        crate::debug_print!("Sending to dart!");
         // Do something with the message here 
         let signal_message = StateSignal { stream_message: message.to_owned() };
         let rust_signal = RustSignal {
@@ -187,12 +187,14 @@ pub fn read_tcp_stream() -> Result<(), Box<dyn std::error::Error>> {
             blob: None,
         };
         send_rust_signal(rust_signal); // Send to flutter
+        crate::debug_print!("Done sending to dart!");
         
         if message == "[LL_END_STREAM]" {
             // socket.send("EXIT_ACK", 0).unwrap();
             break;
         } 
         
+        crate::debug_print!("Sending ACK!");
         socket.send("ACK", 0).unwrap();
         // sends to lesson_generator.py
     }

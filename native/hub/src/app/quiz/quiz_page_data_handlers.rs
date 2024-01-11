@@ -288,18 +288,18 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
             let mut test_source_texts = Vec::new();
             let mut test_questions = Vec::new();
             let mut test_choices = Vec::new();
-            for i in 0..3 {
-                let correct: bool;
-                if i == 0 {
-                    correct = true
-                } else {
-                    correct = false
-                }
-                test_choices.push(ChoiceModel {
-                    content: "Rust test choice ".to_string() + &i.to_string(),
-                    is_correct: correct,
-                });
-            }
+            // for i in 0..3 {
+            //     let correct: bool;
+            //     if i == 0 {
+            //         correct = true
+            //     } else {
+            //         correct = false
+            //     }
+            //     test_choices.push(ChoiceModel {
+            //         content: "Rust test choice ".to_string() + &i.to_string(),
+            //         is_correct: correct,
+            //     });
+            // }
             test_source_files.push("rust_test_source_files".to_string());
             test_source_urls.push("rust_test_source_urls".to_string());
             test_source_texts.push(TextFileModel {
@@ -307,6 +307,18 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
                 content: "Rust test content".to_string(),
             });
             for i in 0..3 {
+                for j in 0..3 {
+                    let correct: bool;
+                    if j == i {
+                        correct = true
+                    } else {
+                        correct = false
+                    }
+                    test_choices.push(ChoiceModel {
+                        content: "Rust test choice ".to_string() + &j.to_string(),
+                        is_correct: correct,
+                    });
+                }
                 test_questions.push(QuestionModel {
                     question: "Rust test question ".to_string() + &i.to_string(),
                     r#type: 2,
@@ -314,6 +326,9 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
                         choices: test_choices.clone(),
                     })),
                 });
+                for j in 0..3{
+                    test_choices.remove(0);
+                }
             }
             test_questions.push(QuestionModel {
                 question: "Test identification question".to_string(),

@@ -1,0 +1,10 @@
+syntax = "proto3";
+package export_material_as_custom_type;
+
+message CreateRequest {
+    string file_path = 1;
+}
+
+message CreateResponse {
+    uint32 status_code = 1;
+}

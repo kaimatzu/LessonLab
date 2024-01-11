@@ -293,10 +293,28 @@ def main_context_query(lesson_specifications: list[str], index_path: str):
     context.term()
     # TODO: Handle references later
     
+def debug_fn():
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://127.0.0.1:5555")
     
+    for i in range(0, 25):
+        # pass these through zmq
+        socket.send_string(f"${i} ")
+        # Wait for acknowledgment from Rust
+        socket.recv_string()
+        time.sleep(.2)
+    
+    socket.send_string("[LL_END_STREAM]")
+    print(f"Sent to Rust: Exit message")
+    
+    # Wait for acknowledgment from Rust
+    ack = socket.recv_string()
+    print(f"Received exit ACK from Rust: {ack}")
 def rust_callback(lesson_specifications: list[str], index_path: str, files: list[str] = [], urls: list[str] = []):
     generate_content_index(files=files, urls=urls, index_path=index_path)
     main_context_query(lesson_specifications=lesson_specifications, index_path=index_path)
+    # debug_fn()
     
 # rust_callback(
 #     lesson_specifications=[

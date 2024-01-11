@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_import_export/lesson_export_connection_orchestrator.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/lesson_open_connection_orchestrator.dart';
+import 'package:file_selector/file_selector.dart';
 import 'dart:developer' as developer;
 
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/lesson_open_model.dart';
@@ -9,9 +11,11 @@ class LessonOpenViewModel with ChangeNotifier {
   late final LessonOpenModel _lessonOpenModel;
   late final LessonOpenConnectionOrchestrator
       _lessonOpenConnectionOrchestrator;
+  late final LessonExportConnectionOrchestrator
+      _lessonExportConnectionOrchestrator;
   final _statusCode = 0;
 
-  bool _done = false;
+  bool _done = true;
   bool get done => _done;
   set done(bool value) {
     _done = value;
@@ -35,6 +39,7 @@ class LessonOpenViewModel with ChangeNotifier {
   LessonOpenViewModel() {
     _lessonOpenModel = LessonOpenModel.initialize();
     _lessonOpenConnectionOrchestrator = LessonOpenConnectionOrchestrator();
+    _lessonExportConnectionOrchestrator = LessonExportConnectionOrchestrator();
     // loadViewContent();
   }
 
@@ -43,7 +48,7 @@ class LessonOpenViewModel with ChangeNotifier {
   // }
 
   Future<void> returnToMenu(BuildContext context) async {
-    await _lessonOpenConnectionOrchestrator.saveLesson(lessonContent);
+    // await _lessonOpenConnectionOrchestrator.saveLesson(lessonContent); // TODO: Fix later
     developer.log("Lesson content: $lessonContent");
     // ignore: use_build_context_synchronously
     Navigator.restorablePushNamed(
@@ -68,6 +73,23 @@ class LessonOpenViewModel with ChangeNotifier {
         // Handle errors
         developer.log('Error loading contents: $error', name: 'Error');
       }
+    }
+  }
+
+  Future<void> exportLesson(String lessonTitle) async {
+    final FileSaveLocation? result =
+      await getSaveLocation(
+        acceptedTypeGroups: [
+          const XTypeGroup(
+            label: "LessonLab file (.lela)",
+            extensions: [".lela"]
+          )  
+        ],
+        suggestedName: "$lessonTitle.lela"
+      );
+    if (result != null) {
+      developer.log(result.path);
+      _lessonExportConnectionOrchestrator.exportLesson(result.path);
     }
   }
 }

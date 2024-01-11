@@ -260,11 +260,11 @@ fn deserialize_menu_model(menu_model: RinfMenuModel) -> Option<MenuDataObject>{
             id: menu_model.lessons[i].id.clone(),
             title: menu_model.lessons[i].title.clone(),
             target_path: menu_model.lessons[i].location.clone(),
-            sources: Sources {
-                source_files: menu_model.lessons[i].source.clone().unwrap().files,
-                source_urls: menu_model.lessons[i].source.clone().unwrap().urls,
-                source_texts: texts.clone(),
-            },
+            // sources: Sources {
+            //     source_files: menu_model.lessons[i].source.clone().unwrap().files,
+            //     source_urls: menu_model.lessons[i].source.clone().unwrap().urls,
+            //     source_texts: texts.clone(),
+            // },
         };
         lessons.push(temp_lesson.clone());
     }
@@ -433,11 +433,11 @@ fn rinf_lesson_model_to_lesson(lesson_model: RinfLessonModel) -> Lesson {
         id: lesson_model.id,
         title: lesson_model.title,
         target_path: lesson_model.location,
-        sources: Sources {
-            source_files: lm.clone().source.unwrap().files,
-            source_urls: lm.clone().source.unwrap().urls,
-            source_texts: texts,
-        }
+        // sources: Sources {
+        //     source_files: lm.clone().source.unwrap().files,
+        //     source_urls: lm.clone().source.unwrap().urls,
+        //     source_texts: texts,
+        // }
     }
 }
 

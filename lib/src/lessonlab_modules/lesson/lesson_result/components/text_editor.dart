@@ -87,12 +87,6 @@ class _TextEditor extends State<TextEditor> {
         }
         // _controller.document.insert(_controller.plainTextEditingValue.text.length - 1, rinfMessage);
       }
-      // setState(() {
-      //   // message = rinfMessage;
-      //   // _scrollController.jumpTo(
-      //   //   _scrollController.position.maxScrollExtent,
-      //   // );
-      // });
     });
   }
 

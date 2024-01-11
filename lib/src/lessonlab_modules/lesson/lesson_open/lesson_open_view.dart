@@ -21,15 +21,39 @@ class LessonOpenView extends StatelessWidget {
     // final lessonSpecificationsViewModel =
     //     context.watch<LessonSpecificationsViewModel>();
 
-    var regenerate = PrimaryButton(
-      handlePress: () {
-        if (lessonOpenViewModel.done) {
-          // lessonOpenViewModel.regenerate();
-          // lessonOpenViewModel.loadViewContent();
+    var export = FutureBuilder<String>(
+      future: lessonOpenViewModel.lessonOpenModel.lesson.title,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return PrimaryButton(
+            handlePress: () {
+              debugPrint("Title not yet loaded");
+            },
+            text: 'Save and Export Lesson',
+            enabled: lessonOpenViewModel.done,
+          );
+        } else if (snapshot.hasError) {
+          return PrimaryButton(
+            handlePress: () {
+              debugPrint("Error loading lesson title");
+            },
+            text: 'Save and Export Lesson',
+            enabled: lessonOpenViewModel.done,
+          );
+        } else {
+          final String lessonTitle = snapshot.data!;
+
+          return PrimaryButton(
+            handlePress: () {
+              if (lessonOpenViewModel.done) {
+                lessonOpenViewModel.exportLesson(lessonTitle);
+              }
+            },
+            text: 'Save and Export Lesson',
+            enabled: lessonOpenViewModel.done,
+          );
         }
-      },
-      text: 'Save and Export Lesson',
-      enabled: lessonOpenViewModel.done,
+      }
     );
 
     var finish = PrimaryButton(
@@ -48,9 +72,8 @@ class LessonOpenView extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(0.0, 30.0, 180.0, 60.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
-          // TODO: add functionality to buttons
           children: [
-            regenerate,
+            export,
             const SizedBox(width: 30.0),
             finish,
           ],

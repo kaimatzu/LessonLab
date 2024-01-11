@@ -1,0 +1,11 @@
+syntax = "proto3";
+package import_material;
+
+message CreateRequest {
+    string file_path = 1;
+    string folder_name = 2;
+}
+
+message CreateResponse {
+    uint32 status_code = 1;
+}

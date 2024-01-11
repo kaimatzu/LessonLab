@@ -19,22 +19,46 @@ class LessonResultView extends StatelessWidget {
     // final lessonSpecificationsViewModel =
     //     context.watch<LessonSpecificationsViewModel>();
 
-    var regenerate = PrimaryButton(
-      handlePress: () {
-        if (lessonResultViewModel.done) {
-          // run loadViewContent() function to regenerate
-          lessonResultViewModel.loadViewContent();
-        }
-      },
-      text: 'Save and Export Lesson',
-      enabled: lessonResultViewModel.done,
-    );
+    var export = FutureBuilder<String>(
+        future: lessonResultViewModel.lessonResultModel.lesson.title,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return PrimaryButton(
+              handlePress: () {
+                debugPrint("Title not yet loaded");
+              },
+              text: 'Save and Export Lesson',
+              enabled: lessonResultViewModel.done,
+            );
+          } else if (snapshot.hasError) {
+            return PrimaryButton(
+              handlePress: () {
+                debugPrint("Error loading lesson title");
+              },
+              text: 'Save and Export Lesson',
+              enabled: lessonResultViewModel.done,
+            );
+          } else {
+            final String lessonTitle = snapshot.data!;
+
+            return PrimaryButton(
+              handlePress: () {
+                if (lessonResultViewModel.done) {
+                  lessonResultViewModel.exportLesson(lessonTitle);
+                }
+              },
+              text: 'Save and Export Lesson',
+              enabled: lessonResultViewModel.done,
+            );
+          }
+        });
 
     var finish = PrimaryButton(
       handlePress: () {
-        developer.log("finish clicked ${lessonResultViewModel.done}",
-            name: "finished");
+        debugPrint("Finished");
+        debugPrint(lessonResultViewModel.done.toString());
         if (lessonResultViewModel.done) {
+          debugPrint("Return");
           lessonResultViewModel.returnToMenu(context, menuViewModel);
         }
       },
@@ -49,7 +73,7 @@ class LessonResultView extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            regenerate,
+            export,
             const SizedBox(width: 30.0),
             finish,
           ],
