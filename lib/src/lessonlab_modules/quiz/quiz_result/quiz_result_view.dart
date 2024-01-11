@@ -111,7 +111,7 @@ class QuizResultView extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Percentage: ${(totalCorrectAnswers / quizResult.length) * 100}%',
+                                'Percentage: ${((totalCorrectAnswers / quizResult.length) * 100).toStringAsFixed(2)}%',
                                 style: TextStyle(
                                     fontSize: 16.0,
                                     color: Color.fromRGBO(49, 51, 56, 1),
