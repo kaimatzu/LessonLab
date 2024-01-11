@@ -181,9 +181,10 @@ class QuizResultView extends StatelessWidget {
       // Multiple choice question
       List<Map<String, dynamic>> choices = result['choices'];
 
-      userAnswerText = (result['userAnswer'] != null)
-          ? choices[result['userAnswer']['index']]['content']
-          : 'No Answer';
+      userAnswerText =
+          (result['userAnswer'] != null && result['userAnswer']['index'] >= 0)
+              ? choices[result['userAnswer']['index']]['content']
+              : 'No Answer';
       correctAnswerText = choices[result['correctAnswerIndex']]['content'];
     }
 
@@ -218,7 +219,7 @@ class QuizResultView extends StatelessWidget {
             ),
           ),
           Text(
-            'Correct: ${result['isCorrect'] ? 'Yes' : 'No'}',
+            '${result['isCorrect'] ? 'Correct' : 'Incorrect'}',
             style: TextStyle(
               fontSize: 14.0,
               color: result['isCorrect'] ? Colors.green : Colors.red,
@@ -233,7 +234,7 @@ class QuizResultView extends StatelessWidget {
     List<Map<String, dynamic>> choices = result['choices'];
     int correctAnswerIndex = result['correctAnswerIndex'];
 
-    int? selectedChoiceIndex = result['userAnswer']['index'];
+    int? selectedChoiceIndex = result['userAnswer']?['index'];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

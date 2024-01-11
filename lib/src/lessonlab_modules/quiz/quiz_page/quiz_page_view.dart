@@ -197,9 +197,10 @@ class _QuizPageViewState extends State<QuizPageView> {
                             padding: const EdgeInsets.only(top: 20.0),
                             child: PrimaryButton(
                               handlePress: () {
-                                _checkAllAnswers();
-                                Navigator.restorablePushNamed(
-                                    context, '/quiz_result');
+                                _showConfirmationDialog();
+                                // _checkAllAnswers();
+                                // Navigator.restorablePushNamed(
+                                //     context, '/quiz_result');
                               },
                               text: 'Finish Attempt',
                               enabled: true,
@@ -330,6 +331,39 @@ class _QuizPageViewState extends State<QuizPageView> {
     );
   }
 
+  void _showConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: Text('Are you sure you want to finish the quiz attempt?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _finishAttempt();
+              },
+              child: Text('Finish'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _finishAttempt() {
+    results.clear();
+    _checkAllAnswers();
+    Navigator.restorablePushNamed(context, '/quiz_result');
+  }
+
   void _checkAllAnswers() {
     final quizViewModel = context.read<QuizPageViewModel>();
     final quizResultViewModel =
@@ -359,9 +393,15 @@ class _QuizPageViewState extends State<QuizPageView> {
             (quizViewModel.questions[i] as MultipleChoiceQuestionModel).choices;
 
         int selectedChoiceIndex = _selectedAnswers[i];
-        String selectedChoiceContent = choices[selectedChoiceIndex].content;
+        bool hasSelectedChoice = selectedChoiceIndex >= 0;
+        //String selectedChoiceContent = choices[selectedChoiceIndex].content;
+        String selectedChoiceContent = hasSelectedChoice
+            ? choices[selectedChoiceIndex].content
+            : 'No Answer';
 
-        isCorrect = choices[selectedChoiceIndex].isCorrect == true;
+        isCorrect = hasSelectedChoice
+            ? choices[selectedChoiceIndex].isCorrect == true
+            : false;
 
         userAnswer = {
           'index': selectedChoiceIndex as int,
