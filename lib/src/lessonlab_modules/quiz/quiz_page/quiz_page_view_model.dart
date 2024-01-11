@@ -30,7 +30,7 @@ class QuizPageViewModel extends ChangeNotifier {
   }
   // get questions => _questions;
 
-  void loadQuizModel() async {
+  Future<void> loadQuizModel() async {
     // orchestrator.getQuizModel().then((value) => model.quiz = value);
     developer.log("load quiz model", name: "function");
     model.quiz = await orchestrator.getQuizModel();
