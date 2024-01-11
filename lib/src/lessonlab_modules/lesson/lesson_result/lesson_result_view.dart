@@ -16,17 +16,19 @@ class LessonResultView extends StatelessWidget {
     //     context.watch<LessonSpecificationsViewModel>();
 
     var regenerate = PrimaryButton(
+      width: 150.0,
       handlePress: () {
         if (lessonResultViewModel.done) {
           // run loadViewContent() function to regenerate
           lessonResultViewModel.loadViewContent();
         }
       },
-      text: 'Save and Export Lesson',
+      text: 'Save and Export',
       enabled: lessonResultViewModel.done,
     );
 
     var finish = PrimaryButton(
+      width: 150.0,
       handlePress: () {
         if (lessonResultViewModel.done) {
           lessonResultViewModel.returnToMenu(context);
@@ -39,7 +41,7 @@ class LessonResultView extends StatelessWidget {
     return Scaffold(
       body: const LessonResultScreen(),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(0.0, 30.0, 180.0, 60.0),
+        padding: const EdgeInsets.only(top: 20.0, right: 35.0, bottom: 35.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           // TODO: add functionality to buttons
