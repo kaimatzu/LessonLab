@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_export/lesson_export_connection_orchestrator.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_connection_orchestrator.dart';
+import 'package:file_selector/file_selector.dart';
 import 'dart:developer' as developer;
 
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_model.dart';
@@ -9,6 +11,9 @@ class LessonResultViewModel with ChangeNotifier {
   late final LessonResultModel _lessonResultModel;
   late final LessonResultConnectionOrchestrator
       _lessonResultConnectionOrchestrator;
+  late final LessonExportConnectionOrchestrator
+      _lessonExportConnectionOrchestrator;
+
   final _statusCode = 0;
 
   bool _done = false;
@@ -28,6 +33,7 @@ class LessonResultViewModel with ChangeNotifier {
   LessonResultViewModel() {
     _lessonResultModel = LessonResultModel.initialize();
     _lessonResultConnectionOrchestrator = LessonResultConnectionOrchestrator();
+    _lessonExportConnectionOrchestrator = LessonExportConnectionOrchestrator();
     loadViewContent();
   }
 
@@ -58,6 +64,23 @@ class LessonResultViewModel with ChangeNotifier {
     } catch (error) {
       // Handle errors
       developer.log('Error loading contents: $error', name: 'Error');
+    }
+  }
+
+  Future<void> exportLesson(String lessonTitle) async {
+    final FileSaveLocation? result =
+      await getSaveLocation(
+        acceptedTypeGroups: [
+          const XTypeGroup(
+            label: "LessonLab file (.lela)",
+            extensions: [".lela"]
+          )  
+        ],
+        suggestedName: "$lessonTitle.lela"
+      );
+    if (result != null) {
+      developer.log(result.path);
+      _lessonExportConnectionOrchestrator.exportLesson(result.path);
     }
   }
 }
