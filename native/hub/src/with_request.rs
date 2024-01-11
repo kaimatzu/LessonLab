@@ -11,6 +11,7 @@ use crate::app::quiz::quiz_page_data_handlers::*;
 use crate::app::results::lesson_result_data_handlers::*;
 use crate::app::settings::settings_data_handlers::*;
 use crate::app::open_lesson::lesson_open_data_handlers::*;
+use crate::app::export::export_data_handlers::*;
 
 // Data objects
 use crate::app::entry::menu::menu_data_object::MenuDataObject;
@@ -57,6 +58,9 @@ pub async fn handle_request(request_unique: RustRequestUnique,
         }
         messages::results::open_finished_lesson::open_lesson::ID => {
             handle_lesson_open(rust_request, settings_save_directory_data_object, menu_data_object).await
+        }
+        messages::export::export_material_as_custom_type::ID => {
+            handle_export_lesson(rust_request).await
         }
         messages::settings::save_directory::ID =>{
             handle_choose_directory(rust_request, settings_save_directory_data_object).await
