@@ -101,7 +101,6 @@ class _QuizPageViewState extends State<QuizPageView> {
                           children: [
                             _buildQuestionWidget(
                               quizViewModel.questions[_questionIndex]!,
-                              // questionsMap[_questionIndex],
                               _questionIndex + 1,
                               _questionIndex,
                             ),
@@ -171,16 +170,19 @@ class _QuizPageViewState extends State<QuizPageView> {
                                             color: _questionIndex == index
                                                 ? const Color.fromARGB(
                                                     255, 49, 51, 56)
-                                                : Colors.amber,
+                                                : Color.fromARGB(
+                                                    255, 241, 196, 27),
                                             border: Border.all(
-                                                color: Colors.amber)),
+                                                color: Color.fromARGB(
+                                                    255, 241, 196, 27))),
                                         child: Align(
                                           alignment: Alignment.center,
                                           child: Text(
                                             '${index + 1}',
                                             style: TextStyle(
                                                 color: _questionIndex == index
-                                                    ? Colors.amber
+                                                    ? Color.fromARGB(
+                                                        255, 241, 196, 27)
                                                     : const Color.fromARGB(
                                                         255, 49, 51, 56),
                                                 fontWeight: FontWeight.bold),
