@@ -13,8 +13,11 @@ pub struct Quiz{
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(tag = "type")]
 pub enum Question{
+    #[serde(rename = "identification")]
     Identification(IdentificationQuestion),
+    #[serde(rename = "multipleChoice")]
     MultipleChoice(MultipleChoiceQuestion)
 }
 
