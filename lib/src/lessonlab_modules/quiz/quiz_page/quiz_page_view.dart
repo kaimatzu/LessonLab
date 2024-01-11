@@ -114,19 +114,31 @@ class _QuizPageViewState extends State<QuizPageView> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   PrimaryButton(
+                                      width: 100.0,
                                       handlePress: () {
                                         _prevQuestion();
                                       },
-                                      text: 'prev',
+                                      text: 'Previous',
                                       enabled: true),
-                                  const SizedBox(
-                                    width: 20.0,
+                                  Container(
+                                    padding: const EdgeInsets.only(
+                                        left: 20.0, right: 20.0),
+                                    width: 75.0,
+                                    child: Text(
+                                      '${_questionIndex + 1}/$_totalItems',
+                                      style: const TextStyle(
+                                          color:
+                                              Color.fromARGB(255, 49, 51, 56),
+                                          fontSize: 20.0,
+                                          fontWeight: FontWeight.bold),
+                                    ),
                                   ),
                                   PrimaryButton(
+                                      width: 100.0,
                                       handlePress: () {
                                         _nextQuestion();
                                       },
-                                      text: 'next',
+                                      text: 'Next',
                                       enabled: true),
                                 ],
                               ),
@@ -135,9 +147,9 @@ class _QuizPageViewState extends State<QuizPageView> {
                         ))),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 40.0),
+                    padding: const EdgeInsets.only(right: 125.0),
                     child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Container(
                             margin: const EdgeInsets.only(top: 20.0),
@@ -200,9 +212,6 @@ class _QuizPageViewState extends State<QuizPageView> {
                             child: PrimaryButton(
                               handlePress: () {
                                 _showConfirmationDialog();
-                                // _checkAllAnswers();
-                                // Navigator.restorablePushNamed(
-                                //     context, '/quiz_result');
                               },
                               text: 'Finish Attempt',
                               enabled: true,
