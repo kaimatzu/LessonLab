@@ -30,7 +30,7 @@ use crate::messages::entry::menu::menu::{
 use crate::messages::entry::upload::uploaded_content;
 
 use std::any::Any;
-use std::fs::{File, OpenOptions};
+use std::fs::{File, OpenOptions, remove_dir_all};
 use std::io::{Read, Write};
 use prost::Message;
 
@@ -99,17 +99,26 @@ pub async fn handle_menu_content_loading(
             let mut file_path = settings_save_directory_data_object.save_directory.clone();
             file_path.push_str("\\config.json");
 
-            // Get lesson and quiz data from saved files
-            let temp_menu_data_object = load_menu_data_from_file(file_path.as_str());
-            menu_data_object.lessons_data_object = temp_menu_data_object.lessons_data_object;
-            menu_data_object.quizzes_data_object = temp_menu_data_object.quizzes_data_object; 
+            let response_message;
 
-            // Create message
-            let response_message = ReadResponse {
-                menu_model: serialize_menu_model(menu_data_object)
-            };
-
-            // Create rust response to send to dart
+            match load_menu_data_from_file(file_path.as_str()) {
+                Some(temp_menu_data_object) => {
+                    menu_data_object.lessons_data_object = temp_menu_data_object.lessons_data_object;
+                    menu_data_object.quizzes_data_object = temp_menu_data_object.quizzes_data_object;
+                    response_message = ReadResponse {
+                        menu_model: serialize_menu_model(menu_data_object)
+                    };
+                },
+                None => {
+                    // Create empty model as model
+                    response_message = ReadResponse {
+                        menu_model: Some(RinfMenuModel {
+                            lessons: Vec::new(),
+                            quizzes: Vec::new(),
+                        }),
+                    }
+                }
+            }
             RustResponse {
                 successful: true,
                 message: Some(response_message.encode_to_vec()),
@@ -267,22 +276,36 @@ fn deserialize_menu_model(menu_model: RinfMenuModel) -> Option<MenuDataObject>{
     })
 }
 
-fn load_menu_data_from_file(file_path: &str) -> MenuDataObject {
+fn load_menu_data_from_file(file_path: &str) -> Option<MenuDataObject> {
     // Open config.json file
-    let mut file = File::open(file_path).expect("Failed to open file");
+    let mut file = match File::open(file_path) {
+        Ok(output) => output,
+        Err(err) => {
+            crate::debug_print!("Error: {:?}", err);
+            return None;
+        },
+    };
 
     // Read the file content into a string
     let mut json_content = String::new();
-    file.read_to_string(&mut json_content)
-        .expect("Failed to read file content");
+    match file.read_to_string(&mut json_content) {
+        Ok(_) => {},
+        Err(err) => {
+            crate::debug_print!("Error: {:?}", err);
+            return None;
+        },
+    };
 
     // Deserialize the JSON content into a MenuDataObject
-    let root: Root = serde_json::from_str(&json_content).expect("Failed to deserialize JSON");
+    let root: Root = match serde_json::from_str(&json_content) {
+        Ok(output) => output,
+        Err(err) => {
+            crate::debug_print!("Error: {:?}", err);
+            return None;
+        },
+    };
 
-    // let menu_data: MenuDataObject = root.menu_data_object;
-
-    // menu_data
-    root.menu_data_object
+    Some(root.menu_data_object)
 }
 
 fn update_lesson_file(file_path: &str, menu_data_object: &mut MenuDataObject, lesson_model: RinfLessonModel) -> std::io::Result<()> {
@@ -343,6 +366,17 @@ fn delete_lesson_file(file_path: &str, menu_data_object: &mut MenuDataObject, id
     let lessons = &mut menu_data_object.lessons_data_object.lessons;
 
     if let Some(index) = lessons.iter_mut().position(|lesson| lesson.id == id) {
+        match lessons.get(index) {
+            Some(lesson) => {
+                // !!! warning this can delete your folders without confirmation
+                let _ = remove_dir_all(lesson.target_path.clone());
+            },
+            None => {
+                crate::debug_print!("Error: Failed to delete directory");
+            },
+        }
+
+        // remove the lesson from vec
         lessons.remove(index);
     }
 
@@ -350,6 +384,7 @@ fn delete_lesson_file(file_path: &str, menu_data_object: &mut MenuDataObject, id
         menu_data_object: menu_data_object.clone(),
     };
 
+    // edit config.json
     let serialized_root = serde_json::to_string_pretty(&root).unwrap();
 
     let mut file = OpenOptions::new()

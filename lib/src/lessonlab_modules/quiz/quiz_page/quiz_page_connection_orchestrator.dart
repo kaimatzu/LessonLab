@@ -19,7 +19,6 @@ class QuizPageConnectionOrchestrator {
     );
     final rustResponse = await requestToRust(rustRequest);
     final responseMessage = RinfInterface.ReadResponse.fromBuffer(
-      // TODO: fix this null error
       rustResponse.message!,
     );
 

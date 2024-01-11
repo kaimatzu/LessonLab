@@ -11,6 +11,8 @@ import 'package:lessonlab/src/lessonlab_modules/quiz/components/number_field.dar
 import 'package:lessonlab/src/lessonlab_modules/quiz/components/text_area.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications/quiz_specifications_connection_orchestrator.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications/quiz_specifications_model.dart';
 // import 'package:lessonlab/src/lessonlab_modules/results/lesson_result/lesson_result_view.dart';
 import 'package:rinf/rinf.dart';
 
@@ -73,64 +75,32 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
     }
   }
 
+  var model = QuizSpecificationsModel();
+  var orchestrator = QuizSpecificationsConnectionOrchestrator();
   var formFields = <FormField>[];
   var quizSpecifications = <String>[];
   var statusCode = 0;
 
-  // Future<void> sendData() async {
-  //   final requestMessage =
-  //       RinfInterface.CreateRequest(lessonSpecifications: lessonSpecifications);
-  //   final rustRequest = RustRequest(
-  //     resource: RinfInterface.ID,
-  //     operation: RustOperation.Create,
-  //     message: requestMessage.writeToBuffer(),
-  //     // blob: NO BLOB
-  //   );
-  //   final rustResponse = await requestToRust(rustRequest);
-  //   final responseMessage = RinfInterface.CreateResponse.fromBuffer(
-  //     rustResponse.message!,
-  //   );
-  //   statusCode = responseMessage.statusCode;
-  //   developer.log(statusCode.toString(), name: 'response-code');
-  // }
+  void collectFormTextValues() {
+    quizSpecifications.clear();
 
-  // Future<void> getData() async {
-  //   // Debug purposes. Just to check if the lesson specs are stored in rust main().
-  //   final requestMessage = RinfInterface.ReadRequest(req: true);
-  //   final rustRequest = RustRequest(
-  //     resource: RinfInterface.ID,
-  //     operation: RustOperation.Read,
-  //     message: requestMessage.writeToBuffer(),
-  //     // blob: NO BLOB
-  //   );
-  //   final rustResponse = await requestToRust(rustRequest);
-  //   final responseMessage = RinfInterface.ReadResponse.fromBuffer(
-  //     rustResponse.message!,
-  //   );
-  //   var content = responseMessage.lessonSpecifications;
-  //   developer.log(content.toString(), name: 'content');
-  // }
+    for (var formField in formFields) {
+      if (formField.inputField != null) {
+        quizSpecifications.add(formField.inputField!.controller.text);
+      } else if (formField.textArea != null) {
+        quizSpecifications.add(formField.textArea!.controller.text);
+      } else if (formField.dropdown != null) {
+        quizSpecifications.add(formField.dropdown!.getSelectedValue);
+      } else {
+        // developer.log('Null error', name: 'collect');
+        // TODO: Handle uninitialized null values, just in case.
+      }
+    }
 
-  // void collectFormTextValues() {
-  //   lessonSpecifications.clear();
+    notifyListeners();
 
-  //   for (var formField in formFields) {
-  //     if (formField.inputField != null) {
-  //       lessonSpecifications.add(formField.inputField!.controller.text);
-  //     } else if (formField.textArea != null) {
-  //       lessonSpecifications.add(formField.textArea!.controller.text);
-  //     } else if (formField.dropdown != null) {
-  //       lessonSpecifications.add(formField.dropdown!.getSelectedValue);
-  //     } else {
-  //       developer.log('Null error', name: 'generate-lesson');
-  //       // TODO: Handle uninitialized null values, just in case.
-  //     }
-  //   }
-
-  //   notifyListeners();
-
-  //   developer.log(lessonSpecifications.toString(), name: 'collect');
-  // }
+    developer.log(quizSpecifications.toString(), name: 'collect');
+  }
 
   void addCustomSpecifications() {
     formFields.add(
@@ -146,16 +116,15 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
   }
 
   void cancelQuiz(BuildContext context) {
-    Navigator.restorablePushNamed(context, UploadSourcesView.routeName);
+    Navigator.pop(context);
   }
 
   void generateQuiz(
       BuildContext context, QuizPageViewModel quizPageViewModel) async {
-    // Navigator.restorablePushNamed(context, LessonResultView.routeName);
-    // TODO: send quiz specs to backend using orchestrator
-    // developer.log("generate quiz clicked");
-    // quizPageViewModel.loadQuizModel();
-    // developer.log("quiz model loaded");
+    collectFormTextValues();
+    orchestrator.sendQuizSpecs(quizSpecifications);
+    await quizPageViewModel.loadQuizModel();
+    if (!context.mounted) return;
     Navigator.restorablePushNamed(context, QuizPageView.routeName);
     developer.log("page changed");
   }

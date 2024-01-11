@@ -23,8 +23,6 @@ class QuizPageView extends StatefulWidget {
   State<QuizPageView> createState() => _QuizPageViewState();
 }
 
-// TODO: MAKE IDENTIFICATION TYPE QUIZ
-
 // THIS IS MULTIPLE CHOICE QUIZ
 class _QuizPageViewState extends State<QuizPageView> {
   int _questionIndex = 0;
@@ -37,7 +35,7 @@ class _QuizPageViewState extends State<QuizPageView> {
   List<Map<String, dynamic>> results = [];
 
   _QuizPageViewState() {
-    developer.log("contstructor call quizpageviewstate");
+    developer.log("constructor call quizpageviewstate");
   }
 
   @override
@@ -104,7 +102,6 @@ class _QuizPageViewState extends State<QuizPageView> {
                           children: [
                             _buildQuestionWidget(
                               quizViewModel.questions[_questionIndex]!,
-                              // questionsMap[_questionIndex],
                               _questionIndex + 1,
                               _questionIndex,
                             ),
@@ -333,8 +330,7 @@ class _QuizPageViewState extends State<QuizPageView> {
             // answerText: ((question as MultipleChoiceQuestionModel).choices?[i]
             //         as Map<String, Object>?)?['content'] as String? ??
             //     '',
-            answerText:
-                (question as MultipleChoiceQuestionModel).choices[i].content,
+            answerText: question.choices[i].content,
             index: i,
             groupValue:
                 _selectedAnswers.length > index ? _selectedAnswers[index] : 0,
@@ -394,7 +390,7 @@ class _QuizPageViewState extends State<QuizPageView> {
       });
     }
 
-    print('Score: ${_calculateScore()} / $_totalItems');
+    developer.log('Score: ${_calculateScore()} / $_totalItems');
 
     quizResultViewModel.setResults(results);
     //Navigator.restorablePushNamed(context, '/quiz_result');

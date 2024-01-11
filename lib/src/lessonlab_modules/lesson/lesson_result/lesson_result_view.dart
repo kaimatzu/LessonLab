@@ -42,7 +42,6 @@ class LessonResultView extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(0.0, 30.0, 180.0, 60.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
-          // TODO: add functionality to buttons
           children: [
             regenerate,
             const SizedBox(width: 30.0),

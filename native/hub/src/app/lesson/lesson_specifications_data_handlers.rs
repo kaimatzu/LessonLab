@@ -16,7 +16,6 @@ pub async fn handle_lesson_specifications(rust_request: RustRequest,
             let message_bytes = rust_request.message.unwrap();
             let request_message = CreateRequest::decode(message_bytes.as_slice()).unwrap();
 
-            // Do something with data
             lesson_specifications_data_object.lesson_specifications = request_message.lesson_specifications;
 
             let response_message;
@@ -28,7 +27,7 @@ pub async fn handle_lesson_specifications(rust_request: RustRequest,
             } else {
                 response_message = CreateResponse {
                     // Send the data back in a response
-                    status_code: StatusCode::NOT_FOUND.as_u16() as u32
+                    status_code: StatusCode::BAD_REQUEST.as_u16() as u32
                 };
             }
             

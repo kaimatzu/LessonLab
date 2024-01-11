@@ -75,10 +75,15 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
                 blob: None,
             }
         }
-        RustOperation::Read => {
+        RustOperation::Read => { // TODO: generate quiz form quiz specs here (python)
+
+            // Start quiz specs test = ===============================
+
+            crate::debug_print!("quiz_page quiz specs: {:?}", quiz_specifications_data_object.quiz_specifications.clone());
+
+            // End quiz specs test = ===============================
 
             // start REAL CODE = ===============================
-            // // TODO: generate quiz from quiz specs here (python)
             // let message_bytes = rust_request.message.unwrap();
             // let request_message = ReadRequest::decode(message_bytes.as_slice()).unwrap();
 
@@ -88,7 +93,7 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
 
             // let mut string_payload: String = String::from("Quiz Specifications \n");
             
-            // let quizzes_json = QuizzesDataObject { quizzes: Vec::new() };
+            // // let quizzes_json = QuizzesDataObject { quizzes: Vec::new() };
             // let mut sources = Sources::default();
 
             // for quiz_specification in &quiz_specifications_data_object.quiz_specifications {
@@ -269,6 +274,12 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
             //         };
             //     }
             // }
+            //
+            // RustResponse {
+            //     successful: true,
+            //     message: Some(response_message.encode_to_vec()),
+            //     blob: None,
+            // }
             // end REAL CODE = ===============================
 
             // Start TEST = ===============================
@@ -314,11 +325,11 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
             RustResponse {
                 successful: true,
                 message: Some(ReadResponse {
-                    status_code: StatusCode::NOT_FOUND.as_u16() as u32,
+                    status_code: StatusCode::OK.as_u16() as u32,
                     quiz_model: Some(QuizModel {
                         id: 100,
                         title: "rust_test_quiz".to_string(),
-                        target_path: "rust_test_target path".to_string(),
+                        target_path: "rust_test_target_path".to_string(),
                         questions: test_questions,
                         sources: Some(SourcesModel {
                             files: test_source_files,
@@ -330,12 +341,6 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
                 blob: None,
             }
             // End TEST = ===============================
-
-            // RustResponse {
-            //     successful: true,
-            //     message: Some(response_message.encode_to_vec()),
-            //     blob: None,
-            // }
         }
         RustOperation::Update => {
             RustResponse {
