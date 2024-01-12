@@ -38,13 +38,13 @@ class TextEditor extends StatefulWidget {
 }
 
 class _TextEditor extends State<TextEditor> {
-  var _doneGenerating = false;
+  ValueNotifier<bool> _doneGeneratingNotifier = ValueNotifier<bool>(true);
   // var mdContentFinal = "a";
   // var htmlContent = "";
   // var noStreamValue = 0;
   // late TextEditingController textController;
   final QuillController _controller = QuillController.basic();
-  late StreamSubscription<RustSignal> streamSubscription;
+  // late StreamSubscription<RustSignal> streamSubscription;
   String message = "Nothing received yet";
   var markdownContent = "";
   @override
@@ -95,9 +95,11 @@ class _TextEditor extends State<TextEditor> {
 
     // var message = "";
     lessonOpenViewModel.lessonContent = _controller.document.toPlainText();
-    if (_doneGenerating) {
-      lessonOpenViewModel.done = true;
-    }
+
+    _doneGeneratingNotifier.addListener(() {
+      debugPrint("Value changed into ${_doneGeneratingNotifier.value}");
+      lessonOpenViewModel.done = _doneGeneratingNotifier.value;
+    });
 
     var mdDocument = md.Document(
         encodeHtml: false,
@@ -117,7 +119,7 @@ class _TextEditor extends State<TextEditor> {
       //   EmbeddableTable.tableType: EmbeddableTable.fromMdSyntax,
       // },
     );
-
+  
     // const markdown = "# test";
 
     // var html = md.markdownToHtml(markdown);
@@ -195,14 +197,15 @@ class _TextEditor extends State<TextEditor> {
                   ),
                 ),
                 onPressed: () {
-                  // quillPageNotifier.regenerateSection(_controller);
-                  debugPrint("Regenerate section of text");
+                  lessonOpenViewModel.regenerateSection(context, _controller.getPlainText(), _controller, _doneGeneratingNotifier);
+                  // lessonOpenViewModel.createInstructionDialog(context);
                 }),
             QuillToolbarCustomButtonOptions(
                 icon: Icon(Icons.add_outlined),
                 tooltip: "Continue lesson from this point",
                 onPressed: () {
                   // quillPageNotifier.regenerateSection(_controller);
+                  
                   debugPrint("Continue");
                 }),
             QuillToolbarCustomButtonOptions(
@@ -253,7 +256,7 @@ class _TextEditor extends State<TextEditor> {
         configurations: QuillEditorConfigurations(
       controller: _controller,
       autoFocus: true,
-      readOnly: !_doneGenerating,
+      readOnly: !_doneGeneratingNotifier.value,
       padding: EdgeInsets.only(left: 30, top: 5, right: 30, bottom: 30),
       elementOptions: const QuillEditorElementOptions(
         orderedList: QuillEditorOrderedListElementOptions(
@@ -383,7 +386,7 @@ class _TextEditor extends State<TextEditor> {
   @override
   void dispose() {
     // Cancel the stream subscription in dispose
-    streamSubscription.cancel();
+    // streamSubscription.cancel();
     super.dispose();
   }
 }

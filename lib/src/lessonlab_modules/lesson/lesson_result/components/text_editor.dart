@@ -42,7 +42,6 @@ class TextEditor extends StatefulWidget {
 class _TextEditor extends State<TextEditor> {
   ValueNotifier<bool> _doneGeneratingNotifier = ValueNotifier<bool>(false);
 
-  
   // var mdContentFinal = "a";
   // var htmlContent = "";
   // var noStreamValue = 0;
@@ -69,28 +68,6 @@ class _TextEditor extends State<TextEditor> {
     );
 
     lessonGenerationStream(mdToDelta);
-    // // Start listening to the stream in initState
-    // streamSubscription = rustBroadcaster.stream
-    //     .where((rustSignal) => rustSignal.resource == streamMessage.ID)
-    //     .listen((RustSignal rustSignal) {
-    //   // Handle the stream data here
-    //   final signal = streamMessage.StateSignal.fromBuffer(rustSignal.message!);
-    //   final rinfMessage = signal.streamMessage;
-    //   debugPrint(rinfMessage);
-    //   if (rinfMessage == "[LL_END_STREAM]") {
-    //     setState(() {
-    //       _doneGenerating = true;
-    //     });
-    //   } else {
-    //     markdownContent += rinfMessage;
-    //     if (markdownContent.isNotEmpty) {
-    //       _controller.document =
-    //           Document.fromDelta(mdToDelta.convert(markdownContent));
-    //       _controller.moveCursorToEnd();
-    //     }
-    //     // _controller.document.insert(_controller.plainTextEditingValue.text.length - 1, rinfMessage);
-    //   }
-    // });
   }
 
   @override

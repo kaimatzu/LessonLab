@@ -44,8 +44,6 @@ class LessonOpenScreen extends StatelessWidget {
           final List<String> contents = snapshot.data!;
           final String title = contents[0];
           final String mdContent = contents[1];
-          debugPrint("Titlexz: $title");
-          debugPrint("Contentsx: $mdContent");
           // developer.log(cssContent, name: 'info');
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
