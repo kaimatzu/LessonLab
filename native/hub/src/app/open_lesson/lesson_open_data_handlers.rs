@@ -3,11 +3,13 @@ use crate::bridge::send_rust_signal;
 use crate::app::entry::menu::menu_data_object::{Root, MenuDataObject};
 use crate::app::settings::settings_data_object::SettingsDataObject;
 use crate::bridge::{RustOperation, RustRequest, RustResponse, RustSignal};
+use crate::messages::entry::menu::menu::UpdateRequest;
 // use crate::messages::entry::menu::menu::CreateRequest;
 // use crate::messages::entry::upload::uploaded_content;
 use prost::Message;
 use tokio_with_wasm::tokio;
 
+use crate::app::utils::lesson_generator;
 use std::fs::{OpenOptions, create_dir_all, File};
 use std::io::{Write, Read};
 use std::thread::sleep;
@@ -18,7 +20,7 @@ use crate::app::global_objects::lessons_data_object::{Lesson, LessonsDataObject}
 pub async fn handle_lesson_open(rust_request: RustRequest,
     settings_save_directory_data_object: &mut tokio::sync::MutexGuard<'_, SettingsDataObject>,
     menu_data_object: &mut tokio::sync::MutexGuard<'_, MenuDataObject>) -> RustResponse {
-    use crate::messages::results::open_finished_lesson::open_lesson::{ReadRequest, ReadResponse, CreateRequest, CreateResponse};
+    use crate::messages::results::open_finished_lesson::open_lesson::{ReadRequest, ReadResponse, CreateRequest, CreateResponse, UpdateRequest, UpdateResponse};
 
     match rust_request.operation{
         RustOperation::Create => RustResponse::default(),
@@ -84,7 +86,63 @@ pub async fn handle_lesson_open(rust_request: RustRequest,
                 blob: None,
             }
         },
-        RustOperation::Update => RustResponse::default(),
+        RustOperation::Update => {
+            let message_bytes = rust_request.message.unwrap();
+            let request_message = UpdateRequest::decode(message_bytes.as_slice()).unwrap();
+
+            crate::debug_print!("Update called");
+
+            let content_to_regenerate = request_message.content_to_regenerate;
+            let additional_commands: String = request_message.additional_commands;
+            let lesson_id = request_message.lesson_id;
+
+            let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
+            let config_file_path_temp = settings_save_directory_data_object.save_directory.clone();
+            config_file_path.push_str("\\config.json");
+            // File path of target/output.md
+
+            match get_lesson_by_id(&config_file_path, lesson_id) {
+                Ok(Some(lesson)) => {
+                    // Found the lesson, do something with it
+                    crate::debug_print!("{:#?}", lesson);
+                    let target_folder_path = format!("{}\\{}", &config_file_path_temp, &lesson.title);
+                    crate::debug_print!("{}", target_folder_path);
+                    crate::debug_print!("From update!");
+
+                    tokio::spawn(create_regeneration_thread_handles(content_to_regenerate, additional_commands, target_folder_path));
+
+                    let response_message = UpdateResponse {
+                        status_code: StatusCode::OK.as_u16() as u32,
+                    };
+    
+                    return RustResponse {
+                        successful: true,
+                        message: Some(response_message.encode_to_vec()),
+                        blob: None,
+                    }
+                }
+                Ok(None) => {
+                    // Lesson with the specified ID not found
+                    crate::debug_print!("Lesson not found.");
+                }
+                Err(err) => {
+                    // Handle the error
+                    crate::debug_print!("Error: {}", err);
+                }
+            }
+
+            // tokio::spawn(create_regeneration_thread_handles(content_to_regenerate, additional_commands, target_folder_path));
+
+            let response_message = UpdateResponse {
+                status_code: StatusCode::OK.as_u16() as u32,
+            };
+
+            RustResponse {
+                successful: true,
+                message: Some(response_message.encode_to_vec()),
+                blob: None,
+            }
+        },
         RustOperation::Delete => RustResponse::default()
     }
 
@@ -130,3 +188,90 @@ pub fn get_lesson_by_id(file_path: &str, lesson_id: u32) -> std::io::Result<Opti
     Ok(lesson)
 }
     
+
+pub fn read_tcp_stream() -> Result<(), Box<dyn std::error::Error>> {
+    use crate::messages::results::open_finished_lesson::open_lesson::{StateSignal, ID};
+
+    println!("Reading from tcp stream:");
+    // Create a new ZeroMQ context
+    let mut ctx = zmq::Context::new();
+
+    // Create a REP socket and bind to the inproc endpoint
+    let socket = ctx.socket(zmq::REP)?;
+    
+    if let Err(bind_err) = socket.bind("tcp://127.0.0.1:5555") {
+        // Log the binding error
+        crate::debug_print!("Error binding to socket: {}", bind_err);
+        return Err(Box::new(bind_err) as Box<dyn std::error::Error>);
+    }
+    
+    println!("Socket bound!");
+
+    // Define a closure to receive messages
+    // receives from lesson_generator.py
+    let receive_message = || {
+        socket.recv_bytes(0).map(|bytes| String::from_utf8(bytes))
+    };
+
+    // receive message from python loop
+    loop {
+        sleep(std::time::Duration::from_millis(50));
+        // Receive a message
+        let message = receive_message()??;
+        
+        crate::debug_print!("{}", message);
+
+        crate::debug_print!("Sending to dart!");
+        // Do something with the message here 
+        let signal_message = StateSignal { stream_message: message.to_owned() };
+        let rust_signal = RustSignal {
+            resource: ID,
+            message: Some(signal_message.encode_to_vec()),
+            blob: None,
+        };
+        send_rust_signal(rust_signal); // Send to flutter
+        crate::debug_print!("Done sending to dart!");
+        
+        if message == "[LL_END_STREAM]" {
+            // socket.send("EXIT_ACK", 0).unwrap();
+            break;
+        } 
+        
+        crate::debug_print!("Sending ACK!");
+        socket.send("ACK", 0).unwrap();
+        // sends to lesson_generator.py
+    }
+    
+    crate::debug_print!("loop broken");
+    
+    // Just to make sure that the socket is unbound for future operations.
+    let _ = socket.unbind("tcp://127.0.0.1:5555");
+    let _ = ctx.destroy();
+
+    Ok(())
+}
+
+// runs the lesson_generation in python using a thread
+// runs streaming in different thread
+pub async fn create_regeneration_thread_handles(content_to_regenerate: String, additional_instructions: String, index_path: String) {
+    // Create a thread for reading inproc stream concurrently
+    let stream_handle = std::thread::spawn(move || {
+        let _ = read_tcp_stream();
+        println!("Finished server thread.");
+    });
+
+    // Create a thread for generating the lesson
+    let generation_handle = std::thread::spawn(move || {
+        if let Err(err) = lesson_generator::regenerate_lesson_stream(content_to_regenerate, additional_instructions, index_path) {
+            eprintln!("Error generating lesson stream: {}\n", err);
+            // Handle the error as needed
+        }
+        println!("Finished generation thread.");
+    });
+
+    // Wait for the generation thread to finish
+    generation_handle.join().unwrap();
+    stream_handle.join().unwrap();
+
+    println!("Finished.");
+}
