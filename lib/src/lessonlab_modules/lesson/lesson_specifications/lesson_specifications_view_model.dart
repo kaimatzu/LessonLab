@@ -175,7 +175,6 @@ class LessonSpecificationsViewModel extends ChangeNotifier {
 
     for (LessonModel lesson in lessons) {
       String tempTitle = '';
-      // lesson.title.then((value) => tempTitle = value);
       tempTitle = lesson.title;
       if (tempTitle == titleFieldValue) {
         return false;
