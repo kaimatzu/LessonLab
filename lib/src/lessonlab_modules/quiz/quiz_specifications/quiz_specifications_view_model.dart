@@ -125,7 +125,8 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
   }
 
   void cancelQuiz(BuildContext context) {
-    Navigator.pop(context);
+    //Navigator.pop(context);
+    Navigator.restorablePushNamed(context, UploadSourcesView.routeName);
   }
 
   void generateQuiz(
