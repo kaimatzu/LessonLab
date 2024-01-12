@@ -39,7 +39,6 @@ class MenuView extends StatelessWidget {
       text: 'Import',
     );
 
-
     var grid = FutureBuilder<List<Object>>(
       future: Future.wait([
         _menuViewModel.menuModel.lessons,
@@ -93,8 +92,7 @@ class MenuView extends StatelessWidget {
                                     ConnectionState.waiting) {
                                   return const CircularProgressIndicator();
                                 } else if (idSnapshot.hasError) {
-                                  return const Text(
-                                      'Error loading lesson id');
+                                  return const Text('Error loading lesson id');
                                 } else {
                                   return MenuCard(
                                     title: titleSnapshot.data!,
@@ -153,6 +151,6 @@ class MenuView extends StatelessWidget {
           ],
         ),
       ),
-);
+    );
   }
 }

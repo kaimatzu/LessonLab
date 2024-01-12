@@ -13,7 +13,7 @@ def generate_quiz(source):
     response = client.chat.completions.create(
         model = "gpt-3.5-turbo",
         messages = [
-            {"role": "system", "content": "You are a quiz generator."},
+            {"role": "system", "content": "You are a system that generates quizzes."},
             {"role": "user", "content": prompt}
         ]
     )

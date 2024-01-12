@@ -118,7 +118,6 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
                 title: sanitized_title.to_string()
             };
             
-            // TODO: Move inside write_lesson_to_config_file
             config_file_path.push_str("\\config.json");
 
             if let Err(error) = write_lesson_to_config_file(&lesson, &config_file_path) {

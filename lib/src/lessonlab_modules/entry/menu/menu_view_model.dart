@@ -9,7 +9,8 @@ import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_import_export/less
 class MenuViewModel with ChangeNotifier {
   late final MenuModel _menuModel;
   late final MenuConnectionOrchestrator _menuConnectionOrchestrator;
-  late final LessonImportConnectionOrchestrator _lessonImportConnectionOrchestrator;
+  late final LessonImportConnectionOrchestrator
+      _lessonImportConnectionOrchestrator;
   MenuModel get menuModel => _menuModel;
 
   MenuViewModel() {
@@ -84,13 +85,12 @@ class MenuViewModel with ChangeNotifier {
   }
 
   Future<void> importLesson() async {
-    const XTypeGroup typeGroup =  XTypeGroup(
-      label: "LessonLab file (.lela)",
-      extensions: [".lela"]
-    );
+    const XTypeGroup typeGroup =
+        XTypeGroup(label: "LessonLab file (.lela)", extensions: [".lela"]);
 
-    final XFile? file = await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
-    if(file != null) {
+    final XFile? file =
+        await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+    if (file != null) {
       debugPrint(file.path);
       debugPrint(file.name);
       _lessonImportConnectionOrchestrator.importLesson(file.path, file.name);
