@@ -29,7 +29,6 @@ class _QuizPageViewState extends State<QuizPageView> {
   int _questionIndex = 0;
 
   int _totalItems = 0;
-  int _currentItem = 0;
 
   List<int> _selectedAnswers = [];
   List<TextEditingController> _identificationControllers = [];
@@ -212,7 +211,6 @@ class _QuizPageViewState extends State<QuizPageView> {
     if (_questionIndex > 0) {
       setState(() {
         _questionIndex--;
-        _currentItem--;
       });
     }
   }
@@ -221,7 +219,6 @@ class _QuizPageViewState extends State<QuizPageView> {
     if (_questionIndex + 1 < _totalItems) {
       setState(() {
         _questionIndex++;
-        _currentItem++;
       });
     }
   }
@@ -242,7 +239,7 @@ class _QuizPageViewState extends State<QuizPageView> {
       dynamic userAnswer;
 
       if (quizViewModel.questions[i]?.type == 1) {
-        // Identification question
+        // Identification Checking
         String correctAnswer =
             (quizViewModel.questions[i] as IdentificationQuestionModel).answer;
 
@@ -257,12 +254,12 @@ class _QuizPageViewState extends State<QuizPageView> {
           'correctAnswer': correctAnswer,
         });
       } else {
+        //Multiple-Choice Checking
         List<ChoiceModel> choices =
             (quizViewModel.questions[i] as MultipleChoiceQuestionModel).choices;
 
         int selectedChoiceIndex = _selectedAnswers[i];
         bool hasSelectedChoice = selectedChoiceIndex >= 0;
-        //String selectedChoiceContent = choices[selectedChoiceIndex].content;
         String selectedChoiceContent = hasSelectedChoice
             ? choices[selectedChoiceIndex].content
             : 'No Answer';
@@ -296,8 +293,6 @@ class _QuizPageViewState extends State<QuizPageView> {
         });
       }
     }
-
-    developer.log('Score: ${_calculateScore()} / $_totalItems');
 
     quizResultViewModel.setResults(results);
   }

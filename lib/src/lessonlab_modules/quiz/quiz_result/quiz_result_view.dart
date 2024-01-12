@@ -27,6 +27,7 @@ class _QuizResultViewState extends State<QuizResultView> {
   Widget build(BuildContext context) {
     final quizResultViewModel = context.watch<QuizResultViewModel>();
     final List<Map<String, dynamic>> quizResult = quizResultViewModel.results;
+
     int totalCorrectAnswers =
         quizResult.where((result) => result['isCorrect'] == true).length;
 
@@ -75,7 +76,6 @@ class _QuizResultViewState extends State<QuizResultView> {
                                             top: 10.0,
                                             right: 100.0,
                                             child: Text(
-                                              // User's Score
                                               '$totalCorrectAnswers',
                                               style: TextStyle(fontSize: 60),
                                             )),
@@ -93,7 +93,6 @@ class _QuizResultViewState extends State<QuizResultView> {
                                           bottom: 10.0,
                                           left: 100.0,
                                           child: Text(
-                                            // Total Score
                                             '${quizResult.length}',
                                             style: TextStyle(fontSize: 60),
                                           ),
