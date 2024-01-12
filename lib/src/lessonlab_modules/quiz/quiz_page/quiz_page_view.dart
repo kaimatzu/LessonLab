@@ -34,7 +34,7 @@ class _QuizPageViewState extends State<QuizPageView> {
   List<Map<String, dynamic>> results = [];
 
   _QuizPageViewState() {
-    developer.log("contstructor call quizpageviewstate");
+    developer.log("constructor call quizpageviewstate");
   }
 
   @override
@@ -327,8 +327,10 @@ class _QuizPageViewState extends State<QuizPageView> {
             i < ((question as MultipleChoiceQuestionModel).choices).length;
             i++)
           Answer(
-            answerText:
-                (question as MultipleChoiceQuestionModel).choices[i].content,
+            // answerText: ((question as MultipleChoiceQuestionModel).choices?[i]
+            //         as Map<String, Object>?)?['content'] as String? ??
+            //     '',
+            answerText: question.choices[i].content,
             index: i,
             groupValue:
                 _selectedAnswers.length > index ? _selectedAnswers[index] : 0,
@@ -440,7 +442,7 @@ class _QuizPageViewState extends State<QuizPageView> {
       }
     }
 
-    print('Score: ${_calculateScore()} / $_totalItems');
+    developer.log('Score: ${_calculateScore()} / $_totalItems');
 
     quizResultViewModel.setResults(results);
   }

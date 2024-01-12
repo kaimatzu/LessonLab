@@ -1,9 +1,9 @@
 use http::StatusCode;
-use crate::bridge::{RustOperation, RustRequest, RustResponse, RustSignal};
+use crate::bridge::{RustOperation, RustRequest, RustResponse};
 use prost::Message;
 use tokio_with_wasm::tokio;
 use crate::app::quiz::quiz_specifications_data_object::QuizSpecificationsDataObject;
-use crate::messages::quiz::quiz_specifications::{CreateRequest, CreateResponse, ReadRequest, ReadResponse, UpdateResponse, DeleteResponse};
+use crate::messages::quiz::quiz_specifications::{CreateRequest, CreateResponse, ReadResponse, UpdateResponse, DeleteResponse};
 
 pub async fn handle_quiz_specifications(rust_request: RustRequest,
     quiz_specifications_data_object: &mut tokio::sync::MutexGuard<'_, QuizSpecificationsDataObject>) -> RustResponse {
@@ -16,6 +16,8 @@ pub async fn handle_quiz_specifications(rust_request: RustRequest,
             // save in main for persistent data
             // will be used in quiz_page_handler for quiz generation later
             quiz_specifications_data_object.quiz_specifications = request_message.quiz_specifications;
+
+            crate::debug_print!("quiz specs len: {:?}", quiz_specifications_data_object.quiz_specifications.len().clone());
 
             let response_message;
             if quiz_specifications_data_object.quiz_specifications.len() > 0 {
@@ -35,10 +37,25 @@ pub async fn handle_quiz_specifications(rust_request: RustRequest,
             }
         }
         RustOperation::Read => {
-            RustResponse {
-                successful: false,
-                message: Some(ReadResponse{status_code: StatusCode::NOT_IMPLEMENTED.as_u16() as u32, quiz_specifications: todo!() }.encode_to_vec()),
-                blob: None,
+            if quiz_specifications_data_object.quiz_specifications.len() == 0 {
+                RustResponse {
+                    successful: false,
+                    message: Some(ReadResponse{
+                        status_code: StatusCode::NOT_FOUND.as_u16() as u32,
+                        quiz_specifications:  quiz_specifications_data_object.quiz_specifications.clone(),
+                    }.encode_to_vec()),
+                    blob: None,
+                }
+
+            } else {
+                RustResponse {
+                    successful: true,
+                    message: Some(ReadResponse{
+                        status_code: StatusCode::OK.as_u16() as u32,
+                        quiz_specifications:  quiz_specifications_data_object.quiz_specifications.clone(),
+                    }.encode_to_vec()),
+                    blob: None,
+                }
             }
         }
         RustOperation::Update => {

@@ -30,7 +30,7 @@ use crate::messages::entry::menu::menu::{
 use crate::messages::entry::upload::uploaded_content;
 
 use std::any::Any;
-use std::fs::{File, OpenOptions};
+use std::fs::{File, OpenOptions, remove_dir_all};
 use std::io::{Read, Write};
 use prost::Message;
 
@@ -370,6 +370,17 @@ fn delete_lesson_file(file_path: &str, menu_data_object: &mut MenuDataObject, id
     let lessons = &mut menu_data_object.lessons_data_object.lessons;
 
     if let Some(index) = lessons.iter_mut().position(|lesson| lesson.id == id) {
+        match lessons.get(index) {
+            Some(lesson) => {
+                // !!! warning this can delete your folders without confirmation
+                let _ = remove_dir_all(lesson.target_path.clone());
+            },
+            None => {
+                crate::debug_print!("Error: Failed to delete directory");
+            },
+        }
+
+        // remove the lesson from vec
         lessons.remove(index);
     }
 
@@ -377,6 +388,7 @@ fn delete_lesson_file(file_path: &str, menu_data_object: &mut MenuDataObject, id
         menu_data_object: menu_data_object.clone(),
     };
 
+    // edit config.json
     let serialized_root = serde_json::to_string_pretty(&root).unwrap();
 
     let mut file = OpenOptions::new()

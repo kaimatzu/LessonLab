@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_import_export/lesson_export_connection_orchestrator.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_connection_orchestrator.dart';
 import 'package:file_selector/file_selector.dart';
@@ -20,7 +21,6 @@ class LessonResultViewModel with ChangeNotifier {
   bool get done => _done;
   set done(bool value) {
     _done = value;
-    // notifyListeners();
   }
 
   String _lessonContent = "";
@@ -28,6 +28,7 @@ class LessonResultViewModel with ChangeNotifier {
   set lessonContent(String value) {
     _lessonContent = value;
   }
+
   LessonResultModel get lessonResultModel => _lessonResultModel;
 
   LessonResultViewModel() {
@@ -41,9 +42,15 @@ class LessonResultViewModel with ChangeNotifier {
   //   developer.log(">>> regenerate");
   // }
 
-  Future<void> returnToMenu(BuildContext context) async {
+  Future<void> returnToMenu(
+      BuildContext context, MenuViewModel menuViewModel) async {
+    developer.log("returnToMenu 1");
+    await menuViewModel.loadViewContent();
+    developer.log("returnToMenu 2");
     await _lessonResultConnectionOrchestrator.saveLesson(lessonContent);
-    developer.log("Lesson content: $lessonContent");
+    developer.log("Lesson content: $lessonContent", name: "returnToMenu");
+
+    // if (!context.mounted) return;
     // ignore: use_build_context_synchronously
     Navigator.restorablePushNamed(
       context,
@@ -68,16 +75,9 @@ class LessonResultViewModel with ChangeNotifier {
   }
 
   Future<void> exportLesson(String lessonTitle) async {
-    final FileSaveLocation? result =
-      await getSaveLocation(
-        acceptedTypeGroups: [
-          const XTypeGroup(
-            label: "LessonLab file (.lela)",
-            extensions: [".lela"]
-          )  
-        ],
-        suggestedName: "$lessonTitle.lela"
-      );
+    final FileSaveLocation? result = await getSaveLocation(acceptedTypeGroups: [
+      const XTypeGroup(label: "LessonLab file (.lela)", extensions: [".lela"])
+    ], suggestedName: "$lessonTitle.lela");
     if (result != null) {
       developer.log(result.path);
       _lessonExportConnectionOrchestrator.exportLesson(result.path);

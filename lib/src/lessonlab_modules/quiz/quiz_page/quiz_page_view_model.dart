@@ -22,18 +22,13 @@ class QuizPageViewModel extends ChangeNotifier {
       QuizPageConnectionOrchestrator();
   final QuizPageModel model = QuizPageModel();
 
-  // TODO: GET QUESTIONS FROM BACKEND
-
-  List<QuestionModel?> get questions {
-    developer.log("${model.quiz.id}", name: "get questions");
-    return model.quiz.questions;
-  }
+  List<QuestionModel?> get questions => model.quiz.questions;
   // get questions => _questions;
 
   Future<void> loadQuizModel() async {
     // orchestrator.getQuizModel().then((value) => model.quiz = value);
-    developer.log("load quiz model", name: "function");
     model.quiz = await orchestrator.getQuizModel();
+    developer.log("load quiz model", name: "function");
   }
 
   final _questions = const [

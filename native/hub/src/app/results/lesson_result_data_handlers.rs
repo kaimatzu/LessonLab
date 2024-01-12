@@ -125,9 +125,8 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
                 crate::debug_print!("Failed to write to config file: {}", error);
             }
 
-            // Spwaning the thread for creating the lesson
+            // Spawning the thread for creating the lesson
             tokio::spawn(create_thread_handles(upload_sources_data_object.file_paths.clone(), upload_sources_data_object.urls.clone(), target_folder_path, lesson_specifications_data_object.lesson_specifications.clone()));
-
 
             let response_message = ReadResponse {
                 status_code: StatusCode::OK.as_u16() as u32,
@@ -276,8 +275,8 @@ pub fn write_lesson_to_config_file(current_lesson: &Lesson, file_path: &str) -> 
 }
 
 fn write_lesson_to_target_path(string_payload: &str, target_path: &str) -> std::io::Result<()> {
-        /* Takes in string to write to the output.md and the target.path of the config
-        */
+    /* Takes in string to write to the output.md and the target.path of the config
+    */
     crate::debug_print!("Writing to target path...");
 
     let mut final_path: String = String::from(target_path);

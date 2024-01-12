@@ -23,6 +23,8 @@ import 'package:pdf/widgets.dart' as pw;
 
 import 'dart:async';
 
+import 'dart:developer' as developer;
+
 const List<Widget> icons = <Widget>[
   Icon(Icons.code),
   Icon(Icons.html),
@@ -74,10 +76,8 @@ class _TextEditor extends State<TextEditor> {
       debugPrint(rinfMessage);
       if (rinfMessage == "[LL_END_STREAM]") {
         setState(() {
-            _doneGenerating = true;
-          }
-        );
-        // lessonResultViewModel.done = true;
+          _doneGenerating = true;
+        });
       } else {
         markdownContent += rinfMessage;
         if (markdownContent.isNotEmpty) {
@@ -97,10 +97,11 @@ class _TextEditor extends State<TextEditor> {
     // var message = "";
 
     var mdDocument = md.Document(
-        encodeHtml: false,
-        extensionSet: md.ExtensionSet.gitHubFlavored,
-        // you can add custom syntax.
-        blockSyntaxes: [const EmbeddableTableSyntax()]);
+      encodeHtml: false,
+      extensionSet: md.ExtensionSet.gitHubFlavored,
+      // you can add custom syntax.
+      blockSyntaxes: [const EmbeddableTableSyntax()],
+    );
 
     final mdToDelta = MarkdownToDelta(
       markdownDocument: mdDocument,

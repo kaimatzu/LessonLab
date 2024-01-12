@@ -5,6 +5,8 @@ import 'package:lessonlab/src/global_components/secondary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view_model.dart';
 import 'package:provider/provider.dart';
 
+import 'dart:developer' as developer;
+
 class LessonSpecificationsView extends StatelessWidget {
   const LessonSpecificationsView({
     Key? key,
@@ -49,6 +51,7 @@ class LessonSpecificationsView extends StatelessWidget {
                               } else if (formField.dropdown != null) {
                                 return formField.dropdown;
                               } else {
+                                developer.log("lesson spec has null");
                                 return null;
                               }
                             })
