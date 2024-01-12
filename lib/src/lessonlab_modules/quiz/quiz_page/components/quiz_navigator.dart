@@ -48,7 +48,8 @@ class _QuizNavigatorState extends State<QuizNavigator> {
                           ? const Color.fromARGB(255, 49, 51, 56)
                           : Color.fromARGB(255, 241, 196, 27),
                       border:
-                          Border.all(color: Color.fromARGB(255, 241, 196, 27))),
+                          Border.all(color: Color.fromARGB(255, 241, 196, 27)),
+                      borderRadius: BorderRadius.circular(6.0)),
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
