@@ -21,7 +21,7 @@ class _QuizNavigatorState extends State<QuizNavigator> {
       width: 350.0,
       constraints: const BoxConstraints(minHeight: 200.0),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 253, 237, 183),
+        color: const Color.fromARGB(255, 244, 245, 247),
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Padding(

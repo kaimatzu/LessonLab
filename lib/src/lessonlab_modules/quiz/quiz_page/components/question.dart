@@ -55,7 +55,7 @@ class _QuestionState extends State<Question> {
               vertical: 20.0,
             ),
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 253, 237, 183),
+              color: const Color.fromARGB(255, 244, 245, 247),
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Align(

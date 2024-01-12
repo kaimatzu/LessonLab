@@ -109,7 +109,7 @@ class _QuizPageViewState extends State<QuizPageView> {
                         height: 200.0,
                         width: 150,
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 253, 237, 183),
+                          color: const Color.fromARGB(255, 244, 245, 247),
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                         child: Container(
@@ -145,13 +145,13 @@ class _QuizPageViewState extends State<QuizPageView> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      PrimaryButton(
-                                          width: 100.0,
+                                      SecondaryButton(
+                                          width: 70.0,
                                           handlePress: () {
                                             _prevQuestion();
                                           },
-                                          text: 'Previous',
-                                          enabled: true),
+                                          text: '<<',
+                                      ),
                                       Container(
                                         padding: const EdgeInsets.only(
                                             left: 20.0, right: 20.0),
@@ -165,13 +165,13 @@ class _QuizPageViewState extends State<QuizPageView> {
                                               fontWeight: FontWeight.bold),
                                         ),
                                       ),
-                                      PrimaryButton(
-                                          width: 100.0,
+                                      SecondaryButton(
+                                          width: 70.0,
                                           handlePress: () {
                                             _nextQuestion();
                                           },
-                                          text: 'Next',
-                                          enabled: true),
+                                          text: '>>',
+                                      ),
                                     ],
                                   ),
                                 ),
