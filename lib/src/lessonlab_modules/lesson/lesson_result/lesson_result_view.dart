@@ -64,6 +64,7 @@ class LessonResultView extends StatelessWidget {
         debugPrint(lessonResultViewModel.done.toString());
         if (lessonResultViewModel.done) {
           debugPrint("Return");
+          menuViewModel.loadViewContent();
           lessonResultViewModel.returnToMenu(context, menuViewModel);
         }
       },

@@ -8,7 +8,7 @@ import 'dart:developer' as developer;
 
 class LessonOpenConnectionOrchestrator {
   Future<void> saveLesson(String content) async {
-    final requestMessage = RinfInterface.UpdateRequest(lessonContent: content);
+    final requestMessage = RinfInterface.CreateRequest(lessonContent: content);
     final rustRequest = RustRequest(
       resource: RinfInterface.ID,
       operation: RustOperation.Create,
@@ -17,7 +17,7 @@ class LessonOpenConnectionOrchestrator {
     );
     final rustResponse =
         await requestToRust(rustRequest, timeout: const Duration(minutes: 10));
-    final responseMessage = RinfInterface.UpdateResponse.fromBuffer(
+    final responseMessage = RinfInterface.CreateResponse.fromBuffer(
       rustResponse.message!,
     );
 
