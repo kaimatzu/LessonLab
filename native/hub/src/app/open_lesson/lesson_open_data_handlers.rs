@@ -18,7 +18,7 @@ use crate::app::global_objects::lessons_data_object::{Lesson, LessonsDataObject}
 pub async fn handle_lesson_open(rust_request: RustRequest,
     settings_save_directory_data_object: &mut tokio::sync::MutexGuard<'_, SettingsDataObject>,
     menu_data_object: &mut tokio::sync::MutexGuard<'_, MenuDataObject>) -> RustResponse {
-    use crate::messages::results::open_finished_lesson::open_lesson::{ReadRequest, ReadResponse, UpdateRequest, UpdateResponse};
+    use crate::messages::results::open_finished_lesson::open_lesson::{ReadRequest, ReadResponse, CreateRequest, CreateResponse};
 
     match rust_request.operation{
         RustOperation::Create => RustResponse::default(),
