@@ -76,7 +76,10 @@ class LessonOpenView extends StatelessWidget {
     var back = PrimaryButton(
       width: 150.0,
       handlePress: () {
-        Navigator.pop(context);
+        //Navigator.pop(context);
+        if (lessonOpenViewModel.done) {
+          lessonOpenViewModel.returnToMenu(context);
+        }
       },
       text: 'Back',
       enabled: true,
