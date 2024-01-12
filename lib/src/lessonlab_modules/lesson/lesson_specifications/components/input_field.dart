@@ -18,17 +18,24 @@ class InputField extends StatefulWidget {
   _InputFieldState createState() => _InputFieldState();
 }
 
+// TODO: Implement no same name
 class _InputFieldState extends State<InputField> {
   @override
   Widget build(BuildContext context) {
     TextField textField;
 
-    // If input field is title then deny \ . / - :
+    // If input field is title then deny / < > : " \ | ? *
     // to avoid file errors in opening and deleting files
     if (widget.label == 'Title') {
       textField = TextField(
+        // Link: https://stackoverflow.com/questions/1976007/what-characters-are-forbidden-in-windows-and-linux-directory-names
+        //
+        // forbidden ASCII characters are:
+        // / < > : " \ | ? *
+        // Click the provided link for more details
+        //
         inputFormatters: <TextInputFormatter>[
-          FilteringTextInputFormatter.deny(RegExp('[\\./-:]'))
+          FilteringTextInputFormatter.deny(RegExp(r'[\\/<>:"|?*-]'))
         ],
         controller: widget.controller,
         style: const TextStyle(color: Colors.white),

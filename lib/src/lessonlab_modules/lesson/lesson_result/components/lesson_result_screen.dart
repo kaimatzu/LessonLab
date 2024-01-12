@@ -32,8 +32,9 @@ class LessonResultScreen extends StatelessWidget {
         // The data sent from rust
         future: Future.wait(
           [
-            lessonResultViewModel.lessonResultModel.lesson.title,
-            lessonResultViewModel.lessonResultModel.lesson.content,
+            Future.value(lessonResultViewModel.lessonResultModel.lesson.title),
+            Future.value(
+                lessonResultViewModel.lessonResultModel.lesson.content),
             lessonResultViewModel.lessonResultModel.cssContents,
           ],
         ),

@@ -20,7 +20,8 @@ class LessonResultView extends StatelessWidget {
     //     context.watch<LessonSpecificationsViewModel>();
 
     var export = FutureBuilder<String>(
-        future: lessonResultViewModel.lessonResultModel.lesson.title,
+        future:
+            Future.value(lessonResultViewModel.lessonResultModel.lesson.title),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return PrimaryButton(

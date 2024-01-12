@@ -22,7 +22,7 @@ class LessonOpenView extends StatelessWidget {
     //     context.watch<LessonSpecificationsViewModel>();
 
     var export = FutureBuilder<String>(
-        future: lessonOpenViewModel.lessonOpenModel.lesson.title,
+        future: Future.value(lessonOpenViewModel.lessonOpenModel.lesson.title),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return PrimaryButton(

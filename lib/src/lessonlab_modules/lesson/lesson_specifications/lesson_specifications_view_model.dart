@@ -30,14 +30,8 @@ class FormField {
 
 class LessonSpecificationsViewModel extends ChangeNotifier {
   LessonSpecificationsViewModel() {
-    var titleField = InputField(
-      label: 'Title',
-      hintLabel: 'Enter lesson title',
-    );
-
     final initializeFields = [
       titleField,
-      InputField(label: 'Title', hintLabel: 'Enter lesson title'),
       InputField(label: 'Focus Topic', hintLabel: 'Enter focus of the lesson'),
       InputField(label: 'Timeframe', hintLabel: 'Enter timeframe'),
       TextArea(
@@ -64,6 +58,9 @@ class LessonSpecificationsViewModel extends ChangeNotifier {
       }
     }
   }
+
+  final InputField titleField =
+      InputField(label: 'Title', hintLabel: 'Enter lesson title');
 
   final lessonSpecsModel = LessonSpecificationModel();
   final LessonSpecificationsConnectionOrchestrator
