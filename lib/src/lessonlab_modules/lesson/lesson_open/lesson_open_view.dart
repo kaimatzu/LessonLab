@@ -14,7 +14,7 @@ class LessonOpenView extends StatelessWidget {
     final int? id = ModalRoute.of(context)!.settings.arguments as int?;
 
     final lessonOpenViewModel = context.watch<LessonOpenViewModel>();
-    if(id != null) {
+    if (id != null) {
       debugPrint("Here");
       lessonOpenViewModel.loadViewContent(id);
     }
@@ -22,41 +22,44 @@ class LessonOpenView extends StatelessWidget {
     //     context.watch<LessonSpecificationsViewModel>();
 
     var export = FutureBuilder<String>(
-      future: lessonOpenViewModel.lessonOpenModel.lesson.title,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return PrimaryButton(
-            handlePress: () {
-              debugPrint("Title not yet loaded");
-            },
-            text: 'Save and Export Lesson',
-            enabled: lessonOpenViewModel.done,
-          );
-        } else if (snapshot.hasError) {
-          return PrimaryButton(
-            handlePress: () {
-              debugPrint("Error loading lesson title");
-            },
-            text: 'Save and Export Lesson',
-            enabled: lessonOpenViewModel.done,
-          );
-        } else {
-          final String lessonTitle = snapshot.data!;
+        future: lessonOpenViewModel.lessonOpenModel.lesson.title,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return PrimaryButton(
+              width: 150.0,
+              handlePress: () {
+                debugPrint("Title not yet loaded");
+              },
+              text: 'Save and Export',
+              enabled: lessonOpenViewModel.done,
+            );
+          } else if (snapshot.hasError) {
+            return PrimaryButton(
+              width: 150.0,
+              handlePress: () {
+                debugPrint("Error loading lesson title");
+              },
+              text: 'Save and Export',
+              enabled: lessonOpenViewModel.done,
+            );
+          } else {
+            final String lessonTitle = snapshot.data!;
 
-          return PrimaryButton(
-            handlePress: () {
-              if (lessonOpenViewModel.done) {
-                lessonOpenViewModel.exportLesson(lessonTitle);
-              }
-            },
-            text: 'Save and Export Lesson',
-            enabled: lessonOpenViewModel.done,
-          );
-        }
-      }
-    );
+            return PrimaryButton(
+              width: 150.0,
+              handlePress: () {
+                if (lessonOpenViewModel.done) {
+                  lessonOpenViewModel.exportLesson(lessonTitle);
+                }
+              },
+              text: 'Save and Export',
+              enabled: lessonOpenViewModel.done,
+            );
+          }
+        });
 
     var finish = PrimaryButton(
+      width: 150.0,
       handlePress: () {
         if (lessonOpenViewModel.done) {
           lessonOpenViewModel.returnToMenu(context);
@@ -66,13 +69,24 @@ class LessonOpenView extends StatelessWidget {
       enabled: lessonOpenViewModel.done,
     );
 
+    var back = PrimaryButton(
+      width: 150.0,
+      handlePress: () {
+        Navigator.pop(context);
+      },
+      text: 'Back',
+      enabled: true,
+    );
+
     return Scaffold(
       body: const LessonOpenScreen(),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(0.0, 30.0, 180.0, 60.0),
+        padding: const EdgeInsets.only(top: 20.0, right: 35.0, bottom: 35.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            back,
+            const SizedBox(width: 30.0),
             export,
             const SizedBox(width: 30.0),
             finish,
