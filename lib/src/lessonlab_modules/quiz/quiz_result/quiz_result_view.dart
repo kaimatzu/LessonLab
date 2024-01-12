@@ -32,7 +32,7 @@ class _QuizResultViewState extends State<QuizResultView> {
 
     var paddingBetweenButtons = const SizedBox(height: 5.0);
 
-    print('Results: $quizResult');
+    //print('Results: $quizResult');
 
     double screenWidth = MediaQuery.of(context).size.width;
 
@@ -276,7 +276,15 @@ class _QuizResultViewState extends State<QuizResultView> {
                           color: Colors.green,
                         ),
                       ),
-                    if (!result['isCorrect'])
+                    if (result['userAnswer'] == '')
+                      Text(
+                        '  N/A',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Color.fromARGB(255, 49, 51, 56),
+                        ),
+                      ),
+                    if (!result['isCorrect'] && result['userAnswer'] != '')
                       Text(
                         '  ❌',
                         style: TextStyle(

@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_models/question_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/components/answer.dart';
 
