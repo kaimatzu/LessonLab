@@ -33,7 +33,14 @@ class _QuizResultViewState extends State<QuizResultView> {
 
     var paddingBetweenButtons = const SizedBox(height: 5.0);
 
-    //print('Results: $quizResult');
+
+    final Map<String, dynamic> args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final Duration elapsedTime = args['elapsedTime'];
+    int minutes = elapsedTime.inMinutes;
+    int seconds = elapsedTime.inSeconds % 60;
+
+    print('Results: $quizResult');
 
     double screenWidth = MediaQuery.of(context).size.width;
 
@@ -138,7 +145,7 @@ class _QuizResultViewState extends State<QuizResultView> {
                                           fontWeight: FontWeight.w500),
                                     ),
                                     Text(
-                                      'Time: 5m 23s',
+                                      'Elapsed Time: ${minutes}m ${seconds}s',
                                       style: TextStyle(
                                           fontSize: 16.0,
                                           color: Color.fromRGBO(49, 51, 56, 1),

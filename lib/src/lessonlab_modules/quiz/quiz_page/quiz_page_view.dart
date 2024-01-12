@@ -31,6 +31,8 @@ class _QuizPageViewState extends State<QuizPageView> {
 
   int _totalItems = 0;
 
+  late DateTime startTime;
+
   List<int> _selectedAnswers = [];
   List<TextEditingController> _identificationControllers = [];
   List<Map<String, dynamic>> results = [];
@@ -46,6 +48,7 @@ class _QuizPageViewState extends State<QuizPageView> {
   @override
   void initState() {
     super.initState();
+    startTime = DateTime.now();
 
     Future.delayed(Duration.zero, () {
       final quizViewModel = context.read<QuizPageViewModel>();
@@ -227,7 +230,14 @@ class _QuizPageViewState extends State<QuizPageView> {
   void _finishAttempt() {
     results.clear();
     _checkAllAnswers();
-    Navigator.restorablePushNamed(context, '/quiz_result');
+
+    Duration elapsedTime = DateTime.now().difference(startTime);
+
+    Navigator.pushNamed(
+      context, 
+      '/quiz_result',
+      arguments: {'elapsedTime': elapsedTime},
+      );
   }
 
   void _checkAllAnswers() {
