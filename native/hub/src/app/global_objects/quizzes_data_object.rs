@@ -9,7 +9,7 @@ pub struct Quiz{
     pub title: String,
     pub target_path: String,
     pub questions: Vec<Question>,
-    pub sources: Sources // Sources from lesson_result_data_object
+    // pub sources: Sources // Sources from lesson_result_data_object
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

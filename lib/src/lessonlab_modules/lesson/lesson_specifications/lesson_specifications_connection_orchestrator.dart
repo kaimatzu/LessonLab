@@ -20,7 +20,7 @@ class LessonSpecificationsConnectionOrchestrator {
       rustResponse.message!,
     );
     statusCode = responseMessage.statusCode;
-    developer.log(statusCode.toString(), name: 'status-code');
+    developer.log(statusCode.toString(), name: 'lessonspec-code');
   }
 
   Future<void> getData() async {
