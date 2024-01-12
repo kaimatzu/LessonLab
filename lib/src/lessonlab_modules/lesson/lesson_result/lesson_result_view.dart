@@ -24,36 +24,40 @@ class LessonResultView extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return PrimaryButton(
+              width: 150.0,
               handlePress: () {
                 debugPrint("Title not yet loaded");
               },
-              text: 'Save and Export Lesson',
+              text: 'Save and Export',
               enabled: lessonResultViewModel.done,
             );
           } else if (snapshot.hasError) {
             return PrimaryButton(
+              width: 150.0,
               handlePress: () {
                 debugPrint("Error loading lesson title");
               },
-              text: 'Save and Export Lesson',
+              text: 'Save and Export',
               enabled: lessonResultViewModel.done,
             );
           } else {
             final String lessonTitle = snapshot.data!;
 
             return PrimaryButton(
+              width: 150.0,
               handlePress: () {
                 if (lessonResultViewModel.done) {
                   lessonResultViewModel.exportLesson(lessonTitle);
                 }
               },
-              text: 'Save and Export Lesson',
+              text: 'Save and Export',
               enabled: lessonResultViewModel.done,
             );
           }
         });
 
     var finish = PrimaryButton(
+      width: 150.0,
       handlePress: () {
         debugPrint("Finished");
         debugPrint(lessonResultViewModel.done.toString());
@@ -69,7 +73,7 @@ class LessonResultView extends StatelessWidget {
     return Scaffold(
       body: const LessonResultScreen(),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(0.0, 30.0, 180.0, 60.0),
+        padding: const EdgeInsets.only(top: 20.0, right: 35.0, bottom: 35.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [

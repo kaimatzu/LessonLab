@@ -135,15 +135,17 @@ class _TextEditor extends State<TextEditor> {
               base: QuillToolbarBaseButtonOptions(
                 iconTheme: QuillIconTheme(
                   iconButtonSelectedData: IconButtonData(
-                    color: Colors.amber,
+                    color: Color.fromARGB(255, 49, 51, 56),
                     style: IconButton.styleFrom(
-                      foregroundColor: Colors.amberAccent,
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
                     ),
                   ),
                   iconButtonUnselectedData: IconButtonData(
-                    color: Colors.amber,
+                    color: Color.fromARGB(255, 49, 51, 56),
                     style: IconButton.styleFrom(
-                      foregroundColor: Colors.amberAccent,
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
                     ),
                   ),
                 ),
@@ -152,21 +154,24 @@ class _TextEditor extends State<TextEditor> {
                   QuillToolbarSelectHeaderStyleButtonsOptions(
                       iconTheme: QuillIconTheme(
                 iconButtonSelectedData: IconButtonData(
-                  color: Colors.amber,
+                  color: Color.fromARGB(255, 49, 51, 56),
                   style: IconButton.styleFrom(
-                    foregroundColor: Colors.amberAccent,
+                    foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                        (196 + 255) ~/ 2, (27 + 255) ~/ 2),
                   ),
                 ),
                 iconButtonUnselectedData: IconButtonData(
-                  color: Colors.amber,
+                  color: Color.fromARGB(255, 49, 51, 56),
                   style: IconButton.styleFrom(
-                    foregroundColor: Colors.amberAccent,
+                    foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                        (196 + 255) ~/ 2, (27 + 255) ~/ 2),
                   ),
                 ),
               )),
               selectHeaderStyleDropdownButton:
                   QuillToolbarSelectHeaderStyleDropdownButtonOptions(
-                      textStyle: TextStyle(color: Colors.amber))),
+                      textStyle:
+                          TextStyle(color: Color.fromARGB(255, 49, 51, 56)))),
           headerStyleType: HeaderStyleType.original,
           // Maybe re-add these once things are figured out, but disable it for now.
           showFontSize: false,
@@ -181,15 +186,17 @@ class _TextEditor extends State<TextEditor> {
                 tooltip: "Regenerate",
                 iconTheme: QuillIconTheme(
                   iconButtonSelectedData: IconButtonData(
-                    color: Colors.amber,
+                    color: Color.fromARGB(255, 49, 51, 56),
                     style: IconButton.styleFrom(
-                      foregroundColor: Colors.amberAccent,
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
                     ),
                   ),
                   iconButtonUnselectedData: IconButtonData(
-                    color: Colors.amber,
+                    color: Color.fromARGB(255, 49, 51, 56),
                     style: IconButton.styleFrom(
-                      foregroundColor: Colors.amberAccent,
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
                     ),
                   ),
                 ),
@@ -255,10 +262,18 @@ class _TextEditor extends State<TextEditor> {
           autoFocus: true,
           readOnly: !_doneGenerating,
           padding: EdgeInsets.only(left: 30, top: 5, right: 30, bottom: 30),
+          elementOptions: const QuillEditorElementOptions(
+            orderedList: QuillEditorOrderedListElementOptions(
+              useTextColorForDot: true,
+            ),
+            unorderedList: QuillEditorUnOrderedListElementOptions(
+              useTextColorForDot: true,
+            ),
+          ),
           customStyles: DefaultStyles(
               h1: DefaultTextBlockStyle(
                   TextStyle(
-                      color: Colors.amber,
+                      color: Color.fromARGB(255, 49, 51, 56),
                       fontSize: 30,
                       fontWeight: FontWeight.w700),
                   VerticalSpacing(16, 0),
@@ -266,7 +281,7 @@ class _TextEditor extends State<TextEditor> {
                   null),
               h2: DefaultTextBlockStyle(
                   TextStyle(
-                      color: Colors.amber,
+                      color: Color.fromARGB(255, 49, 51, 56),
                       fontSize: 25,
                       fontWeight: FontWeight.w500),
                   VerticalSpacing(16, 0),
@@ -274,7 +289,7 @@ class _TextEditor extends State<TextEditor> {
                   null),
               h3: DefaultTextBlockStyle(
                   TextStyle(
-                      color: Colors.amber,
+                      color: Color.fromARGB(255, 49, 51, 56),
                       fontSize: 20,
                       fontWeight: FontWeight.w500),
                   VerticalSpacing(16, 0),
@@ -282,36 +297,55 @@ class _TextEditor extends State<TextEditor> {
                   null),
               paragraph: DefaultTextBlockStyle(
                   TextStyle(
-                    color: Colors.amber,
+                    color: Color.fromARGB(255, 49, 51, 56),
                     fontSize: 15,
                   ),
                   VerticalSpacing(16, 0),
                   VerticalSpacing(0, 0),
                   null),
               strikeThrough: TextStyle(
-                  color: Colors.amber, decoration: TextDecoration.lineThrough),
-              sizeSmall: TextStyle(color: Colors.amber),
-              italic:
-                  TextStyle(color: Colors.amber, fontStyle: FontStyle.italic),
-              bold: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+                  color: Color.fromARGB(255, 49, 51, 56),
+                  decoration: TextDecoration.lineThrough),
+              sizeSmall: TextStyle(color: Color.fromARGB(255, 49, 51, 56)),
+              italic: TextStyle(
+                  color: Color.fromARGB(255, 49, 51, 56),
+                  fontStyle: FontStyle.italic),
+              bold: TextStyle(
+                  color: Color.fromARGB(255, 49, 51, 56),
+                  fontWeight: FontWeight.bold),
               underline: TextStyle(
-                  color: Colors.amber, decoration: TextDecoration.underline),
-              color: Colors.amber),
-        )
-        // textSelectionThemeData: TextSelectionThemeData(selectionColor: Colors.amber)
-        );
+                  color: Color.fromARGB(255, 49, 51, 56),
+                  decoration: TextDecoration.underline),
+              lists: DefaultListBlockStyle(
+                  TextStyle(
+                    color: context.quillEditorElementOptions?.unorderedList
+                                    .useTextColorForDot ==
+                                true ||
+                            context.quillEditorElementOptions?.orderedList
+                                    .useTextColorForDot ==
+                                true
+                        ? Color.fromARGB(255, 49, 51, 56)
+                        : null,
+                  ),
+                  VerticalSpacing(16, 0),
+                  VerticalSpacing(0, 0),
+                  null,
+                  null),
+              color: Color.fromARGB(255, 49, 51, 56)),
+        ));
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
       child: Column(
         children: [
-          // Insert text area here
           Center(
               child: Container(
-            height:
-                400, // TODO: Need to change this into dynamic depending on screen size
+            constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.670),
+            width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 49, 51, 56),
+              color: Color.fromARGB(
+                  255, (241 + 255) ~/ 2, (196 + 255) ~/ 2, (27 + 255) ~/ 2),
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Column(
