@@ -13,7 +13,7 @@ class LessonResultScreen extends StatelessWidget {
 
     // This is the "Lesson" text at the top left of the screen
     const header = Padding(
-      padding: EdgeInsets.fromLTRB(90.0, 45.0, 45.0, 45.0),
+      padding: EdgeInsets.fromLTRB(100.0, 30.0, 45.0, 30.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -27,7 +27,7 @@ class LessonResultScreen extends StatelessWidget {
 
     // This is the div for holding the title bar and the text box
     var textEditorContainer = Padding(
-      padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 0.0),
+      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
       child: FutureBuilder<List<String>>(
         // The data sent from rust
         future: Future.wait(
@@ -60,7 +60,7 @@ class LessonResultScreen extends StatelessWidget {
           header,
           textEditorContainer,
           Padding(
-            padding: const EdgeInsets.fromLTRB(120.0, 0.0, 120.0, 30.0),
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
             child: TextEditor(),
           )
         ],

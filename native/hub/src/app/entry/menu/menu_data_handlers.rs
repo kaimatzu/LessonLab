@@ -99,26 +99,30 @@ pub async fn handle_menu_content_loading(
             let mut file_path = settings_save_directory_data_object.save_directory.clone();
             file_path.push_str("\\config.json");
 
+            // Get lesson and quiz data from saved files
             let response_message;
-
             match load_menu_data_from_file(file_path.as_str()) {
-                Some(temp_menu_data_object) => {
+                Some (temp_menu_data_object) => {
                     menu_data_object.lessons_data_object = temp_menu_data_object.lessons_data_object;
-                    menu_data_object.quizzes_data_object = temp_menu_data_object.quizzes_data_object;
+                    menu_data_object.quizzes_data_object = temp_menu_data_object.quizzes_data_object; 
+                    // Create message
                     response_message = ReadResponse {
                         menu_model: serialize_menu_model(menu_data_object)
-                    };
+                    }
                 },
                 None => {
-                    // Create empty model as model
+                    // Create empty model as message
                     response_message = ReadResponse {
                         menu_model: Some(RinfMenuModel {
                             lessons: Vec::new(),
                             quizzes: Vec::new(),
                         }),
-                    }
-                }
+                    };
+                },
             }
+
+
+            // Create rust response to send to dart
             RustResponse {
                 successful: true,
                 message: Some(response_message.encode_to_vec()),
