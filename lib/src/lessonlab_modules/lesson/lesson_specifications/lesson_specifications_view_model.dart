@@ -1,6 +1,9 @@
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lessonlab/src/global_models/lesson_model.dart';
+import 'package:lessonlab/src/global_models/quiz_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/components/dropdown_menu.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/components/input_field.dart';
@@ -159,5 +162,30 @@ class LessonSpecificationsViewModel extends ChangeNotifier {
       controller.text = directoryPath;
       _targetPath = directoryPath;
     }
+  }
+
+  // This will check if there are no same title in the existing items
+  bool checkTitleAvailability(MenuViewModel menu) {
+    var titleFieldValue = titleField.controller.text;
+
+    List<LessonModel> lessons = [];
+    List<QuizModel> quizzes = [];
+    lessons = menu.menuModel.lessons;
+    quizzes = menu.menuModel.quizzes;
+
+    for (LessonModel lesson in lessons) {
+      String tempTitle = '';
+      tempTitle = lesson.title;
+      if (tempTitle == titleFieldValue) {
+        return false;
+      }
+    }
+    for (QuizModel quiz in quizzes) {
+      if (quiz.title == titleFieldValue) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

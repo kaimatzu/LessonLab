@@ -8,6 +8,7 @@ import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/components/answer.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_result/components/result_item.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_result/quiz_result_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -27,10 +28,18 @@ class _QuizResultViewState extends State<QuizResultView> {
   Widget build(BuildContext context) {
     final quizResultViewModel = context.watch<QuizResultViewModel>();
     final List<Map<String, dynamic>> quizResult = quizResultViewModel.results;
+
     int totalCorrectAnswers =
         quizResult.where((result) => result['isCorrect'] == true).length;
 
     var paddingBetweenButtons = const SizedBox(height: 5.0);
+
+
+    final Map<String, dynamic> args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final Duration elapsedTime = args['elapsedTime'];
+    int minutes = elapsedTime.inMinutes;
+    int seconds = elapsedTime.inSeconds % 60;
 
     print('Results: $quizResult');
 
@@ -75,7 +84,6 @@ class _QuizResultViewState extends State<QuizResultView> {
                                             top: 10.0,
                                             right: 100.0,
                                             child: Text(
-                                              // User's Score
                                               '$totalCorrectAnswers',
                                               style: TextStyle(fontSize: 60),
                                             )),
@@ -93,7 +101,6 @@ class _QuizResultViewState extends State<QuizResultView> {
                                           bottom: 10.0,
                                           left: 100.0,
                                           child: Text(
-                                            // Total Score
                                             '${quizResult.length}',
                                             style: TextStyle(fontSize: 60),
                                           ),
@@ -139,7 +146,7 @@ class _QuizResultViewState extends State<QuizResultView> {
                                           fontWeight: FontWeight.w500),
                                     ),
                                     Text(
-                                      'Time: 5m 23s',
+                                      'Elapsed Time: ${minutes}m ${seconds}s',
                                       style: TextStyle(
                                           fontSize: 16.0,
                                           color: Color.fromRGBO(49, 51, 56, 1),
@@ -190,13 +197,11 @@ class _QuizResultViewState extends State<QuizResultView> {
                 ),
                 if (isResultVisible)
                   Container(
-                    // margin:
-                    //     EdgeInsets.only(left: (screenWidth / 10), bottom: 20.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         for (int i = 0; i < quizResult.length; i++)
-                          _buildResultItem(quizResult[i], i),
+                          ResultItem(result: quizResult[i], index: i),
                       ],
                     ),
                   ),
@@ -205,152 +210,6 @@ class _QuizResultViewState extends State<QuizResultView> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildResultItem(Map<String, dynamic> result, int index) {
-    String userAnswerText = '';
-    String correctAnswerText = '';
-
-    if (result['type'] == 1) {
-      // Identification question
-      userAnswerText = result['userAnswer'] ?? 'No Answer';
-      correctAnswerText =
-          (result['correctAnswer'] != null) ? result['correctAnswer'] : '';
-    } else if (result['type'] == 2) {
-      // Multiple choice question
-      List<Map<String, dynamic>> choices = result['choices'];
-
-      userAnswerText =
-          (result['userAnswer'] != null && result['userAnswer']['index'] >= 0)
-              ? choices[result['userAnswer']['index']]['content']
-              : 'No Answer';
-      correctAnswerText = choices[result['correctAnswerIndex']]['content'];
-    }
-
-    return Container(
-      height: 200.0,
-      decoration: BoxDecoration(
-          color: result['isCorrect']
-              ? Color.fromARGB(255, 223, 255, 219)
-              : Color.fromARGB(255, 255, 219, 219),
-          borderRadius: BorderRadius.circular(10.0)),
-      margin: EdgeInsets.only(bottom: 20.0, right: 40.0),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${index + 1}. ${result['question']}',
-              style: TextStyle(
-                color: Color.fromARGB(255, 49, 51, 56),
-                fontSize: 18.0,
-              ),
-            ),
-            if (result['type'] == 2) _buildMultipleChoiceResult(result),
-            if (result['type'] == 1)
-              Container(
-                margin: EdgeInsets.only(top: 20.0),
-                child: Row(
-                  children: [
-                    Text(
-                      'Your Answer: ',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Color.fromARGB(255, 49, 51, 56),
-                      ),
-                    ),
-                    Text(
-                      '$userAnswerText',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Color.fromARGB(255, 49, 51, 56),
-                      ),
-                    ),
-                    if (result['isCorrect'])
-                      Text(
-                        '  ✔',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.green,
-                        ),
-                      ),
-                    if (!result['isCorrect'])
-                      Text(
-                        '  ❌',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.red,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            Container(
-              margin: EdgeInsets.only(top: 25.0),
-              child: Text(
-                'Correct Answer: $correctAnswerText',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 49, 51, 56),
-                  fontSize: 16.0,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMultipleChoiceResult(Map<String, dynamic> result) {
-    List<Map<String, dynamic>> choices = result['choices'];
-    int correctAnswerIndex = result['correctAnswerIndex'];
-
-    int? selectedChoiceIndex = result['userAnswer']?['index'];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (int i = 0; i < choices.length; i++)
-          Row(
-            children: [
-              Radio(
-                value: i,
-                groupValue: selectedChoiceIndex,
-                onChanged: (value) {},
-              ),
-              Row(
-                children: [
-                  Text(
-                    choices[i]['content'] ?? '',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: Color.fromARGB(255, 49, 51, 56),
-                    ),
-                  ),
-                  if (i == correctAnswerIndex && i == selectedChoiceIndex)
-                    Text(
-                      '  ✔',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.green,
-                      ),
-                    ),
-                  if (i == selectedChoiceIndex && i != correctAnswerIndex)
-                    Text(
-                      '  ❌',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.red,
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          ),
-      ],
     );
   }
 }

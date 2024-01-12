@@ -5,7 +5,10 @@ import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_models/choice_model.dart';
 import 'package:lessonlab/src/global_models/question_model.dart';
-import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/components/answer.dart';
+import 'package:lessonlab/src/global_components/secondary_button.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/components/question.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/components/quiz_navigator.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/components/show_dialog.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_result/quiz_result_view_model.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +30,8 @@ class _QuizPageViewState extends State<QuizPageView> {
   int _questionIndex = 0;
 
   int _totalItems = 0;
-  int _currentItem = 0;
+
+  late DateTime startTime;
 
   List<int> _selectedAnswers = [];
   List<TextEditingController> _identificationControllers = [];
@@ -37,9 +41,14 @@ class _QuizPageViewState extends State<QuizPageView> {
     developer.log("constructor call quizpageviewstate");
   }
 
+  int get questionIndex {
+    return _questionIndex;
+  }
+
   @override
   void initState() {
     super.initState();
+    startTime = DateTime.now();
 
     Future.delayed(Duration.zero, () {
       final quizViewModel = context.read<QuizPageViewModel>();
@@ -53,6 +62,12 @@ class _QuizPageViewState extends State<QuizPageView> {
           (index) => TextEditingController(),
         );
       });
+    });
+  }
+
+  void _handleItemTap(int index) {
+    setState(() {
+      _questionIndex = index; // Update _questionIndex in QuizPageView
     });
   }
 
@@ -94,7 +109,7 @@ class _QuizPageViewState extends State<QuizPageView> {
                         height: 200.0,
                         width: 150,
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 253, 237, 183),
+                          color: const Color.fromARGB(255, 244, 245, 247),
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                         child: Container(
@@ -113,11 +128,14 @@ class _QuizPageViewState extends State<QuizPageView> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildQuestionWidget(
-                                  quizViewModel.questions[_questionIndex]!,
-                                  _questionIndex + 1,
-                                  _questionIndex,
-                                ),
+                                Question(
+                                    question: quizViewModel
+                                        .questions[_questionIndex]!,
+                                    questionNumber: _questionIndex + 1,
+                                    index: _questionIndex,
+                                    selectedAnswers: _selectedAnswers,
+                                    identificationControllers:
+                                        _identificationControllers),
                                 const SizedBox(
                                   height: 20.0,
                                 ),
@@ -127,13 +145,13 @@ class _QuizPageViewState extends State<QuizPageView> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      PrimaryButton(
-                                          width: 100.0,
+                                      SecondaryButton(
+                                          width: 70.0,
                                           handlePress: () {
                                             _prevQuestion();
                                           },
-                                          text: 'Previous',
-                                          enabled: true),
+                                          text: '<<',
+                                      ),
                                       Container(
                                         padding: const EdgeInsets.only(
                                             left: 20.0, right: 20.0),
@@ -147,13 +165,13 @@ class _QuizPageViewState extends State<QuizPageView> {
                                               fontWeight: FontWeight.bold),
                                         ),
                                       ),
-                                      PrimaryButton(
-                                          width: 100.0,
+                                      SecondaryButton(
+                                          width: 70.0,
                                           handlePress: () {
                                             _nextQuestion();
                                           },
-                                          text: 'Next',
-                                          enabled: true),
+                                          text: '>>',
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -165,71 +183,18 @@ class _QuizPageViewState extends State<QuizPageView> {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Container(
-                                margin: const EdgeInsets.only(top: 20.0),
-                                width: 350.0,
-                                constraints:
-                                    const BoxConstraints(minHeight: 200.0),
-                                decoration: BoxDecoration(
-                                  color:
-                                      const Color.fromARGB(255, 253, 237, 183),
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 23.5, top: 36.0, bottom: 36.0),
-                                  child: Wrap(
-                                    spacing: 10.0,
-                                    runSpacing: 11.0,
-                                    alignment: WrapAlignment.start,
-                                    children: [
-                                      ...List.generate(
-                                        _totalItems,
-                                        (index) => InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              _questionIndex = index;
-                                            });
-                                          },
-                                          child: Container(
-                                            height: 50.0,
-                                            width: 35.0,
-                                            decoration: BoxDecoration(
-                                                color: _questionIndex == index
-                                                    ? const Color.fromARGB(
-                                                        255, 49, 51, 56)
-                                                    : Color.fromARGB(
-                                                        255, 241, 196, 27),
-                                                border: Border.all(
-                                                    color: Color.fromARGB(
-                                                        255, 241, 196, 27))),
-                                            child: Align(
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                '${index + 1}',
-                                                style: TextStyle(
-                                                    color: _questionIndex ==
-                                                            index
-                                                        ? Color.fromARGB(
-                                                            255, 241, 196, 27)
-                                                        : const Color.fromARGB(
-                                                            255, 49, 51, 56),
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                              QuizNavigator(
+                                  totalItems: _totalItems,
+                                  questionIndex: _questionIndex,
+                                  tap: _handleItemTap),
                               Padding(
                                 padding: const EdgeInsets.only(top: 20.0),
                                 child: PrimaryButton(
                                   handlePress: () {
-                                    _showConfirmationDialog();
+                                    ShowDialog.ShowConfirmDialog(context, () {
+                                      _finishAttempt();
+                                    });
+                                    //_showConfirmationDialog();
                                   },
                                   text: 'Finish Attempt',
                                   enabled: true,
@@ -250,7 +215,6 @@ class _QuizPageViewState extends State<QuizPageView> {
     if (_questionIndex > 0) {
       setState(() {
         _questionIndex--;
-        _currentItem--;
       });
     }
   }
@@ -259,140 +223,21 @@ class _QuizPageViewState extends State<QuizPageView> {
     if (_questionIndex + 1 < _totalItems) {
       setState(() {
         _questionIndex++;
-        _currentItem++;
       });
     }
-  }
-
-  double _calculateHorizontalPadding(String questionText) {
-    return max(20.0, min(questionText.length.toDouble(), 50.0));
-  }
-
-  Widget _buildQuestionWidget(
-      QuestionModel question, int questionNumber, int index) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-            margin: const EdgeInsets.only(
-              bottom: 10.0,
-            ),
-            height: 350.0,
-            width: 600.0,
-            constraints: const BoxConstraints(
-              minHeight: 350.0,
-              maxHeight: 350.0,
-              maxWidth: 600.0,
-            ),
-            padding: EdgeInsets.symmetric(
-              horizontal: _calculateHorizontalPadding(question.question),
-              vertical: 20.0,
-            ),
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 253, 237, 183),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    Text(
-                      question.question,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        fontSize: 15.0,
-                        color: Color.fromARGB(255, 49, 51, 56),
-                      ),
-                      softWrap: true,
-                      maxLines: null,
-                    ),
-                    const SizedBox(
-                      height: 40.0,
-                    ),
-                    if (question.type == 1)
-                      _buildIdentification(index)
-                    else if (question.type == 2)
-                      _buildMultipleChoice(question, index)
-                  ]),
-            )),
-      ],
-    );
-  }
-
-  Widget _buildIdentification(int index) {
-    return Column(
-      children: [
-        TextField(
-          controller: _getController(index),
-          decoration: const InputDecoration(border: OutlineInputBorder()),
-        )
-      ],
-    );
-  }
-
-  TextEditingController _getController(int index) {
-    while (_identificationControllers.length <= index) {
-      _identificationControllers.add(TextEditingController());
-    }
-    return _identificationControllers[index];
-  }
-
-  Widget _buildMultipleChoice(QuestionModel question, int index) {
-    return Column(
-      children: [
-        for (int i = 0;
-            i < ((question as MultipleChoiceQuestionModel).choices).length;
-            i++)
-          Answer(
-            answerText: question.choices[i].content,
-            index: i,
-            groupValue:
-                _selectedAnswers.length > index ? _selectedAnswers[index] : 0,
-            answerTap: (value) {
-              setState(() {
-                _selectedAnswers[index] = value;
-              });
-            },
-          ),
-      ],
-    );
-  }
-
-  void _showConfirmationDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirmation'),
-          content: Text('Are you sure you want to finish the quiz attempt?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _finishAttempt();
-              },
-              child: Text('Finish'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void _finishAttempt() {
     results.clear();
     _checkAllAnswers();
-    Navigator.restorablePushNamed(context, '/quiz_result');
+
+    Duration elapsedTime = DateTime.now().difference(startTime);
+
+    Navigator.pushNamed(
+      context, 
+      '/quiz_result',
+      arguments: {'elapsedTime': elapsedTime},
+      );
   }
 
   void _checkAllAnswers() {
@@ -405,7 +250,7 @@ class _QuizPageViewState extends State<QuizPageView> {
       dynamic userAnswer;
 
       if (quizViewModel.questions[i]?.type == 1) {
-        // Identification question
+        // Identification Checking
         String correctAnswer =
             (quizViewModel.questions[i] as IdentificationQuestionModel).answer;
 
@@ -420,12 +265,12 @@ class _QuizPageViewState extends State<QuizPageView> {
           'correctAnswer': correctAnswer,
         });
       } else {
+        //Multiple-Choice Checking
         List<ChoiceModel> choices =
             (quizViewModel.questions[i] as MultipleChoiceQuestionModel).choices;
 
         int selectedChoiceIndex = _selectedAnswers[i];
         bool hasSelectedChoice = selectedChoiceIndex >= 0;
-        //String selectedChoiceContent = choices[selectedChoiceIndex].content;
         String selectedChoiceContent = hasSelectedChoice
             ? choices[selectedChoiceIndex].content
             : 'No Answer';
@@ -459,8 +304,6 @@ class _QuizPageViewState extends State<QuizPageView> {
         });
       }
     }
-
-    developer.log('Score: ${_calculateScore()} / $_totalItems');
 
     quizResultViewModel.setResults(results);
   }

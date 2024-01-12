@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/lessonlab_appbar.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_components/secondary_button.dart';
-import 'package:lessonlab/src/global_models/lesson_model.dart';
-import 'package:lessonlab/src/global_models/quiz_model.dart';
-import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/components/input_field.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -153,8 +149,9 @@ class LessonSpecificationsView extends StatelessWidget {
                                 PrimaryButton(
                                     handlePress: () {
                                       // check first if there are same title
-                                      if (checkTitleAvailability(menuViewModel,
-                                          lessonSpecificationsViewModel)) {
+                                      if (lessonSpecificationsViewModel
+                                          .checkTitleAvailability(
+                                              menuViewModel)) {
                                         lessonSpecificationsViewModel
                                             .collectFormTextValues();
                                         lessonSpecificationsViewModel
@@ -182,49 +179,5 @@ class LessonSpecificationsView extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  // This will check if there are no same title in the existing items
-  bool checkTitleAvailability(
-      MenuViewModel menu, LessonSpecificationsViewModel lessonSpecifications) {
-    var titleFieldValue = lessonSpecifications.titleField.controller.text;
-
-    // menu.menuModel.lessons.then((value) {
-    //   for (LessonModel lesson in value) {
-    //     lesson.title.then((value) {
-    //       if (value == titleFieldValue) {
-    //         return false;
-    //       }
-    //     });
-    //   }
-    // });
-
-    List<LessonModel> lessons = [];
-    List<QuizModel> quizzes = [];
-    // menu.menuModel.lessons.then((value) {
-    //   developer.log("length: ${value.length}");
-    //   developer.log("id: ${value[0].id}");
-    //   developer.log("title: ${value[0].title}");
-    // });
-    // menu.menuModel.lessons.then((value) => lessons = value);
-    // menu.menuModel.quizzes.then((value) => quizzes = value);
-    lessons = menu.menuModel.lessons;
-    quizzes = menu.menuModel.quizzes;
-
-    for (LessonModel lesson in lessons) {
-      String tempTitle = '';
-      // lesson.title.then((value) => tempTitle = value);
-      tempTitle = lesson.title;
-      if (tempTitle == titleFieldValue) {
-        return false;
-      }
-    }
-    for (QuizModel quiz in quizzes) {
-      if (quiz.title == titleFieldValue) {
-        return false;
-      }
-    }
-
-    return true;
   }
 }

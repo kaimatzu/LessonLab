@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+import 'package:lessonlab/src/global_components/route_animation.dart';
+import 'package:lessonlab/src/settings/settings_view_model.dart';
+
+import 'lessonlab_modules/entry/menu/menu_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/lesson_open_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:lessonlab/src/global_components/route_animation.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/lesson_specifications_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_result/quiz_result_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications/quiz_specifications_view.dart';
-import 'package:lessonlab/src/settings/settings_view_model.dart';
-import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view.dart';
-
-import 'lessonlab_modules/entry/menu/menu_view.dart';
 import 'settings/settings_view.dart';
 
 /// The Widget that configures your application.
@@ -49,11 +49,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             useMaterial3: false,
             colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.amber),
-            //BG color
             scaffoldBackgroundColor: Colors.white,
-            // * colors from figma
-            // primary color: (241, 196, 149)
-            // secondary color: (255, 242, 148)
           ),
           darkTheme: ThemeData.dark(),
           themeMode: settingsViewModel.themeMode,

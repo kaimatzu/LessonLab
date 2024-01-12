@@ -500,6 +500,5 @@ fn rinf_quiz_model_to_quiz(quiz_model: RinfQuizModel) -> Quiz {
         // quiz_type: 1,
         target_path: quiz_model.location,
         questions,
-        sources,
     }
 }

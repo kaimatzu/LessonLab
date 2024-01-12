@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/global_models/lesson_model.dart';
+import 'package:lessonlab/src/global_models/quiz_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/components/dropdown_menu.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/components/input_field.dart';
 import 'dart:developer' as developer;
 
-import 'package:lessonlab/messages/lesson/lesson_specifications.pb.dart'
+import 'package:lessonlab/messages/quiz/quiz_specifications.pb.dart'
     // ignore: library_prefixes
     as RinfInterface;
 import 'package:lessonlab/src/lessonlab_modules/quiz/components/number_field.dart';
@@ -49,6 +52,7 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
   QuizSpecificationsViewModel() {
     final initializeFields = [
       InputField(label: 'Title', hintLabel: 'Enter quiz title'),
+      InputField(label: 'Focus Topic', hintLabel: 'Enter focus topic'),
       const Dropdown(
           label: "Type",
           list: <String>['Identification', 'Multiple Choice', 'Both']),
@@ -75,6 +79,9 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
     }
   }
 
+  final InputField titleField =
+      InputField(label: 'Title', hintLabel: 'Enter lesson title');
+
   var model = QuizSpecificationsModel();
   var orchestrator = QuizSpecificationsConnectionOrchestrator();
   var formFields = <FormField>[];
@@ -91,6 +98,8 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
         quizSpecifications.add(formField.textArea!.controller.text);
       } else if (formField.dropdown != null) {
         quizSpecifications.add(formField.dropdown!.getSelectedValue);
+      } else if (formField.numberField != null) {
+        quizSpecifications.add(formField.numberField!.controller.text);
       } else {
         // developer.log('Null error', name: 'collect');
         // TODO: Handle uninitialized null values, just in case.
@@ -116,7 +125,8 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
   }
 
   void cancelQuiz(BuildContext context) {
-    Navigator.pop(context);
+    //Navigator.pop(context);
+    Navigator.restorablePushNamed(context, UploadSourcesView.routeName);
   }
 
   void generateQuiz(
@@ -127,5 +137,30 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
     if (!context.mounted) return;
     Navigator.restorablePushNamed(context, QuizPageView.routeName);
     developer.log("page changed");
+  }
+
+  // This will check if there are no same title in the existing items
+  bool checkTitleAvailability(MenuViewModel menu) {
+    var titleFieldValue = titleField.controller.text;
+
+    List<LessonModel> lessons = [];
+    List<QuizModel> quizzes = [];
+    lessons = menu.menuModel.lessons;
+    quizzes = menu.menuModel.quizzes;
+
+    for (LessonModel lesson in lessons) {
+      String tempTitle = '';
+      tempTitle = lesson.title;
+      if (tempTitle == titleFieldValue) {
+        return false;
+      }
+    }
+    for (QuizModel quiz in quizzes) {
+      if (quiz.title == titleFieldValue) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

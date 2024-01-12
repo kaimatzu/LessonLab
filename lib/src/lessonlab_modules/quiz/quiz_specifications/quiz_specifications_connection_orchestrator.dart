@@ -12,8 +12,6 @@ class QuizSpecificationsConnectionOrchestrator {
     developer.log("${specifications.length}", name: "sendQuizSpecs");
     final requestMessage =
         RinfInterface.CreateRequest(quizSpecifications: specifications);
-
-    // developer.log("${specifications.length}", name: "sendQuizSpecs");
     final rustRequest = RustRequest(
       resource: RinfInterface.ID,
       operation: RustOperation.Create,
@@ -25,6 +23,6 @@ class QuizSpecificationsConnectionOrchestrator {
       rustResponse.message!,
     );
 
-    developer.log('${responseMessage.statusCode}', name: 'quiz-spec code');
+    developer.log('${responseMessage.statusCode}', name: 'quizspec code');
   }
 }
