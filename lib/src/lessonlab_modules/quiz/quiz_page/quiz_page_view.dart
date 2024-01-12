@@ -6,6 +6,7 @@ import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/global_models/choice_model.dart';
 import 'package:lessonlab/src/global_models/question_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/components/answer.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/components/question.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_result/quiz_result_view_model.dart';
 import 'package:provider/provider.dart';
@@ -113,11 +114,19 @@ class _QuizPageViewState extends State<QuizPageView> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildQuestionWidget(
-                                  quizViewModel.questions[_questionIndex]!,
-                                  _questionIndex + 1,
-                                  _questionIndex,
-                                ),
+                                Question(
+                                    question: quizViewModel
+                                        .questions[_questionIndex]!,
+                                    questionNumber: _questionIndex + 1,
+                                    index: _questionIndex,
+                                    selectedAnswers: _selectedAnswers,
+                                    identificationControllers:
+                                        _identificationControllers),
+                                // _buildQuestionWidget(
+                                //   quizViewModel.questions[_questionIndex]!,
+                                //   _questionIndex + 1,
+                                //   _questionIndex,
+                                // ),
                                 const SizedBox(
                                   height: 20.0,
                                 ),
