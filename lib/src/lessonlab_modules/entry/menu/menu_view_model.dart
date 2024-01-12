@@ -9,7 +9,8 @@ import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_import_export/less
 class MenuViewModel with ChangeNotifier {
   late final MenuModel _menuModel;
   late final MenuConnectionOrchestrator _menuConnectionOrchestrator;
-  late final LessonImportConnectionOrchestrator _lessonImportConnectionOrchestrator;
+  late final LessonImportConnectionOrchestrator
+      _lessonImportConnectionOrchestrator;
   MenuModel get menuModel => _menuModel;
 
   MenuViewModel() {
@@ -46,51 +47,35 @@ class MenuViewModel with ChangeNotifier {
   }
 
   void delete(String title) {
-    _menuModel.lessons.then((List<LessonModel> lessons) {
-      for (LessonModel lesson in lessons) {
-        lesson.title.then((String elementTitle) {
-          // TODO: add ID for each lesson
-          // id to check for equality here (currently title)
-          //               |
-          //               V
-          if (elementTitle == title) {
-            _deleteLesson(lesson);
-          }
-        });
+    for (LessonModel lesson in _menuModel.lessons) {
+      if (lesson.title == title) {
+        _deleteLesson(lesson);
       }
-    });
+    }
   }
 
   void deleteId(int id) {
-    _menuModel.lessons.then((List<LessonModel> lessons) {
-      for (LessonModel lesson in lessons) {
-        lesson.id.then((int elementId) {
-          if (elementId == id) {
-            _deleteLesson(lesson);
-          }
-        });
+    for (LessonModel lesson in _menuModel.lessons) {
+      if (lesson.id == id) {
+        _deleteLesson(lesson);
       }
-    });
+    }
   }
 
   void _deleteLesson(LessonModel lesson) {
-    _menuModel.lessons.then((List<LessonModel> lessons) {
-      lessons.remove(lesson);
-    });
-
-    lesson.id.then((id) => _menuConnectionOrchestrator.deleteLesson(id));
+    _menuModel.lessons.remove(lesson);
+    _menuConnectionOrchestrator.deleteLesson(lesson.id);
 
     notifyListeners();
   }
 
   Future<void> importLesson() async {
-    const XTypeGroup typeGroup =  XTypeGroup(
-      label: "LessonLab file (.lela)",
-      extensions: [".lela"]
-    );
+    const XTypeGroup typeGroup =
+        XTypeGroup(label: "LessonLab file (.lela)", extensions: [".lela"]);
 
-    final XFile? file = await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
-    if(file != null) {
+    final XFile? file =
+        await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+    if (file != null) {
       debugPrint(file.path);
       debugPrint(file.name);
       _lessonImportConnectionOrchestrator.importLesson(file.path, file.name);

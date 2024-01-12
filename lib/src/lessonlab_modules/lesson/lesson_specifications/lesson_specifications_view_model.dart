@@ -1,5 +1,6 @@
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/components/dropdown_menu.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_specifications/components/input_field.dart';
@@ -30,20 +31,21 @@ class FormField {
 class LessonSpecificationsViewModel extends ChangeNotifier {
   LessonSpecificationsViewModel() {
     final initializeFields = [
-      InputField(label: 'Title', hintLabel: 'Enter lesson title'),
+      titleField,
       InputField(label: 'Focus Topic', hintLabel: 'Enter focus of the lesson'),
       InputField(label: 'Timeframe', hintLabel: 'Enter timeframe'),
       TextArea(
           label: 'Learning Outcomes', hintLabel: 'Enter learning outcomes'),
       Dropdown(
-          label: 'Grade Level',
-          list: const <String>[
-            'Elementary',
-            'Junior High School',
-            'Senior High School',
-            'College',
-          ],
-          stateNotifier: DropdownStateNotifier()),
+        label: 'Grade Level',
+        list: const <String>[
+          'Elementary',
+          'Junior High School',
+          'Senior High School',
+          'College',
+        ],
+        stateNotifier: DropdownStateNotifier(),
+      ),
     ];
 
     for (var formField in initializeFields) {
@@ -56,6 +58,9 @@ class LessonSpecificationsViewModel extends ChangeNotifier {
       }
     }
   }
+
+  final InputField titleField =
+      InputField(label: 'Title', hintLabel: 'Enter lesson title');
 
   final lessonSpecsModel = LessonSpecificationModel();
   final LessonSpecificationsConnectionOrchestrator

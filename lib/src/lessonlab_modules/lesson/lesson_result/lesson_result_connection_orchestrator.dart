@@ -20,7 +20,7 @@ class LessonResultConnectionOrchestrator {
     final responseMessage = RinfInterface.CreateResponse.fromBuffer(
       rustResponse.message!,
     );
-    
+
     developer.log("Save lesson status: ${responseMessage.statusCode}");
   }
 
@@ -38,15 +38,15 @@ class LessonResultConnectionOrchestrator {
       rustResponse.message!,
       // TODO: handle this could be a null
     );
-    
+
     final lessonResultModel = LessonResultModel();
-    lessonResultModel.lesson.title = Future.value(responseMessage.title);
-    lessonResultModel.lesson.content = Future.value(responseMessage.mdContent);
-    lessonResultModel.cssContents = Future.value(_loadFileContents('assets/styles/markdown.css'));
+    lessonResultModel.lesson.title = responseMessage.title;
+    lessonResultModel.lesson.content = responseMessage.mdContent;
+    lessonResultModel.cssContents =
+        Future.value(_loadFileContents('assets/styles/markdown.css'));
 
     return lessonResultModel;
   }
-
 }
 
 Future<String> _loadFileContents(String filePath) async {

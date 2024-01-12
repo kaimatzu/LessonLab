@@ -39,11 +39,10 @@ class MenuView extends StatelessWidget {
       text: 'Import',
     );
 
-
     var grid = FutureBuilder<List<Object>>(
       future: Future.wait([
-        _menuViewModel.menuModel.lessons,
-        _menuViewModel.menuModel.quizzes,
+        Future.value(_menuViewModel.menuModel.lessons),
+        Future.value(_menuViewModel.menuModel.quizzes),
       ]),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -67,7 +66,7 @@ class MenuView extends StatelessWidget {
               if (index < lessons.length) {
                 return FutureBuilder<String>(
                   // * Future builder for TITLE
-                  future: lessons[index].title,
+                  future: Future.value(lessons[index].title),
                   builder: (context, titleSnapshot) {
                     if (titleSnapshot.connectionState ==
                         ConnectionState.waiting) {
@@ -77,7 +76,7 @@ class MenuView extends StatelessWidget {
                     } else {
                       return FutureBuilder<String>(
                         // * Future builder for CONTENT
-                        future: lessons[index].content,
+                        future: Future.value(lessons[index].content),
                         builder: (context, contentSnapshot) {
                           if (contentSnapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -87,14 +86,13 @@ class MenuView extends StatelessWidget {
                           } else {
                             return FutureBuilder<int>(
                               // * Future builder for ID
-                              future: lessons[index].id,
+                              future: Future.value(lessons[index].id),
                               builder: (context, idSnapshot) {
                                 if (idSnapshot.connectionState ==
                                     ConnectionState.waiting) {
                                   return const CircularProgressIndicator();
                                 } else if (idSnapshot.hasError) {
-                                  return const Text(
-                                      'Error loading lesson id');
+                                  return const Text('Error loading lesson id');
                                 } else {
                                   return MenuCard(
                                     title: titleSnapshot.data!,
@@ -153,6 +151,6 @@ class MenuView extends StatelessWidget {
           ],
         ),
       ),
-);
+    );
   }
 }
