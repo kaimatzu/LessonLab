@@ -49,6 +49,7 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
   QuizSpecificationsViewModel() {
     final initializeFields = [
       InputField(label: 'Title', hintLabel: 'Enter quiz title'),
+      InputField(label: 'Focus Topic', hintLabel: 'Enter focus topic'),
       const Dropdown(
           label: "Type",
           list: <String>['Identification', 'Multiple Choice', 'Both']),
@@ -91,6 +92,8 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
         quizSpecifications.add(formField.textArea!.controller.text);
       } else if (formField.dropdown != null) {
         quizSpecifications.add(formField.dropdown!.getSelectedValue);
+      } else if (formField.numberField != null) {
+        quizSpecifications.add(formField.numberField!.controller.text);
       } else {
         // developer.log('Null error', name: 'collect');
         // TODO: Handle uninitialized null values, just in case.
