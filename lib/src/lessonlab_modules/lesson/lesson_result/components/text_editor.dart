@@ -40,7 +40,9 @@ class TextEditor extends StatefulWidget {
 }
 
 class _TextEditor extends State<TextEditor> {
-  var _doneGenerating = false;
+  ValueNotifier<bool> _doneGeneratingNotifier = ValueNotifier<bool>(false);
+
+  
   // var mdContentFinal = "a";
   // var htmlContent = "";
   // var noStreamValue = 0;
@@ -66,28 +68,29 @@ class _TextEditor extends State<TextEditor> {
       markdownDocument: mdDocument,
     );
 
-    // Start listening to the stream in initState
-    streamSubscription = rustBroadcaster.stream
-        .where((rustSignal) => rustSignal.resource == streamMessage.ID)
-        .listen((RustSignal rustSignal) {
-      // Handle the stream data here
-      final signal = streamMessage.StateSignal.fromBuffer(rustSignal.message!);
-      final rinfMessage = signal.streamMessage;
-      debugPrint(rinfMessage);
-      if (rinfMessage == "[LL_END_STREAM]") {
-        setState(() {
-          _doneGenerating = true;
-        });
-      } else {
-        markdownContent += rinfMessage;
-        if (markdownContent.isNotEmpty) {
-          _controller.document =
-              Document.fromDelta(mdToDelta.convert(markdownContent));
-          _controller.moveCursorToEnd();
-        }
-        // _controller.document.insert(_controller.plainTextEditingValue.text.length - 1, rinfMessage);
-      }
-    });
+    lessonGenerationStream(mdToDelta);
+    // // Start listening to the stream in initState
+    // streamSubscription = rustBroadcaster.stream
+    //     .where((rustSignal) => rustSignal.resource == streamMessage.ID)
+    //     .listen((RustSignal rustSignal) {
+    //   // Handle the stream data here
+    //   final signal = streamMessage.StateSignal.fromBuffer(rustSignal.message!);
+    //   final rinfMessage = signal.streamMessage;
+    //   debugPrint(rinfMessage);
+    //   if (rinfMessage == "[LL_END_STREAM]") {
+    //     setState(() {
+    //       _doneGenerating = true;
+    //     });
+    //   } else {
+    //     markdownContent += rinfMessage;
+    //     if (markdownContent.isNotEmpty) {
+    //       _controller.document =
+    //           Document.fromDelta(mdToDelta.convert(markdownContent));
+    //       _controller.moveCursorToEnd();
+    //     }
+    //     // _controller.document.insert(_controller.plainTextEditingValue.text.length - 1, rinfMessage);
+    //   }
+    // });
   }
 
   @override
@@ -120,9 +123,15 @@ class _TextEditor extends State<TextEditor> {
 
     lessonResultViewModel.lessonContent =
         deltaToMd.convert(_controller.document.toDelta());
-    if (_doneGenerating) {
-      lessonResultViewModel.done = true;
-    }
+
+    _doneGeneratingNotifier.addListener(() {
+      if (_doneGeneratingNotifier.value) {
+        lessonResultViewModel.done = true;
+      }
+    });
+    // if (_doneGenerating) {
+    //   lessonResultViewModel.done = true;
+    // }
 
     // const markdown = "# test";
 
@@ -260,7 +269,7 @@ class _TextEditor extends State<TextEditor> {
         configurations: QuillEditorConfigurations(
           controller: _controller,
           autoFocus: true,
-          readOnly: !_doneGenerating,
+          readOnly: !_doneGeneratingNotifier.value,
           padding: EdgeInsets.only(left: 30, top: 5, right: 30, bottom: 30),
           elementOptions: const QuillEditorElementOptions(
             orderedList: QuillEditorOrderedListElementOptions(
@@ -366,7 +375,32 @@ class _TextEditor extends State<TextEditor> {
   @override
   void dispose() {
     // Cancel the stream subscription in dispose
+    _doneGeneratingNotifier.dispose();
     streamSubscription.cancel();
     super.dispose();
+  }
+
+  void lessonGenerationStream(MarkdownToDelta mdToDelta) {
+    // Start listening to the stream in initState
+    streamSubscription = rustBroadcaster.stream
+        .where((rustSignal) => rustSignal.resource == streamMessage.ID)
+        .listen((RustSignal rustSignal) {
+      // Handle the stream data here
+      final signal = streamMessage.StateSignal.fromBuffer(rustSignal.message!);
+      final rinfMessage = signal.streamMessage;
+      debugPrint(rinfMessage);
+      if (rinfMessage == "[LL_END_STREAM]") {
+        _doneGeneratingNotifier.value = true;
+        debugPrint("Done generating: ${_doneGeneratingNotifier.value}");
+      } else {
+        markdownContent += rinfMessage;
+        if (markdownContent.isNotEmpty) {
+          _controller.document =
+              Document.fromDelta(mdToDelta.convert(markdownContent));
+          _controller.moveCursorToEnd();
+        }
+        // _controller.document.insert(_controller.plainTextEditingValue.text.length - 1, rinfMessage);
+      }
+    });
   }
 }

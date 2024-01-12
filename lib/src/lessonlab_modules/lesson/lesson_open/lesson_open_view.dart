@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/components/lesson_open_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/lesson_open_view_model.dart';
 
 class LessonOpenView extends StatelessWidget {
@@ -14,6 +15,8 @@ class LessonOpenView extends StatelessWidget {
     final int? id = ModalRoute.of(context)!.settings.arguments as int?;
 
     final lessonOpenViewModel = context.watch<LessonOpenViewModel>();
+    final menuViewModel = context.watch<MenuViewModel>();
+
     if (id != null) {
       debugPrint("Here");
       lessonOpenViewModel.loadViewContent(id);
@@ -62,6 +65,7 @@ class LessonOpenView extends StatelessWidget {
       width: 150.0,
       handlePress: () {
         if (lessonOpenViewModel.done) {
+          menuViewModel.loadViewContent();
           lessonOpenViewModel.returnToMenu(context);
         }
       },
