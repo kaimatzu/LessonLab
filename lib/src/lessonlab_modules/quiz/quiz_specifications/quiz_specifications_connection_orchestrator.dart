@@ -6,10 +6,7 @@ import 'package:rinf/rinf.dart';
 import 'dart:developer' as developer;
 
 class QuizSpecificationsConnectionOrchestrator {
-  QuizSpecificationsConnectionOrchestrator() {}
-
-  void sendQuizSpecs(List<String> specifications) async {
-    developer.log("${specifications.length}", name: "sendQuizSpecs");
+  void sendData(List<String> specifications) async {
     final requestMessage =
         RinfInterface.CreateRequest(quizSpecifications: specifications);
     final rustRequest = RustRequest(

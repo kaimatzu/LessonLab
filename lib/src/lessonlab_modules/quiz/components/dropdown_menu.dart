@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class Dropdown extends StatefulWidget {
   const Dropdown({
-    Key? key, 
+    Key? key,
     required this.label,
-    required this.list
+    required this.list,
   }) : super(key: key);
 
   final String label;

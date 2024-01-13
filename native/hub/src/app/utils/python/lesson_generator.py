@@ -233,7 +233,6 @@ def main_context_query(lesson_specifications: list[str], index_path: str):
         ]
     )
     
-    
     messages = prompt.format_messages(
         lesson_specifications=lesson_specifications
     )

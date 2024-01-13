@@ -55,9 +55,10 @@ class MenuViewModel with ChangeNotifier {
   }
 
   void deleteId(int id) {
-    for (LessonModel lesson in _menuModel.lessons) {
-      if (lesson.id == id) {
-        _deleteLesson(lesson);
+    for (int i = 0; i < _menuModel.lessons.length; i++) {
+      if (_menuModel.lessons[i].id == id) {
+        _deleteLesson(_menuModel.lessons[i]);
+        break;
       }
     }
   }

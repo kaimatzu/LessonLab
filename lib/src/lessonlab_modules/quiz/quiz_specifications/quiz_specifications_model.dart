@@ -1,12 +1,12 @@
 class QuizSpecificationsModel {
-  late List<QuizSpecificationModel> specifications;
+  late List<QuizSpecification> quizSpecs;
 }
 
-class QuizSpecificationModel {
+class QuizSpecification {
   String _label;
   String _content;
 
-  QuizSpecificationModel(this._label, this._content);
+  QuizSpecification(this._label, this._content);
 
   String get label => _label;
   set label(value) {
