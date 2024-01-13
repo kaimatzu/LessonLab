@@ -18,13 +18,13 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_quill/markdown_quill.dart';
 
 class LessonOpenViewModel with ChangeNotifier {
-  late final LessonOpenModel _lessonOpenModel;
-  late final LessonOpenConnectionOrchestrator
+  late LessonOpenModel _lessonOpenModel;
+  late LessonOpenConnectionOrchestrator
       _lessonOpenConnectionOrchestrator;
-  late final LessonExportConnectionOrchestrator
+  late LessonExportConnectionOrchestrator
       _lessonExportConnectionOrchestrator;
   final _statusCode = 0;
-  late final int _lessonId;
+  late int _lessonId;
   late QuillController quillController;
 
   bool _done = true;
@@ -49,15 +49,18 @@ class LessonOpenViewModel with ChangeNotifier {
   LessonOpenModel get lessonOpenModel => _lessonOpenModel;
 
   LessonOpenViewModel() {
-    _lessonOpenModel = LessonOpenModel.initialize();
-    _lessonOpenConnectionOrchestrator = LessonOpenConnectionOrchestrator();
-    _lessonExportConnectionOrchestrator = LessonExportConnectionOrchestrator();
+     debugPrint("LessonOpenViewModel created!");
+    // _lessonOpenModel = LessonOpenModel.initialize();
+    // _lessonOpenConnectionOrchestrator = LessonOpenConnectionOrchestrator();
+    // _lessonExportConnectionOrchestrator = LessonExportConnectionOrchestrator();
     // loadViewContent();
   }
 
-  // void regenerate() {
-  //   developer.log(">>> regenerate");
-  // }
+  Future<void> initialize() async {
+    _lessonOpenModel = LessonOpenModel.initialize();
+    _lessonOpenConnectionOrchestrator = LessonOpenConnectionOrchestrator();
+    _lessonExportConnectionOrchestrator = LessonExportConnectionOrchestrator();
+  }
 
   Future<void> returnToMenu(BuildContext context, MenuViewModel menuViewModel) async {
     var delta = quillController.document.toDelta();
@@ -68,15 +71,12 @@ class LessonOpenViewModel with ChangeNotifier {
     await menuViewModel.loadViewContent();
 
     // ignore: use_build_context_synchronously
-    Navigator.restorablePushNamed(
-      context,
-      MenuView.routeName,
-    );
+    Navigator.popUntil(context, (route) => route.isFirst);
   }
 
   Future<void> loadViewContent(int id) async {
-    if(!instantiated){
-      instantiated = true;
+    // if(!instantiated){
+      // instantiated = true;
       _lessonId = id;
 
       try {
@@ -92,7 +92,7 @@ class LessonOpenViewModel with ChangeNotifier {
         // Handle errors
         developer.log('Error loading contents: $error', name: 'Error');
       }
-    }
+    // }
   }
 
   Future<void> exportLesson(String lessonTitle) async {
