@@ -37,7 +37,8 @@ class _InputFieldState extends State<InputField> {
         // Click the provided link for more details
         //
         inputFormatters: <TextInputFormatter>[
-          FilteringTextInputFormatter.deny(RegExp(r'[\\/<>:"|?*-]'))
+          FilteringTextInputFormatter.deny(
+              RegExp(r'[\\/<>:"|?*!@#$%^&(){}\[\]]'))
         ],
         controller: widget.controller,
         style: const TextStyle(color: Colors.white),
