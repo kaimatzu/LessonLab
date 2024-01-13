@@ -14,21 +14,25 @@ class MenuViewModel with ChangeNotifier {
   MenuModel get menuModel => _menuModel;
 
   MenuViewModel() {
+    debugPrint("MenuViewModel created!");
+    _initialize();
+  }
+
+  void _initialize() {
     _menuModel = MenuModel.initialize();
     _menuConnectionOrchestrator = MenuConnectionOrchestrator();
     _lessonImportConnectionOrchestrator = LessonImportConnectionOrchestrator();
     loadViewContent();
-    // for (int i = 0; i < 4; i++) {
-    //   lesson.add(LessonModel(i, 'Title $i', 'Content $i'));
-    // }
-
-    // _menuModel = MenuModel(lesson, quiz);
-    //_menuModel = _menuConnectionOrchestrator.getData();
-    // _menuModel = MenuModel(_menuConnectionOrchestrator.loadLessons(),
-    //     _menuConnectionOrchestrator.loadQuizzes());
   }
 
+  void reset() {
+    _initialize();
+    notifyListeners();
+  }
+
+
   void navigateToUploadScreen(BuildContext context) {
+    // reset();
     Navigator.restorablePushNamed(
       context,
       UploadSourcesView.routeName,

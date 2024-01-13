@@ -1,48 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/app.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_import_export/lesson_export_connection_orchestrator.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_connection_orchestrator.dart';
 import 'package:file_selector/file_selector.dart';
+import 'package:lessonlab/src/settings/settings_service.dart';
+import 'package:lessonlab/src/settings/settings_view_model.dart';
+import 'package:lessonlab/src/settings/shared_preferences.dart';
 import 'dart:developer' as developer;
-
-import 'package:markdown/markdown.dart' as md;
 import 'package:rinf/rinf.dart';
 import 'package:lessonlab/messages/results/view_lesson_result/load_lesson.pb.dart'
     as streamMessage;
 import 'dart:async';
 
 import 'package:flutter_quill/flutter_quill.dart';
-import 'package:flutter_quill/markdown_quill.dart';
-
-import 'package:markdown/markdown.dart' as md;
-import 'package:rinf/rinf.dart';
-import 'package:lessonlab/messages/results/view_lesson_result/load_lesson.pb.dart'
-    as streamMessage;
-import 'dart:async';
-
-import 'package:flutter_quill/flutter_quill.dart';
-import 'package:flutter_quill/markdown_quill.dart';
 
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_model.dart';
 
 
 
 class LessonResultViewModel with ChangeNotifier {
-  late final LessonResultModel _lessonResultModel;
-  late final LessonResultConnectionOrchestrator
+  late LessonResultModel _lessonResultModel;
+  late LessonResultConnectionOrchestrator
       _lessonResultConnectionOrchestrator;
-  late final LessonExportConnectionOrchestrator
+  late LessonExportConnectionOrchestrator
       _lessonExportConnectionOrchestrator;
-
-  final _statusCode = 0;
-  late final int _lessonId;
+  late int _lessonId;
   late QuillController quillController;
   
   bool _done = false;
   bool get done => _done;
   set done(bool value) {
     _done = value;
+  }
+
+  bool _instantiated = false;
+  bool get instantiated => _instantiated;
+  set instantiated(bool value) {
+    _instantiated = value;
+    // notifyListeners();
   }
 
   String _lessonContent = "";
@@ -54,23 +51,17 @@ class LessonResultViewModel with ChangeNotifier {
   LessonResultModel get lessonResultModel => _lessonResultModel;
 
   LessonResultViewModel() {
-    _lessonResultModel = LessonResultModel.initialize();
-    _lessonResultConnectionOrchestrator = LessonResultConnectionOrchestrator();
-    loadViewContent();
+    debugPrint("LessonResultViewModel created!");
+    // loadViewContent();
   }
 
-  // void regenerate() {
-  //   developer.log(">>> regenerate");
-  // }
-
+  Future<void> initialize() async {
+    _lessonResultModel = LessonResultModel.initialize();
+    _lessonResultConnectionOrchestrator = LessonResultConnectionOrchestrator();
+    await loadViewContent();
+  }
   Future<void> returnToMenu(
       BuildContext context, MenuViewModel menuViewModel) async {
-    // developer.log("Convert to md");   
-
-    // final deltaToMd = DeltaToMarkdown();
-    // lessonContent = deltaToMd.convert(quillController.document.toDelta());
-    developer.log("Lesson content: $lessonContent", name: "returnToMenu");
-
     // developer.log("Convert to md");   
 
     // final deltaToMd = DeltaToMarkdown();
@@ -82,13 +73,26 @@ class LessonResultViewModel with ChangeNotifier {
     developer.log("Load menu content");
     await menuViewModel.loadViewContent();
     
-
     if (!context.mounted) return;
     // ignore: use_build_context_synchronously
-    Navigator.restorablePushNamed(
-      context,
-      MenuView.routeName,
-    );
+    // Navigator.restorablePushNamed(
+    //   context,
+    //   MenuView.routeName,
+    // );
+    Navigator.popUntil(context, (route) => route.isFirst);
+    instantiated = false;
+
+//     final settingsViewModel = SettingsViewModel(SettingsService());
+
+//     await SettingsPreferences.init();
+//     await settingsViewModel.loadSettings();
+//     await settingsViewModel.sendData();
+
+//     _navigatorKey.currentState!.pushReplacement(
+//     MaterialPageRoute(
+//       builder: (BuildContext context) => MyApp(settingsViewModel: settingsViewModel),
+//     ),
+// );
   }
 
   Future<void> loadViewContent() async {

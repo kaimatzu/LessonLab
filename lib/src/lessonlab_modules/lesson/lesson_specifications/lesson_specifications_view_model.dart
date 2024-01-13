@@ -33,6 +33,7 @@ class FormField {
 
 class LessonSpecificationsViewModel extends ChangeNotifier {
   LessonSpecificationsViewModel() {
+    debugPrint("LessonSpecificationsViewModel created!");
     final initializeFields = [
       titleField,
       InputField(label: 'Focus Topic', hintLabel: 'Enter focus of the lesson'),
