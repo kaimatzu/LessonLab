@@ -5,22 +5,47 @@ import 'package:provider/provider.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/lesson_open_view_model.dart';
 
-class LessonOpenView extends StatelessWidget {
+class LessonOpenView extends StatefulWidget {
   const LessonOpenView({Key? key}) : super(key: key);
 
   static const routeName = '/lesson_open';
 
   @override
+  State<LessonOpenView> createState() => _LessonOpenViewState();
+}
+
+class _LessonOpenViewState extends State<LessonOpenView> {
+  bool _isInitialized = false;
+
+  @override
+    void didChangeDependencies() {
+      super.didChangeDependencies();
+      debugPrint("DEP CHANGE");
+      
+      // Check if the initialization has already been performed
+      if (!_isInitialized) {
+        final lessonOpenViewModel = context.watch<LessonOpenViewModel>();
+        _isInitialized = true;
+        lessonOpenViewModel.initialize();
+
+        final int? id = ModalRoute.of(context)!.settings.arguments as int?;
+        
+        if (id != null) {
+          lessonOpenViewModel.loadViewContent(id);
+        }
+      }
+    }
+
+  @override
   Widget build(BuildContext context) {
-    final int? id = ModalRoute.of(context)!.settings.arguments as int?;
+    
 
     final lessonOpenViewModel = context.watch<LessonOpenViewModel>();
     final menuViewModel = context.watch<MenuViewModel>();
 
-    if (id != null) {
-      debugPrint("Here");
-      lessonOpenViewModel.loadViewContent(id);
-    }
+    
+     
+    
     // final lessonSpecificationsViewModel =
     //     context.watch<LessonSpecificationsViewModel>();
 
@@ -78,7 +103,7 @@ class LessonOpenView extends StatelessWidget {
       handlePress: () {
         //Navigator.pop(context);
         if (lessonOpenViewModel.done) {
-          lessonOpenViewModel.returnToMenu(context, menuViewModel);
+          Navigator.popUntil(context, (route) => route.isFirst);
         }
       },
       text: 'Back',
