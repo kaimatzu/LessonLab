@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_import_export/lesson_export_connection_orchestrator.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/lesson_open_connection_orchestrator.dart';
 import 'package:file_selector/file_selector.dart';
@@ -7,6 +8,7 @@ import 'dart:developer' as developer;
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/lesson_open_model.dart';
 
 import 'package:markdown/markdown.dart' as md;
+import 'package:quill_html_converter/quill_html_converter.dart';
 import 'package:rinf/rinf.dart';
 import 'package:lessonlab/messages/results/open_finished_lesson/open_lesson.pb.dart'
     as streamMessage;
@@ -23,7 +25,8 @@ class LessonOpenViewModel with ChangeNotifier {
       _lessonExportConnectionOrchestrator;
   final _statusCode = 0;
   late final int _lessonId;
-  
+  late QuillController quillController;
+
   bool _done = true;
   bool get done => _done;
   set done(bool value) {
@@ -56,9 +59,14 @@ class LessonOpenViewModel with ChangeNotifier {
   //   developer.log(">>> regenerate");
   // }
 
-  Future<void> returnToMenu(BuildContext context) async {
-    // await _lessonOpenConnectionOrchestrator.saveLesson(lessonContent); // TODO: Fix later
-    developer.log("Lesson content: $lessonContent");
+  Future<void> returnToMenu(BuildContext context, MenuViewModel menuViewModel) async {
+    var delta = quillController.document.toDelta();
+    lessonContent = delta.toHtml();
+    await _lessonOpenConnectionOrchestrator.saveLesson(lessonContent, _lessonId);
+
+    developer.log("Load menu content");
+    await menuViewModel.loadViewContent();
+
     // ignore: use_build_context_synchronously
     Navigator.restorablePushNamed(
       context,
@@ -113,35 +121,36 @@ class LessonOpenViewModel with ChangeNotifier {
     if(dialogContent != null) {
       debugPrint("Opened lesson stream from flutter...");
       _lessonOpenConnectionOrchestrator.reopenLessonStream(dialogContent, _lessonId, content: lessonContent);
-    }
-    var selection = controller.selection;
-    late StreamSubscription<RustSignal> streamSubscription;
 
-    // var mdDocument = md.Document(
-    //   encodeHtml: false,
-    //   extensionSet: md.ExtensionSet.gitHubFlavored,
-    // );
+      var selection = controller.selection;
+      late StreamSubscription<RustSignal> streamSubscription;
 
-    controller.document.delete(selection.start, selection.extentOffset - selection.baseOffset);
-    controller.moveCursorToPosition(selection.start);
-    var currentCursorPos = selection.start;
-    streamSubscription = rustBroadcaster.stream
-      .where((rustSignal) => rustSignal.resource == streamMessage.ID)
-      .listen((RustSignal rustSignal) {
-      // Handle the stream data here
-      final signal = streamMessage.StateSignal.fromBuffer(rustSignal.message!);
-      final rinfMessage = signal.streamMessage;
-      if (rinfMessage == "[LL_END_STREAM]") {
-        streamSubscription.cancel();
-        doneGeneratingNotifier.value = true;
-      } else{
-        debugPrint("In open lesson: $rinfMessage");
-        controller.document.insert(currentCursorPos, rinfMessage);    
-        currentCursorPos += rinfMessage.length;
-        controller.moveCursorToPosition(currentCursorPos);
+      // var mdDocument = md.Document(
+      //   encodeHtml: false,
+      //   extensionSet: md.ExtensionSet.gitHubFlavored,
+      // );
+
+      controller.document.delete(selection.start, selection.extentOffset - selection.baseOffset);
+      controller.moveCursorToPosition(selection.start);
+      var currentCursorPos = selection.start;
+      streamSubscription = rustBroadcaster.stream
+        .where((rustSignal) => rustSignal.resource == streamMessage.ID)
+        .listen((RustSignal rustSignal) {
+        // Handle the stream data here
+        final signal = streamMessage.StateSignal.fromBuffer(rustSignal.message!);
+        final rinfMessage = signal.streamMessage;
+        if (rinfMessage == "[LL_END_STREAM]") {
+          streamSubscription.cancel();
+          doneGeneratingNotifier.value = true;
+        } else{
+          debugPrint("In open lesson: $rinfMessage");
+          controller.document.insert(currentCursorPos, rinfMessage);    
+          currentCursorPos += rinfMessage.length;
+          controller.moveCursorToPosition(currentCursorPos);
+        }
+      });
+      controller.notifyListeners();
       }
-    });
-    controller.notifyListeners();
   }
 
   Future<String?> createInstructionDialog(BuildContext context) async {

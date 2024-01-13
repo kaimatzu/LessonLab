@@ -10,6 +10,7 @@ message ReadResponse {
     string title = 2;
     string md_content = 3;
 	string error_string = 4;
+    uint32 lesson_id = 5;
 }
 
 message StateSignal { string stream_message = 1; }
@@ -20,5 +21,16 @@ message CreateRequest {
 }
 
 message CreateResponse {
+    uint32 status_code = 1;
+}
+
+message UpdateRequest {
+    bool req = 1;
+    string content_to_regenerate = 2;
+    string additional_commands = 3;
+    uint32 lesson_id = 4;
+}
+
+message UpdateResponse {
     uint32 status_code = 1;
 }

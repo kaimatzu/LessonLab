@@ -49,77 +49,26 @@ class _TextEditor extends State<TextEditor> {
   var markdownContent = "";
   @override
   void initState() {
-    // final lessonOpenViewModel = context.watch<LessonOpenViewModel>(); // PROBLEM HERE
     super.initState();
 
-    var mdDocument = md.Document(
-        encodeHtml: false,
-        extensionSet: md.ExtensionSet.gitHubFlavored,
-        // you can add custom syntax.
-        blockSyntaxes: [const EmbeddableTableSyntax()]);
-
-    final mdToDelta = MarkdownToDelta(
-      markdownDocument: mdDocument,
-    );
-
-    _controller.document =
-        Document.fromDelta(mdToDelta.convert(widget.contents));
-
-    // // Start listening to the stream in initState
-    // streamSubscription = rustBroadcaster.stream
-    //     .where((rustSignal) => rustSignal.resource == streamMessage.ID)
-    //     .listen((RustSignal rustSignal) {
-    //   // Handle the stream data here
-    //   final signal = streamMessage.StateSignal.fromBuffer(rustSignal.message!);
-    //   final rinfMessage = signal.streamMessage;
-    //   debugPrint(rinfMessage);
-    //   if (rinfMessage == "[LL_END_STREAM]") {
-    //     _doneGenerating = true;
-    //     // lessonResultViewModel.done = true;
-    //   } else {
-    //     markdownContent += rinfMessage;
-    //     if(markdownContent.isNotEmpty) {
-    //       _controller.document = Document.fromDelta(mdToDelta.convert(markdownContent));
-    //     }
-    //     // _controller.document.insert(_controller.plainTextEditingValue.text.length - 1, rinfMessage);
-    //   }
-    //   setState(() {
-    //     // message = rinfMessage;
-    //   });
-    // });
+    _controller.document = Document.fromDelta(Document.fromHtml(widget.contents));
   }
 
   @override
   Widget build(BuildContext context) {
     final lessonOpenViewModel = context.watch<LessonOpenViewModel>();
-
-    // var message = "";
+    
     lessonOpenViewModel.lessonContent = _controller.document.toPlainText();
+    lessonOpenViewModel.quillController = _controller;
 
     _doneGeneratingNotifier.addListener(() {
-      debugPrint("Value changed into ${_doneGeneratingNotifier.value}");
+      var delta = _controller.document.toDelta();
+      // lessonOpenViewModel.lessonContent = deltaToMd.convert(delta); // This crashes for some reason
+      lessonOpenViewModel.lessonContent = delta.toHtml();
       lessonOpenViewModel.done = _doneGeneratingNotifier.value;
+      debugPrint("Value changed to: ${lessonOpenViewModel.done}");
     });
 
-    var mdDocument = md.Document(
-        encodeHtml: false,
-        extensionSet: md.ExtensionSet.gitHubFlavored,
-        // you can add custom syntax.
-        blockSyntaxes: [const EmbeddableTableSyntax()]);
-
-    final mdToDelta = MarkdownToDelta(
-      markdownDocument: mdDocument,
-
-      // // you can add custom attributes based on tags
-      // customElementToBlockAttribute: {
-      //   'h4': (element) => [HeaderAttribute(level: 4)],
-      // },
-      // // custom embed
-      // customElementToEmbeddable: {
-      //   EmbeddableTable.tableType: EmbeddableTable.fromMdSyntax,
-      // },
-    );
-  
     // const markdown = "# test";
 
     // var html = md.markdownToHtml(markdown);
@@ -385,8 +334,7 @@ class _TextEditor extends State<TextEditor> {
 
   @override
   void dispose() {
-    // Cancel the stream subscription in dispose
-    // streamSubscription.cancel();
+    _doneGeneratingNotifier.dispose();
     super.dispose();
   }
 }

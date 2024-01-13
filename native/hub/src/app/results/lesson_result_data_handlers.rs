@@ -24,7 +24,7 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
     lesson_specifications_data_object: &mut tokio::sync::MutexGuard<'_, LessonSpecificationsDataObject>,
     settings_save_directory_data_object: &mut tokio::sync::MutexGuard<'_, SettingsDataObject>,
     menu_data_object: &mut tokio::sync::MutexGuard<'_, MenuDataObject>) -> RustResponse {
-    use crate::messages::results::view_lesson_result::load_lesson::{CreateRequest, CreateResponse, ReadRequest, ReadResponse};
+    use crate::messages::results::view_lesson_result::load_lesson::{CreateRequest, CreateResponse, ReadRequest, ReadResponse, UpdateRequest, UpdateResponse};
 
     match rust_request.operation {
         RustOperation::Create => {
@@ -131,7 +131,8 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
                 status_code: StatusCode::OK.as_u16() as u32,
                 title: sanitized_title.to_string(),
                 md_content: "MOVED LESSON GENERATION".to_string(), // TODO: Need to remove this from rinf
-                error_string: String::from("No error")
+                error_string: String::from("No error"),
+                lesson_id: i
             };
 
             RustResponse {
@@ -140,7 +141,63 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
                 blob: None,
             }
         },
-        RustOperation::Update => RustResponse::default(),
+        RustOperation::Update => {
+            let message_bytes = rust_request.message.unwrap();
+            let request_message = UpdateRequest::decode(message_bytes.as_slice()).unwrap();
+
+            crate::debug_print!("Update called");
+
+            let content_to_regenerate = request_message.content_to_regenerate;
+            let additional_commands: String = request_message.additional_commands;
+            let lesson_id = request_message.lesson_id;
+
+            let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
+            let config_file_path_temp = settings_save_directory_data_object.save_directory.clone();
+            config_file_path.push_str("\\config.json");
+            // File path of target/output.md
+
+            match get_lesson_by_id(&config_file_path, lesson_id) {
+                Ok(Some(lesson)) => {
+                    // Found the lesson, do something with it
+                    crate::debug_print!("{:#?}", lesson);
+                    let target_folder_path = format!("{}\\{}", &config_file_path_temp, &lesson.title);
+                    crate::debug_print!("{}", target_folder_path);
+                    crate::debug_print!("From update!");
+
+                    tokio::spawn(create_regeneration_thread_handles(content_to_regenerate, additional_commands, target_folder_path));
+
+                    let response_message = UpdateResponse {
+                        status_code: StatusCode::OK.as_u16() as u32,
+                    };
+    
+                    return RustResponse {
+                        successful: true,
+                        message: Some(response_message.encode_to_vec()),
+                        blob: None,
+                    }
+                }
+                Ok(None) => {
+                    // Lesson with the specified ID not found
+                    crate::debug_print!("Lesson not found.");
+                }
+                Err(err) => {
+                    // Handle the error
+                    crate::debug_print!("Error: {}", err);
+                }
+            }
+
+            // tokio::spawn(create_regeneration_thread_handles(content_to_regenerate, additional_commands, target_folder_path));
+
+            let response_message = UpdateResponse {
+                status_code: StatusCode::OK.as_u16() as u32,
+            };
+
+            RustResponse {
+                successful: true,
+                message: Some(response_message.encode_to_vec()),
+                blob: None,
+            }
+        },
         RustOperation::Delete => RustResponse::default(),
     }
 }
@@ -231,6 +288,55 @@ pub async fn create_thread_handles(files: Vec<String>, urls: Vec<String>, index_
 
     println!("Finished.");
 }
+
+pub fn get_lesson_by_id(file_path: &str, lesson_id: u32) -> std::io::Result<Option<Lesson>> {
+    // Load all lessons in the config file and find the lesson with the specified ID
+    let root: Root = {
+        let mut file = File::open(file_path)?;
+        let mut contents = String::new();
+        file.read_to_string(&mut contents)?;
+
+        serde_json::from_str(&contents).unwrap_or_else(|e| {
+            crate::debug_print!("Failed to deserialize Root.");
+            panic!("Error deserializing Root: {}", e);
+        })
+    };
+
+    // Find the lesson with the specified ID
+    let lesson = root
+        .menu_data_object
+        .lessons_data_object
+        .lessons
+        .iter()
+        .find(|&l| l.id == lesson_id)
+        .cloned(); // Clone the found lesson to return
+
+    Ok(lesson)
+}
+
+pub async fn create_regeneration_thread_handles(content_to_regenerate: String, additional_instructions: String, index_path: String) {
+    // Create a thread for reading inproc stream concurrently
+    let stream_handle = std::thread::spawn(move || {
+        let _ = read_tcp_stream();
+        println!("Finished server thread.");
+    });
+
+    // Create a thread for generating the lesson
+    let generation_handle = std::thread::spawn(move || {
+        if let Err(err) = lesson_generator::regenerate_lesson_stream(content_to_regenerate, additional_instructions, index_path) {
+            eprintln!("Error generating lesson stream: {}\n", err);
+            // Handle the error as needed
+        }
+        println!("Finished generation thread.");
+    });
+
+    // Wait for the generation thread to finish
+    generation_handle.join().unwrap();
+    stream_handle.join().unwrap();
+
+    println!("Finished.");
+}
+
 
 pub fn write_lesson_to_config_file(current_lesson: &Lesson, file_path: &str) -> std::io::Result<()> {
     // crate::debug_print!("Deserializing...");
