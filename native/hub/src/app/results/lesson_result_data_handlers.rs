@@ -6,6 +6,7 @@ use crate::bridge::{RustOperation, RustRequest, RustResponse, RustSignal};
 use crate::messages::entry::upload::uploaded_content;
 use prost::Message;
 use tokio_with_wasm::tokio;
+use tokio_with_wasm::tokio::sync::Mutex;
 
 use std::fs::{OpenOptions, create_dir_all, File};
 use std::io::{self, Write, Read};
@@ -17,6 +18,8 @@ use crate::app::lesson::lesson_specifications_data_object::LessonSpecificationsD
 use crate::app::results::lesson_result_data_object::{LessonResultDataObject, Sources};
 
 use crate::app::global_objects::lessons_data_object::{Lesson, LessonsDataObject};
+
+use std::sync::Arc;
 
 // Handler functions
 pub async fn handle_lesson_generation(rust_request: RustRequest,
@@ -60,6 +63,13 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
                 }
             }
 
+            //Reset data objects
+            upload_sources_data_object.file_paths.clear();
+            upload_sources_data_object.urls.clear();
+            upload_sources_data_object.text_files.clear();
+
+            lesson_specifications_data_object.lesson_specifications.clear();
+            
             let response_message = CreateResponse{
                 status_code: StatusCode::OK.as_u16() as u32,
             };
@@ -126,6 +136,7 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
 
             // Spawning the thread for creating the lesson
             tokio::spawn(create_thread_handles(upload_sources_data_object.file_paths.clone(), upload_sources_data_object.urls.clone(), target_folder_path, lesson_specifications_data_object.lesson_specifications.clone()));
+            
 
             let response_message = ReadResponse {
                 status_code: StatusCode::OK.as_u16() as u32,
