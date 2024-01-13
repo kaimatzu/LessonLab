@@ -113,12 +113,12 @@ class LessonOpenViewModel with ChangeNotifier {
   }
 
   Future<void> regenerateSection(BuildContext context, String lessonContent, QuillController controller, ValueNotifier<bool> doneGeneratingNotifier) async {
-    doneGeneratingNotifier.value = false;
     debugPrint("Lesson content to regenerate: $lessonContent");
     var dialogContent = await createInstructionDialog(context);
     debugPrint("Dialog content: $dialogContent");
     // _lessonOpenConnectionOrchestrator.
     if(dialogContent != null) {
+      doneGeneratingNotifier.value = false;
       debugPrint("Opened lesson stream from flutter...");
       _lessonOpenConnectionOrchestrator.reopenLessonStream(dialogContent, _lessonId, content: lessonContent);
 
@@ -150,7 +150,41 @@ class LessonOpenViewModel with ChangeNotifier {
         }
       });
       controller.notifyListeners();
-      }
+    }
+  }
+
+  Future<void> continueLessonFromHere(BuildContext context, QuillController controller, ValueNotifier<bool> doneGeneratingNotifier) async {
+    var dialogContent = await createInstructionDialog(context);
+    debugPrint("Dialog content: $dialogContent");
+
+    if(dialogContent != null) {
+      doneGeneratingNotifier.value = false;
+      debugPrint("Opened lesson stream from flutter...");
+      _lessonOpenConnectionOrchestrator.reopenLessonStream(dialogContent, _lessonId);
+
+      var selection = controller.selection;
+      late StreamSubscription<RustSignal> streamSubscription;
+
+      controller.moveCursorToPosition(selection.start);
+      var currentCursorPos = selection.start;
+      streamSubscription = rustBroadcaster.stream
+        .where((rustSignal) => rustSignal.resource == streamMessage.ID)
+        .listen((RustSignal rustSignal) {
+        // Handle the stream data here
+        final signal = streamMessage.StateSignal.fromBuffer(rustSignal.message!);
+        final rinfMessage = signal.streamMessage;
+        if (rinfMessage == "[LL_END_STREAM]") {
+          streamSubscription.cancel();
+          doneGeneratingNotifier.value = true;
+        } else{
+          debugPrint("In open lesson: $rinfMessage");
+          controller.document.insert(currentCursorPos, rinfMessage);    
+          currentCursorPos += rinfMessage.length;
+          controller.moveCursorToPosition(currentCursorPos);
+        }
+      });
+      controller.notifyListeners();
+    }
   }
 
   Future<String?> createInstructionDialog(BuildContext context) async {

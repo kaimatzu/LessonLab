@@ -18,23 +18,23 @@ class _LessonOpenViewState extends State<LessonOpenView> {
   bool _isInitialized = false;
 
   @override
-    void didChangeDependencies() {
-      super.didChangeDependencies();
-      debugPrint("DEP CHANGE");
-      
-      // Check if the initialization has already been performed
-      if (!_isInitialized) {
-        final lessonOpenViewModel = context.watch<LessonOpenViewModel>();
-        _isInitialized = true;
-        lessonOpenViewModel.initialize();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    debugPrint("DEP CHANGE");
+    
+    // Check if the initialization has already been performed
+    if (!_isInitialized) {
+      final lessonOpenViewModel = context.watch<LessonOpenViewModel>();
+      _isInitialized = true;
+      lessonOpenViewModel.initialize();
 
-        final int? id = ModalRoute.of(context)!.settings.arguments as int?;
-        
-        if (id != null) {
-          lessonOpenViewModel.loadViewContent(id);
-        }
+      final int? id = ModalRoute.of(context)!.settings.arguments as int?;
+      
+      if (id != null) {
+        lessonOpenViewModel.loadViewContent(id);
       }
     }
+  }
 
   @override
   Widget build(BuildContext context) {
