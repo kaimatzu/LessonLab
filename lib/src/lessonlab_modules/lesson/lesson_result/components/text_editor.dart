@@ -50,6 +50,7 @@ class _TextEditor extends State<TextEditor> {
   late StreamSubscription<RustSignal> streamSubscription;
   late ScrollController _scrollController;
   final deltaToMd = DeltaToMarkdown();
+  final deltaToMd = DeltaToMarkdown();
 
   String message = "Nothing received yet";
   var markdownContent = "";
@@ -78,6 +79,11 @@ class _TextEditor extends State<TextEditor> {
     // var message = "";
 
     _doneGeneratingNotifier.addListener(() {
+      var delta = _controller.document.toDelta();
+      // lessonResultViewModel.lessonContent = deltaToMd.convert(delta); // This crashes for some reason
+      lessonResultViewModel.lessonContent = delta.toHtml();
+      lessonResultViewModel.done = _doneGeneratingNotifier.value;
+      debugPrint("Value changed to: ${lessonResultViewModel.done}");
       var delta = _controller.document.toDelta();
       // lessonResultViewModel.lessonContent = deltaToMd.convert(delta); // This crashes for some reason
       lessonResultViewModel.lessonContent = delta.toHtml();
