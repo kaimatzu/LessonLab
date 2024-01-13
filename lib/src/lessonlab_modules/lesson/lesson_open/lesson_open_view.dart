@@ -66,7 +66,7 @@ class LessonOpenView extends StatelessWidget {
       handlePress: () {
         if (lessonOpenViewModel.done) {
           menuViewModel.loadViewContent();
-          lessonOpenViewModel.returnToMenu(context);
+          lessonOpenViewModel.returnToMenu(context, menuViewModel);
         }
       },
       text: 'Save and Finish',
@@ -78,7 +78,7 @@ class LessonOpenView extends StatelessWidget {
       handlePress: () {
         //Navigator.pop(context);
         if (lessonOpenViewModel.done) {
-          lessonOpenViewModel.returnToMenu(context);
+          lessonOpenViewModel.returnToMenu(context, menuViewModel);
         }
       },
       text: 'Back',

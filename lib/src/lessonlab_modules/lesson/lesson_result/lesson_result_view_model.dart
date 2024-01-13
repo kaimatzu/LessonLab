@@ -28,6 +28,7 @@ class LessonResultViewModel with ChangeNotifier {
   final _statusCode = 0;
   late final int _lessonId;
   late QuillController quillController;
+  
   bool _done = false;
   bool get done => _done;
   set done(bool value) {

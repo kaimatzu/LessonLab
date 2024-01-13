@@ -77,30 +77,6 @@ class _TextEditor extends State<TextEditor> {
     lessonResultViewModel.quillController = _controller;
     // var message = "";
 
-    var mdDocument = md.Document(
-      encodeHtml: false,
-      extensionSet: md.ExtensionSet.gitHubFlavored,
-      // you can add custom syntax.
-      blockSyntaxes: [const EmbeddableTableSyntax()],
-    );
-
-    // final mdToDelta = MarkdownToDelta(
-    //   markdownDocument: mdDocument,
-
-    //   // // you can add custom attributes based on tags
-    //   // customElementToBlockAttribute: {
-    //   //   'h4': (element) => [HeaderAttribute(level: 4)],
-    //   // },
-    //   // // custom embed
-    //   // customElementToEmbeddable: {
-    //   //   EmbeddableTable.tableType: EmbeddableTable.fromMdSyntax,
-    //   // },
-    // );
-
-    
-
-    
-
     _doneGeneratingNotifier.addListener(() {
       var delta = _controller.document.toDelta();
       // lessonResultViewModel.lessonContent = deltaToMd.convert(delta); // This crashes for some reason
@@ -353,9 +329,7 @@ class _TextEditor extends State<TextEditor> {
 
   @override
   void dispose() {
-    // Cancel the stream subscription in dispose
     _doneGeneratingNotifier.dispose();
-    streamSubscription.cancel();
     super.dispose();
   }
 

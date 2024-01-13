@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_import_export/lesson_export_connection_orchestrator.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/lesson_open_connection_orchestrator.dart';
 import 'package:file_selector/file_selector.dart';
@@ -7,6 +8,7 @@ import 'dart:developer' as developer;
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/lesson_open_model.dart';
 
 import 'package:markdown/markdown.dart' as md;
+import 'package:quill_html_converter/quill_html_converter.dart';
 import 'package:rinf/rinf.dart';
 import 'package:lessonlab/messages/results/open_finished_lesson/open_lesson.pb.dart'
     as streamMessage;
@@ -23,7 +25,8 @@ class LessonOpenViewModel with ChangeNotifier {
       _lessonExportConnectionOrchestrator;
   final _statusCode = 0;
   late final int _lessonId;
-  
+  late QuillController quillController;
+
   bool _done = true;
   bool get done => _done;
   set done(bool value) {
@@ -56,9 +59,14 @@ class LessonOpenViewModel with ChangeNotifier {
   //   developer.log(">>> regenerate");
   // }
 
-  Future<void> returnToMenu(BuildContext context) async {
-    // await _lessonOpenConnectionOrchestrator.saveLesson(lessonContent); // TODO: Fix later
-    developer.log("Lesson content: $lessonContent");
+  Future<void> returnToMenu(BuildContext context, MenuViewModel menuViewModel) async {
+    var delta = quillController.document.toDelta();
+    lessonContent = delta.toHtml();
+    await _lessonOpenConnectionOrchestrator.saveLesson(lessonContent, _lessonId);
+
+    developer.log("Load menu content");
+    await menuViewModel.loadViewContent();
+
     // ignore: use_build_context_synchronously
     Navigator.restorablePushNamed(
       context,

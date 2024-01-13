@@ -18,6 +18,7 @@ message StateSignal { string stream_message = 1; }
 
 message CreateRequest {
     string lesson_content = 1;
+    uint32 lesson_id = 4;
 }
 
 message CreateResponse {
