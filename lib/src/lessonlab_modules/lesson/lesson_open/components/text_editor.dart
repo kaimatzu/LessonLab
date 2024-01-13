@@ -52,18 +52,18 @@ class _TextEditor extends State<TextEditor> {
     // final lessonOpenViewModel = context.watch<LessonOpenViewModel>(); // PROBLEM HERE
     super.initState();
 
-    var mdDocument = md.Document(
-        encodeHtml: false,
-        extensionSet: md.ExtensionSet.gitHubFlavored,
-        // you can add custom syntax.
-        blockSyntaxes: [const EmbeddableTableSyntax()]);
+    // var mdDocument = md.Document(
+    //     encodeHtml: false,
+    //     extensionSet: md.ExtensionSet.gitHubFlavored,
+    //     // you can add custom syntax.
+    //     blockSyntaxes: [const EmbeddableTableSyntax()]);
 
-    final mdToDelta = MarkdownToDelta(
-      markdownDocument: mdDocument,
-    );
+    // final mdToDelta = MarkdownToDelta(
+    //   markdownDocument: mdDocument,
+    // );
 
-    _controller.document =
-        Document.fromDelta(mdToDelta.convert(widget.contents));
+    _controller.document = Document.fromDelta(Document.fromHtml(widget.contents));
+        // Document.fromDelta(mdToDelta.convert(widget.contents));
 
     // // Start listening to the stream in initState
     // streamSubscription = rustBroadcaster.stream
