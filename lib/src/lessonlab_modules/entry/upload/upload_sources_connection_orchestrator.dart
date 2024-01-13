@@ -8,6 +8,9 @@ import 'package:rinf/rinf.dart';
 
 class UploadSourcesConnectionOrchestrator {
   void sendData(UploadSourcesModel uploadModel) async {
+    developer.log(uploadModel.pdfFilePaths.map((file) => file.path).toList().toString() ,name: 'file');
+    developer.log(uploadModel.urls.toString(), name: 'url');
+    developer.log(uploadModel.texts.toString(), name: 'text');
     final requestMessage = RinfInterface.CreateRequest(
       filePaths: uploadModel.pdfFilePaths.map((file) => file.path).toList(),
       urls: uploadModel.urls,

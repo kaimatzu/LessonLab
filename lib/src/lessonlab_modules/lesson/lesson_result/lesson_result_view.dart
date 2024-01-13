@@ -7,10 +7,30 @@ import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_resu
 
 import 'dart:developer' as developer;
 
-class LessonResultView extends StatelessWidget {
+class LessonResultView extends StatefulWidget {
   const LessonResultView({Key? key}) : super(key: key);
 
   static const routeName = '/lesson_result';
+
+  @override
+  State<LessonResultView> createState() => _LessonResultViewState();
+}
+
+class _LessonResultViewState extends State<LessonResultView> {
+  bool _isInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    debugPrint("DEP CHANGE");
+    
+    // Check if the initialization has already been performed
+    if (!_isInitialized) {
+      final lessonResultViewModel = context.watch<LessonResultViewModel>();
+      _isInitialized = true;
+      lessonResultViewModel.initialize();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +38,10 @@ class LessonResultView extends StatelessWidget {
     final menuViewModel = context.watch<MenuViewModel>();
     // final lessonSpecificationsViewModel =
     //     context.watch<LessonSpecificationsViewModel>();
-
+    // if(!lessonResultViewModel.instantiated){
+    //   lessonResultViewModel.instantiated = true;
+    //   lessonResultViewModel.initialize();
+    // }
     var export = FutureBuilder<String>(
         future:
             Future.value(lessonResultViewModel.lessonResultModel.lesson.title),

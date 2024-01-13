@@ -18,25 +18,26 @@ import 'package:cross_file/cross_file.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/components/overlay/overlay_controller.dart';
 
 class UploadSourcesViewModel with ChangeNotifier {
-  // final _files = <XFile>[];
-  // List<XFile> get files => _files;
-
-  // final _urls = <String>[];
-  // List<String> get urls => _urls;
-
-  // final _textFiles = <TextFile>[];
-  // List<TextFile> get textFiles => _textFiles;
-
   final UploadSourcesModel _uploadModel = UploadSourcesModel();
   final UploadSourcesConnectionOrchestrator _uploadConnectionOrchestrator =
       UploadSourcesConnectionOrchestrator();
 
-  // var _statusCode = 0;
+  UploadSourcesViewModel () {
+    debugPrint("UploadSourcesViewModel created!");
+  }
 
   bool _hasFiles = false;
   bool get hasFiles => _hasFiles;
   set hasFiles(bool value) {
     _hasFiles = value;
+  }
+
+  void reset() {
+    _uploadModel.pdfFilePaths.clear();
+    _uploadModel.urls.clear();
+    _uploadModel.texts.clear();
+    _hasFiles = false;
+    notifyListeners();
   }
 
   void getData() {
@@ -88,6 +89,7 @@ class UploadSourcesViewModel with ChangeNotifier {
     if (_hasFiles) {
       sendData();
       getData();
+      reset();
       Navigator.restorablePushNamed(
         context,
         LessonSpecificationsView.routeName,
@@ -99,6 +101,7 @@ class UploadSourcesViewModel with ChangeNotifier {
     if (_hasFiles) {
       sendData();
       getData();
+      reset();
       Navigator.restorablePushNamed(
         context,
         QuizSpecificationsView.routeName,
@@ -118,47 +121,3 @@ class UploadSourcesViewModel with ChangeNotifier {
     return _uploadModel.texts;
   }
 }
-
-  // Future<void> sendData() async {
-  //   final requestMessage = RinfInterface.CreateRequest(
-  //     filePaths: uploadModel.pdfFilePaths.map((file) => file.path).toList(),
-  //     urls: uploadModel.urls,
-  //     texts: uploadModel.texts
-  //         .map((text) => TextFile(title: text.title, content: text.content))
-  //         .toList(),
-  //   );
-  //   final rustRequest = RustRequest(
-  //     resource: RinfInterface.ID,
-  //     operation: RustOperation.Create,
-  //     message: requestMessage.writeToBuffer(),
-  //     // blob: NO BLOB
-  //   );
-  //   final rustResponse = await requestToRust(rustRequest);
-  //   final responseMessage = RinfInterface.CreateResponse.fromBuffer(
-  //     rustResponse.message!,
-  //   );
-  //   _statusCode = responseMessage.statusCode;
-  //   developer.log(_statusCode.toString(), name: 'rinf-info');
-  // }
-
-  // Future<void> getData() async {
-  //   // Debug purposes. Just to check if the uploaded files are stored in rust main().
-  //   final requestMessage = RinfInterface.ReadRequest(req: true);
-  //   final rustRequest = RustRequest(
-  //     resource: RinfInterface.ID,
-  //     operation: RustOperation.Read,
-  //     message: requestMessage.writeToBuffer(),
-  //     // blob: NO BLOB
-  //   );
-  //   final rustResponse = await requestToRust(rustRequest);
-  //   final responseMessage = RinfInterface.ReadResponse.fromBuffer(
-  //     rustResponse.message!,
-  //   );
-  //   var content = responseMessage.filePaths;
-  //   developer.log(content.join(), name: 'file');
-  //   content = responseMessage.urls;
-  //   developer.log(content.join(), name: 'url');
-  //   content = responseMessage.texts.map((e) => e.toString()).toList();
-  //   developer.log(content.join(), name: 'text');
-  // }
-

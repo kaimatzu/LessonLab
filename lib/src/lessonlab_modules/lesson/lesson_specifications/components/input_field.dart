@@ -93,7 +93,7 @@ class _InputFieldState extends State<InputField> {
 
   @override
   void dispose() {
-    widget.controller.dispose();
+    // widget.controller.dispose();
     super.dispose();
   }
 }

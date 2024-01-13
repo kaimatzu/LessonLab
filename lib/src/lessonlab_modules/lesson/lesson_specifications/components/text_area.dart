@@ -62,7 +62,7 @@ class _TextAreaState extends State<TextArea> {
 
   @override
   void dispose() {
-    widget.controller.dispose();
+    // widget.controller.dispose();
     super.dispose();
   }
 }

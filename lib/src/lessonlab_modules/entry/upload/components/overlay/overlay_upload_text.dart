@@ -36,8 +36,8 @@ class _OverlayUploadTextState extends State<OverlayUploadText> {
 
   @override
   void dispose() {
-    titleController.dispose();
-    contentController.dispose();
+    // titleController.dispose();
+    // contentController.dispose();
     super.dispose();
   }
 

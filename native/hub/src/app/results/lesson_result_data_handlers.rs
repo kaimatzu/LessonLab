@@ -69,7 +69,7 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
             upload_sources_data_object.text_files.clear();
 
             lesson_specifications_data_object.lesson_specifications.clear();
-            
+
             let response_message = CreateResponse{
                 status_code: StatusCode::OK.as_u16() as u32,
             };
@@ -89,7 +89,8 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
 
             let mut sources = Sources::default();
             
-
+            crate::debug_print!("Creating lesson result...");
+            
             for file_path in &upload_sources_data_object.file_paths {
                 sources.source_files.push(file_path.clone());
             }
@@ -269,8 +270,11 @@ pub fn read_tcp_stream() -> Result<(), Box<dyn std::error::Error>> {
     crate::debug_print!("loop broken");
     
     // Just to make sure that the socket is unbound for future operations.
-    let _ = socket.unbind("tcp://127.0.0.1:5555");
-    let _ = ctx.destroy();
+    if let Err(err) = socket.unbind("tcp://127.0.0.1:5555") {
+        // Log the error using the log crate
+        crate::debug_print!("Error during unbind: {}", err);
+    }
+    // let _ = ctx.destroy();
 
     Ok(())
 }
