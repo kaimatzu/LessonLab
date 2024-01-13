@@ -53,11 +53,21 @@ class _TextEditor extends State<TextEditor> {
 
   String message = "Nothing received yet";
   var markdownContent = "";
+  bool isTextSelected = false;
+
   @override
   void initState() {
     // final lessonResultViewModel = context.watch<LessonResultViewModel>(); // PROBLEM HERE
     super.initState();
     _scrollController = ScrollController();
+   _controller.addListener(() { 
+      if(isTextSelected != (_controller.selection.start != _controller.selection.end)){
+        setState(() {
+          isTextSelected = _controller.selection.start != _controller.selection.end;
+        });
+      }
+    });
+
     var mdDocument = md.Document(
         encodeHtml: false,
         extensionSet: md.ExtensionSet.gitHubFlavored,
@@ -72,18 +82,26 @@ class _TextEditor extends State<TextEditor> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     final lessonResultViewModel = context.watch<LessonResultViewModel>();
-    lessonResultViewModel.quillController = _controller;
-    // var message = "";
 
     _doneGeneratingNotifier.addListener(() {
       var delta = _controller.document.toDelta();
       // lessonResultViewModel.lessonContent = deltaToMd.convert(delta); // This crashes for some reason
       lessonResultViewModel.lessonContent = delta.toHtml();
-      lessonResultViewModel.done = _doneGeneratingNotifier.value;
-      debugPrint("Value changed to: ${lessonResultViewModel.done}");
+      setState(() {
+        lessonResultViewModel.done = _doneGeneratingNotifier.value;
+        debugPrint("Value changed to: ${lessonResultViewModel.done}");
+      });
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final lessonResultViewModel = context.watch<LessonResultViewModel>();
+    lessonResultViewModel.quillController = _controller;
+    // var message = "";
     // if (_doneGenerating) {
     //   lessonResultViewModel.done = true;
     // }
@@ -148,7 +166,8 @@ class _TextEditor extends State<TextEditor> {
             QuillToolbarCustomButtonOptions(
                 icon: Icon(Icons.restart_alt),
                 tooltip: "Regenerate",
-                iconTheme: QuillIconTheme(
+                iconTheme: isTextSelected && lessonResultViewModel.done ? 
+                QuillIconTheme(
                   iconButtonSelectedData: IconButtonData(
                     color: Color.fromARGB(255, 49, 51, 56),
                     style: IconButton.styleFrom(
@@ -163,57 +182,143 @@ class _TextEditor extends State<TextEditor> {
                           (196 + 255) ~/ 2, (27 + 255) ~/ 2),
                     ),
                   ),
+                ) :
+                QuillIconTheme(
+                  iconButtonSelectedData: IconButtonData(
+                    color: Color.fromARGB(255, 204, 208, 217),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                  iconButtonUnselectedData: IconButtonData(
+                    color: Color.fromARGB(255, 204, 208, 217),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
                 ),
                 onPressed: () {
-                  // quillPageNotifier.regenerateSection(_controller);
-                  lessonResultViewModel.regenerateSection(context, _controller.getPlainText(), _controller, _doneGeneratingNotifier);
+                  if(isTextSelected){
+                    lessonResultViewModel.regenerateSection(context, _controller.getPlainText(), _controller, _doneGeneratingNotifier);
+                  }
                 }),
             QuillToolbarCustomButtonOptions(
                 icon: Icon(Icons.add_outlined),
                 tooltip: "Continue lesson from this point",
+                iconTheme: !isTextSelected && lessonResultViewModel.done ? 
+                QuillIconTheme(
+                  iconButtonSelectedData: IconButtonData(
+                    color: Color.fromARGB(255, 49, 51, 56),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                  iconButtonUnselectedData: IconButtonData(
+                    color: Color.fromARGB(255, 49, 51, 56),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                ) :
+                QuillIconTheme(
+                  iconButtonSelectedData: IconButtonData(
+                    color: Color.fromARGB(255, 204, 208, 217),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                  iconButtonUnselectedData: IconButtonData(
+                    color: Color.fromARGB(255, 204, 208, 217),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                ),
                 onPressed: () {
-                  // quillPageNotifier.regenerateSection(_controller);
-                  debugPrint("Continue");
+                  if(!isTextSelected){
+                    lessonResultViewModel.continueLessonFromHere(context, _controller, _doneGeneratingNotifier);
+                  }
                 }),
             QuillToolbarCustomButtonOptions(
                 icon: Icon(Icons.picture_as_pdf_outlined),
                 tooltip: "Create PDF from lesson",
+                iconTheme: lessonResultViewModel.done ? 
+                QuillIconTheme(
+                  iconButtonSelectedData: IconButtonData(
+                    color: Color.fromARGB(255, 49, 51, 56),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                  iconButtonUnselectedData: IconButtonData(
+                    color: Color.fromARGB(255, 49, 51, 56),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                ) :
+                QuillIconTheme(
+                  iconButtonSelectedData: IconButtonData(
+                    color: Color.fromARGB(255, 204, 208, 217),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                  iconButtonUnselectedData: IconButtonData(
+                    color: Color.fromARGB(255, 204, 208, 217),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                ),
                 onPressed: () async {
-                  debugPrint(_controller.document.toDelta().toHtml());
-                  var widgets = await _controller.document.toDelta().toPdf();
-                  var filePath = './test/example.pdf';
-                  var file = File(filePath);
-                  final newpdf = htmlToPdf.Document();
-                  newpdf.addPage(htmlToPdf.MultiPage(
-                      maxPages: 200,
-                      theme: pw.ThemeData(
-                        defaultTextStyle: pw.TextStyle(fontSize: 12),
-                        paragraphStyle: pw.TextStyle(fontSize: 12),
-                        header0: pw.TextStyle(
-                            fontSize: 28, fontWeight: pw.FontWeight.bold),
-                        header1: pw.TextStyle(
-                            fontSize: 25, fontWeight: pw.FontWeight.bold),
-                        header2: pw.TextStyle(
-                            fontSize: 23, fontWeight: pw.FontWeight.bold),
-                        header3: pw.TextStyle(
-                            fontSize: 20, fontWeight: pw.FontWeight.bold),
-                        header4: pw.TextStyle(
-                            fontSize: 18, fontWeight: pw.FontWeight.bold),
-                        header5: pw.TextStyle(
-                            fontSize: 16, fontWeight: pw.FontWeight.bold),
-                        bulletStyle: pw.TextStyle(fontSize: 12),
-                        tableHeader: pw.TextStyle(
-                            fontSize: 12, fontWeight: pw.FontWeight.bold),
-                        tableCell: pw.TextStyle(fontSize: 12),
-                        softWrap: true,
-                        textAlign: pw.TextAlign.left,
-                        overflow: pw.TextOverflow.clip,
-                        maxLines: null, // Unlimited lines
-                      ),
-                      build: (context) {
-                        return widgets;
-                      }));
-                  await file.writeAsBytes(await newpdf.save());
+                  if(lessonResultViewModel.done){
+                    debugPrint(_controller.document.toDelta().toHtml());
+                    var widgets = await _controller.document.toDelta().toPdf();
+                    var filePath = './test/example.pdf';
+                    var file = File(filePath);
+                    final newpdf = htmlToPdf.Document();
+                    newpdf.addPage(htmlToPdf.MultiPage(
+                        maxPages: 200,
+                        theme: pw.ThemeData(
+                          defaultTextStyle: pw.TextStyle(fontSize: 12),
+                          paragraphStyle: pw.TextStyle(fontSize: 12),
+                          header0: pw.TextStyle(
+                              fontSize: 28, fontWeight: pw.FontWeight.bold),
+                          header1: pw.TextStyle(
+                              fontSize: 25, fontWeight: pw.FontWeight.bold),
+                          header2: pw.TextStyle(
+                              fontSize: 23, fontWeight: pw.FontWeight.bold),
+                          header3: pw.TextStyle(
+                              fontSize: 20, fontWeight: pw.FontWeight.bold),
+                          header4: pw.TextStyle(
+                              fontSize: 18, fontWeight: pw.FontWeight.bold),
+                          header5: pw.TextStyle(
+                              fontSize: 16, fontWeight: pw.FontWeight.bold),
+                          bulletStyle: pw.TextStyle(fontSize: 12),
+                          tableHeader: pw.TextStyle(
+                              fontSize: 12, fontWeight: pw.FontWeight.bold),
+                          tableCell: pw.TextStyle(fontSize: 12),
+                          softWrap: true,
+                          textAlign: pw.TextAlign.left,
+                          overflow: pw.TextOverflow.clip,
+                          maxLines: null, // Unlimited lines
+                        ),
+                        build: (context) {
+                          return widgets;
+                        }));
+                    await file.writeAsBytes(await newpdf.save());
+                  }
                 }),
           ]),
     );

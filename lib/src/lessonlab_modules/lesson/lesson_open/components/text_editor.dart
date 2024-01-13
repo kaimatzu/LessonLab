@@ -3,9 +3,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/lesson_open_view_model.dart';
-import 'package:markdown/markdown.dart' as md;
 import 'package:provider/provider.dart';
 import 'package:quill_html_converter/quill_html_converter.dart';
 import 'package:rinf/rinf.dart';
@@ -13,9 +11,7 @@ import 'package:lessonlab/messages/results/open_finished_lesson/open_lesson.pb.d
     as streamMessage;
 
 import 'package:flutter_quill/flutter_quill.dart';
-import 'package:flutter_quill/markdown_quill.dart';
 import 'package:htmltopdfwidgets/htmltopdfwidgets.dart' as htmlToPdf;
-import 'package:quill_html_converter/quill_html_converter.dart';
 import 'package:quill_pdf_converter/quill_pdf_converter.dart';
 // import 'package:pdf/src/widgets/page_theme.dart' as pdfTheme;
 // import 'package:pdf/pdf.dart' as pdf;
@@ -47,11 +43,37 @@ class _TextEditor extends State<TextEditor> {
   // late StreamSubscription<RustSignal> streamSubscription;
   String message = "Nothing received yet";
   var markdownContent = "";
+  bool isTextSelected = false;
+
+
   @override
   void initState() {
     super.initState();
 
     _controller.document = Document.fromDelta(Document.fromHtml(widget.contents));
+    _controller.addListener(() { 
+      if(isTextSelected != (_controller.selection.start != _controller.selection.end)){
+        setState(() {
+          isTextSelected = _controller.selection.start != _controller.selection.end;
+        });
+      }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final lessonOpenViewModel = context.watch<LessonOpenViewModel>();
+
+    _doneGeneratingNotifier.addListener(() {
+      var delta = _controller.document.toDelta();
+      // lessonOpenViewModel.lessonContent = deltaToMd.convert(delta); // This crashes for some reason
+      lessonOpenViewModel.lessonContent = delta.toHtml();
+      setState(() {
+        lessonOpenViewModel.done = _doneGeneratingNotifier.value;
+        debugPrint("Value changed to: ${lessonOpenViewModel.done}");
+      });
+    });
   }
 
   @override
@@ -61,14 +83,7 @@ class _TextEditor extends State<TextEditor> {
     lessonOpenViewModel.lessonContent = _controller.document.toPlainText();
     lessonOpenViewModel.quillController = _controller;
 
-    _doneGeneratingNotifier.addListener(() {
-      var delta = _controller.document.toDelta();
-      // lessonOpenViewModel.lessonContent = deltaToMd.convert(delta); // This crashes for some reason
-      lessonOpenViewModel.lessonContent = delta.toHtml();
-      lessonOpenViewModel.done = _doneGeneratingNotifier.value;
-      debugPrint("Value changed to: ${lessonOpenViewModel.done}");
-    });
-
+    
     // const markdown = "# test";
 
     // var html = md.markdownToHtml(markdown);
@@ -129,7 +144,8 @@ class _TextEditor extends State<TextEditor> {
             QuillToolbarCustomButtonOptions(
                 icon: Icon(Icons.restart_alt),
                 tooltip: "Regenerate",
-                iconTheme: QuillIconTheme(
+                iconTheme: isTextSelected && lessonOpenViewModel.done ? 
+                QuillIconTheme(
                   iconButtonSelectedData: IconButtonData(
                     color: Color.fromARGB(255, 49, 51, 56),
                     style: IconButton.styleFrom(
@@ -144,58 +160,144 @@ class _TextEditor extends State<TextEditor> {
                           (196 + 255) ~/ 2, (27 + 255) ~/ 2),
                     ),
                   ),
+                ) :
+                QuillIconTheme(
+                  iconButtonSelectedData: IconButtonData(
+                    color: Color.fromARGB(255, 204, 208, 217),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                  iconButtonUnselectedData: IconButtonData(
+                    color: Color.fromARGB(255, 204, 208, 217),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
                 ),
                 onPressed: () {
-                  lessonOpenViewModel.regenerateSection(context, _controller.getPlainText(), _controller, _doneGeneratingNotifier);
+                  if(isTextSelected && lessonOpenViewModel.done){
+                    lessonOpenViewModel.regenerateSection(context, _controller.getPlainText(), _controller, _doneGeneratingNotifier);
+                  }
                   // lessonOpenViewModel.createInstructionDialog(context);
                 }),
             QuillToolbarCustomButtonOptions(
                 icon: Icon(Icons.add_outlined),
                 tooltip: "Continue lesson from this point",
+                iconTheme: !isTextSelected && lessonOpenViewModel.done ? 
+                QuillIconTheme(
+                  iconButtonSelectedData: IconButtonData(
+                    color: Color.fromARGB(255, 49, 51, 56),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                  iconButtonUnselectedData: IconButtonData(
+                    color: Color.fromARGB(255, 49, 51, 56),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                ) :
+                QuillIconTheme(
+                  iconButtonSelectedData: IconButtonData(
+                    color: Color.fromARGB(255, 204, 208, 217),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                  iconButtonUnselectedData: IconButtonData(
+                    color: Color.fromARGB(255, 204, 208, 217),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                ),
                 onPressed: () {
-                  // quillPageNotifier.regenerateSection(_controller);
-                  
-                  debugPrint("Continue");
+                  if(!isTextSelected && lessonOpenViewModel.done ){
+                    lessonOpenViewModel.continueLessonFromHere(context, _controller, _doneGeneratingNotifier);
+                  }
                 }),
             QuillToolbarCustomButtonOptions(
                 icon: Icon(Icons.picture_as_pdf_outlined),
                 tooltip: "Create PDF from lesson",
+                iconTheme: lessonOpenViewModel.done ? 
+                QuillIconTheme(
+                  iconButtonSelectedData: IconButtonData(
+                    color: Color.fromARGB(255, 49, 51, 56),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                  iconButtonUnselectedData: IconButtonData(
+                    color: Color.fromARGB(255, 49, 51, 56),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                ) :
+                QuillIconTheme(
+                  iconButtonSelectedData: IconButtonData(
+                    color: Color.fromARGB(255, 204, 208, 217),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                  iconButtonUnselectedData: IconButtonData(
+                    color: Color.fromARGB(255, 204, 208, 217),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
+                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                    ),
+                  ),
+                ),
                 onPressed: () async {
-                  debugPrint(_controller.document.toDelta().toHtml());
-                  var widgets = await _controller.document.toDelta().toPdf();
-                  var filePath = './test/example.pdf';
-                  var file = File(filePath);
-                  final newpdf = htmlToPdf.Document();
-                  newpdf.addPage(htmlToPdf.MultiPage(
-                      maxPages: 200,
-                      theme: pw.ThemeData(
-                        defaultTextStyle: pw.TextStyle(fontSize: 12),
-                        paragraphStyle: pw.TextStyle(fontSize: 12),
-                        header0: pw.TextStyle(
-                            fontSize: 28, fontWeight: pw.FontWeight.bold),
-                        header1: pw.TextStyle(
-                            fontSize: 25, fontWeight: pw.FontWeight.bold),
-                        header2: pw.TextStyle(
-                            fontSize: 23, fontWeight: pw.FontWeight.bold),
-                        header3: pw.TextStyle(
-                            fontSize: 20, fontWeight: pw.FontWeight.bold),
-                        header4: pw.TextStyle(
-                            fontSize: 18, fontWeight: pw.FontWeight.bold),
-                        header5: pw.TextStyle(
-                            fontSize: 16, fontWeight: pw.FontWeight.bold),
-                        bulletStyle: pw.TextStyle(fontSize: 12),
-                        tableHeader: pw.TextStyle(
-                            fontSize: 12, fontWeight: pw.FontWeight.bold),
-                        tableCell: pw.TextStyle(fontSize: 12),
-                        softWrap: true,
-                        textAlign: pw.TextAlign.left,
-                        overflow: pw.TextOverflow.clip,
-                        maxLines: null, // Unlimited lines
-                      ),
-                      build: (context) {
-                        return widgets;
-                      }));
-                  await file.writeAsBytes(await newpdf.save());
+                  if(lessonOpenViewModel.done){
+                    debugPrint(_controller.document.toDelta().toHtml());
+                    var widgets = await _controller.document.toDelta().toPdf();
+                    var filePath = './test/example.pdf';
+                    var file = File(filePath);
+                    final newpdf = htmlToPdf.Document();
+                    newpdf.addPage(htmlToPdf.MultiPage(
+                        maxPages: 200,
+                        theme: pw.ThemeData(
+                          defaultTextStyle: pw.TextStyle(fontSize: 12),
+                          paragraphStyle: pw.TextStyle(fontSize: 12),
+                          header0: pw.TextStyle(
+                              fontSize: 28, fontWeight: pw.FontWeight.bold),
+                          header1: pw.TextStyle(
+                              fontSize: 25, fontWeight: pw.FontWeight.bold),
+                          header2: pw.TextStyle(
+                              fontSize: 23, fontWeight: pw.FontWeight.bold),
+                          header3: pw.TextStyle(
+                              fontSize: 20, fontWeight: pw.FontWeight.bold),
+                          header4: pw.TextStyle(
+                              fontSize: 18, fontWeight: pw.FontWeight.bold),
+                          header5: pw.TextStyle(
+                              fontSize: 16, fontWeight: pw.FontWeight.bold),
+                          bulletStyle: pw.TextStyle(fontSize: 12),
+                          tableHeader: pw.TextStyle(
+                              fontSize: 12, fontWeight: pw.FontWeight.bold),
+                          tableCell: pw.TextStyle(fontSize: 12),
+                          softWrap: true,
+                          textAlign: pw.TextAlign.left,
+                          overflow: pw.TextOverflow.clip,
+                          maxLines: null, // Unlimited lines
+                        ),
+                        build: (context) {
+                          return widgets;
+                        }));
+                    await file.writeAsBytes(await newpdf.save());
+                  }
                 }),
           ]),
     );

@@ -38,11 +38,21 @@ pub fn regenerate_lesson_stream(content_to_regenerate: String, additional_instru
             "lesson_generator",
         )?;
 
-        let generated_lesson: String = lesson_generator
-        .getattr("rust_callback_regenerate_lesson")?
-        .call((content_to_regenerate, additional_instructions, index_path), None)?
-        .extract()?;
+        if content_to_regenerate.is_empty(){
+            let generated_lesson: String = lesson_generator
+            .getattr("rust_callback_continue_lesson")?
+            .call((additional_instructions, index_path), None)?
+            .extract()?;
 
-        Ok(generated_lesson)
+            Ok(generated_lesson)
+        }
+        else{
+            let generated_lesson: String = lesson_generator
+            .getattr("rust_callback_regenerate_lesson")?
+            .call((content_to_regenerate, additional_instructions, index_path), None)?
+            .extract()?;
+
+            Ok(generated_lesson)
+        }
     })
 }

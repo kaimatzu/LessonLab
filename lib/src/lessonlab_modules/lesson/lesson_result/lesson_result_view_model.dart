@@ -124,28 +124,63 @@ class LessonResultViewModel with ChangeNotifier {
     }
   }
 
-    Future<void> regenerateSection(BuildContext context, String lessonContent, QuillController controller, ValueNotifier<bool> doneGeneratingNotifier) async {
+  Future<void> regenerateSection(BuildContext context, String lessonContent, QuillController controller, ValueNotifier<bool> doneGeneratingNotifier) async {
+    debugPrint("Lesson content to regenerate: $lessonContent");
+    var dialogContent = await createInstructionDialog(context);
+    debugPrint("Dialog content: $dialogContent");
+    // _lessonOpenConnectionOrchestrator.
+    if(dialogContent != null) {
       doneGeneratingNotifier.value = false;
-      debugPrint("Lesson content to regenerate: $lessonContent");
-      var dialogContent = await createInstructionDialog(context);
-      debugPrint("Dialog content: $dialogContent");
-      // _lessonOpenConnectionOrchestrator.
-      if(dialogContent != null) {
-        debugPrint("Opened lesson stream from flutter...");
-        _lessonResultConnectionOrchestrator.reopenLessonStream(dialogContent, _lessonId, content: lessonContent);
+      debugPrint("Opened lesson stream from flutter...");
+      _lessonResultConnectionOrchestrator.reopenLessonStream(dialogContent, _lessonId, content: lessonContent);
 
-        var selection = controller.selection;
-        late StreamSubscription<RustSignal> streamSubscription;
+      var selection = controller.selection;
+      late StreamSubscription<RustSignal> streamSubscription;
 
-        // var mdDocument = md.Document(
-        //   encodeHtml: false,
-        //   extensionSet: md.ExtensionSet.gitHubFlavored,
-        // );
+      // var mdDocument = md.Document(
+      //   encodeHtml: false,
+      //   extensionSet: md.ExtensionSet.gitHubFlavored,
+      // );
 
-        controller.document.delete(selection.start, selection.extentOffset - selection.baseOffset);
-        controller.moveCursorToPosition(selection.start);
-        var currentCursorPos = selection.start;
-        streamSubscription = rustBroadcaster.stream
+      controller.document.delete(selection.start, selection.extentOffset - selection.baseOffset);
+      controller.moveCursorToPosition(selection.start);
+      var currentCursorPos = selection.start;
+      streamSubscription = rustBroadcaster.stream
+      .where((rustSignal) => rustSignal.resource == streamMessage.ID)
+      .listen((RustSignal rustSignal) {
+      // Handle the stream data here
+      final signal = streamMessage.StateSignal.fromBuffer(rustSignal.message!);
+      final rinfMessage = signal.streamMessage;
+      if (rinfMessage == "[LL_END_STREAM]") {
+        streamSubscription.cancel();
+        doneGeneratingNotifier.value = true;
+      } else{
+        debugPrint("In open lesson: $rinfMessage");
+        controller.document.insert(currentCursorPos, rinfMessage);    
+        currentCursorPos += rinfMessage.length;
+        controller.moveCursorToPosition(currentCursorPos);
+      }
+    });
+    controller.notifyListeners();
+    }
+  }
+
+  
+  Future<void> continueLessonFromHere(BuildContext context, QuillController controller, ValueNotifier<bool> doneGeneratingNotifier) async {
+    var dialogContent = await createInstructionDialog(context);
+    debugPrint("Dialog content: $dialogContent");
+
+    if(dialogContent != null) {
+      doneGeneratingNotifier.value = false;
+      debugPrint("Opened lesson stream from flutter...");
+      _lessonResultConnectionOrchestrator.reopenLessonStream(dialogContent, _lessonId);
+
+      var selection = controller.selection;
+      late StreamSubscription<RustSignal> streamSubscription;
+
+      controller.moveCursorToPosition(selection.start);
+      var currentCursorPos = selection.start;
+      streamSubscription = rustBroadcaster.stream
         .where((rustSignal) => rustSignal.resource == streamMessage.ID)
         .listen((RustSignal rustSignal) {
         // Handle the stream data here
@@ -162,8 +197,9 @@ class LessonResultViewModel with ChangeNotifier {
         }
       });
       controller.notifyListeners();
-      }
     }
+  }
+
 
   Future<String?> createInstructionDialog(BuildContext context) async {
     final quillEditorController = QuillController(

@@ -28,7 +28,7 @@ pub async fn handle_lesson_open(rust_request: RustRequest,
             let request_message = CreateRequest::decode(message_bytes.as_slice()).unwrap();
             
             let lesson_content = request_message.lesson_content;
-
+                
             let lesson_id = request_message.lesson_id;
             
             let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
@@ -184,9 +184,9 @@ pub async fn handle_lesson_open(rust_request: RustRequest,
 
             crate::debug_print!("Update called");
 
-            let content_to_regenerate = request_message.content_to_regenerate;
+            let mut content_to_regenerate = request_message.content_to_regenerate;
             let additional_commands: String = request_message.additional_commands;
-            let lesson_id = request_message.lesson_id;
+            let lesson_id = request_message.lesson_id;  
 
             let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
             let config_file_path_temp = settings_save_directory_data_object.save_directory.clone();
