@@ -49,6 +49,7 @@ class _TextEditor extends State<TextEditor> {
   final QuillController _controller = QuillController.basic();
   late StreamSubscription<RustSignal> streamSubscription;
   late ScrollController _scrollController;
+  final deltaToMd = DeltaToMarkdown();
 
   String message = "Nothing received yet";
   var markdownContent = "";
@@ -73,7 +74,7 @@ class _TextEditor extends State<TextEditor> {
   @override
   Widget build(BuildContext context) {
     final lessonResultViewModel = context.watch<LessonResultViewModel>();
-
+    lessonResultViewModel.quillController = _controller;
     // var message = "";
 
     var mdDocument = md.Document(
@@ -83,28 +84,29 @@ class _TextEditor extends State<TextEditor> {
       blockSyntaxes: [const EmbeddableTableSyntax()],
     );
 
-    final mdToDelta = MarkdownToDelta(
-      markdownDocument: mdDocument,
+    // final mdToDelta = MarkdownToDelta(
+    //   markdownDocument: mdDocument,
 
-      // // you can add custom attributes based on tags
-      // customElementToBlockAttribute: {
-      //   'h4': (element) => [HeaderAttribute(level: 4)],
-      // },
-      // // custom embed
-      // customElementToEmbeddable: {
-      //   EmbeddableTable.tableType: EmbeddableTable.fromMdSyntax,
-      // },
-    );
+    //   // // you can add custom attributes based on tags
+    //   // customElementToBlockAttribute: {
+    //   //   'h4': (element) => [HeaderAttribute(level: 4)],
+    //   // },
+    //   // // custom embed
+    //   // customElementToEmbeddable: {
+    //   //   EmbeddableTable.tableType: EmbeddableTable.fromMdSyntax,
+    //   // },
+    // );
 
-    final deltaToMd = DeltaToMarkdown();
+    
 
-    lessonResultViewModel.lessonContent =
-        deltaToMd.convert(_controller.document.toDelta());
+    
 
     _doneGeneratingNotifier.addListener(() {
-      if (_doneGeneratingNotifier.value) {
-        lessonResultViewModel.done = true;
-      }
+      var delta = _controller.document.toDelta();
+      // lessonResultViewModel.lessonContent = deltaToMd.convert(delta); // This crashes for some reason
+      lessonResultViewModel.lessonContent = delta.toHtml();
+      lessonResultViewModel.done = _doneGeneratingNotifier.value;
+      debugPrint("Value changed to: ${lessonResultViewModel.done}");
     });
     // if (_doneGenerating) {
     //   lessonResultViewModel.done = true;
@@ -188,7 +190,7 @@ class _TextEditor extends State<TextEditor> {
                 ),
                 onPressed: () {
                   // quillPageNotifier.regenerateSection(_controller);
-                  debugPrint("Regenerate section of text");
+                  lessonResultViewModel.regenerateSection(context, _controller.getPlainText(), _controller, _doneGeneratingNotifier);
                 }),
             QuillToolbarCustomButtonOptions(
                 icon: Icon(Icons.add_outlined),
@@ -368,6 +370,7 @@ class _TextEditor extends State<TextEditor> {
       debugPrint(rinfMessage);
       if (rinfMessage == "[LL_END_STREAM]") {
         _doneGeneratingNotifier.value = true;
+        streamSubscription.cancel();
         debugPrint("Done generating: ${_doneGeneratingNotifier.value}");
       } else {
         markdownContent += rinfMessage;
