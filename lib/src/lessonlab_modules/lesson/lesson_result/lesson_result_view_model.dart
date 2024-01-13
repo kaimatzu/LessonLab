@@ -56,7 +56,6 @@ class LessonResultViewModel with ChangeNotifier {
   LessonResultViewModel() {
     _lessonResultModel = LessonResultModel.initialize();
     _lessonResultConnectionOrchestrator = LessonResultConnectionOrchestrator();
-    _lessonExportConnectionOrchestrator = LessonExportConnectionOrchestrator();
     loadViewContent();
   }
 
@@ -100,10 +99,6 @@ class LessonResultViewModel with ChangeNotifier {
       _lessonResultModel.cssContents = result.cssContents;
       _lessonResultModel.lesson.title = result.lesson.title;
       _lessonResultModel.lesson.content = result.lesson.content;
-      _lessonResultModel.lesson.id = result.lesson.id;
-
-      _lessonId = _lessonResultModel.lesson.id;
-      
       _lessonResultModel.lesson.id = result.lesson.id;
 
       _lessonId = _lessonResultModel.lesson.id;
