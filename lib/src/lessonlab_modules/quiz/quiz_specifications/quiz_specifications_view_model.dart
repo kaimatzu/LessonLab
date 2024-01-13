@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lessonlab/src/global_models/lesson_model.dart';
 import 'package:lessonlab/src/global_models/quiz_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/components/dropdown_menu.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/components/input_field.dart';
 import 'dart:developer' as developer;
@@ -48,6 +49,7 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
   QuizSpecificationsViewModel() {
     final initializeFields = [
       InputField(label: 'Title', hintLabel: 'Enter quiz title'),
+      InputField(label: 'Focus Topic', hintLabel: 'Enter focus topic'),
       const Dropdown(
         label: 'Type',
         list: <String>['Identification', 'Multiple Choice', 'Both'],
@@ -104,6 +106,10 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
       } else if (formField.dropdown != null) {
         quizSpecsModel.quizSpecs.add(QuizSpecification(
             formField.dropdown!.label, formField.dropdown!.getSelectedValue));
+      } else if (formField.numberField != null) {
+        quizSpecsModel.quizSpecs.add(QuizSpecification(
+            formField.numberField!.label,
+            formField.numberField!.controller.text));
       } else {
         // developer.log('Null error', name: 'collect');
         // TODO: Handle uninitialized null values, just in case.
@@ -140,7 +146,8 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
   }
 
   void cancelQuiz(BuildContext context) {
-    Navigator.pop(context);
+    //Navigator.pop(context);
+    Navigator.restorablePushNamed(context, UploadSourcesView.routeName);
   }
 
   void generateQuiz(

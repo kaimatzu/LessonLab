@@ -290,6 +290,62 @@ def main_context_query(lesson_specifications: list[str], index_path: str):
     socket.close()
     context.term()
     # TODO: Handle references later
+
+def regenerate_section(content_to_regenerate: str, additional_instructions: str, index_path: str):
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://127.0.0.1:5555")
+    
+    # initialize client
+    db = chromadb.PersistentClient(path=index_path+"/index/chroma_db")
+
+    # get collection
+    chroma_collection = db.get_or_create_collection("content")
+
+    # assign chroma as the vector_store to the context
+    vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+    storage_context = StorageContext.from_defaults(vector_store=vector_store)
+
+    llm = OpenAI(model="gpt-4-1106-preview")
+    service_context = ServiceContext.from_defaults(llm=llm)
+    
+    # load your index from stored vectors
+    index = VectorStoreIndex.from_vector_store(
+        vector_store, storage_context=storage_context, service_context=service_context
+    )
+    
+    query_engine = index.as_query_engine(
+        streaming=True, 
+        verbose=True,
+        # response_mode="refine"
+    )
+    
+    response_stream = query_engine.query(
+        f'''
+        Regenerate the following section based on these instructions: {additional_instructions}. 
+        Ensure that the output is the regenerated content only.
+        
+        Here is the section to regenerate/change:
+        
+        {content_to_regenerate}
+        ''',
+    )
+    response_gen = response_stream.response_gen
+
+    for token in response_gen:
+        # pass these through zmq
+        socket.send_string(token)
+        # Wait for acknowledgment from Rust
+        socket.recv_string()
+    
+    socket.send_string("[LL_END_STREAM]")
+    print(f"Sent to Rust: Exit message")
+    
+    # Wait for acknowledgment from Rust
+    ack = socket.recv_string()
+    print(f"Received exit ACK from Rust: {ack}")
+    
+    socket.close()
     
 def debug_fn():
     context = zmq.Context()
@@ -309,12 +365,18 @@ def debug_fn():
     # Wait for acknowledgment from Rust
     ack = socket.recv_string()
     print(f"Received exit ACK from Rust: {ack}")
-
+    
+    socket.close()
+    
 def rust_callback(lesson_specifications: list[str], index_path: str, files: list[str] = [], urls: list[str] = []):
     generate_content_index(files=files, urls=urls, index_path=index_path)
     main_context_query(lesson_specifications=lesson_specifications, index_path=index_path)
     # debug_fn()
-    
+
+def rust_callback_regenerate_lesson(content_to_regenerate: str, additional_instructions: str, index_path: str):
+    regenerate_section(content_to_regenerate=content_to_regenerate, 
+                       additional_instructions=additional_instructions, 
+                       index_path=index_path)
 # rust_callback(
 #     lesson_specifications=[
 #         "Title - Proxy Design Pattern",
@@ -324,5 +386,3 @@ def rust_callback(lesson_specifications: list[str], index_path: str, files: list
 #     # files=["C:/Users/karlj/OneDrive/Documents/Proxy Design Pattern Summary.pdf"], 
 #     urls=["https://en.wikipedia.org/wiki/Proxy_pattern"]
 # )
-
-

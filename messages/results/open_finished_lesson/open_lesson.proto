@@ -23,3 +23,14 @@ message CreateRequest {
 message CreateResponse {
     uint32 status_code = 1;
 }
+
+message UpdateRequest {
+    bool req = 1;
+    string content_to_regenerate = 2;
+    string additional_commands = 3;
+    uint32 lesson_id = 4;
+}
+
+message UpdateResponse {
+    uint32 status_code = 1;
+}
