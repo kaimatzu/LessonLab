@@ -233,12 +233,10 @@ def main_context_query(lesson_specifications: list[str], index_path: str):
         ]
     )
     
-    
     messages = prompt.format_messages(
         lesson_specifications=lesson_specifications
     )
     
-    messages=messages,
     # load your index from stored vectors
     index = VectorStoreIndex.from_vector_store(
         vector_store, storage_context=storage_context, service_context=service_context
@@ -311,6 +309,7 @@ def debug_fn():
     # Wait for acknowledgment from Rust
     ack = socket.recv_string()
     print(f"Received exit ACK from Rust: {ack}")
+
 def rust_callback(lesson_specifications: list[str], index_path: str, files: list[str] = [], urls: list[str] = []):
     generate_content_index(files=files, urls=urls, index_path=index_path)
     main_context_query(lesson_specifications=lesson_specifications, index_path=index_path)

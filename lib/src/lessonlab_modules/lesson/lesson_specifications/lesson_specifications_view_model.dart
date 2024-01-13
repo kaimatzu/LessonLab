@@ -144,7 +144,7 @@ class LessonSpecificationsViewModel extends ChangeNotifier {
   }
 
   void cancelLesson(BuildContext context) {
-    Navigator.restorablePushNamed(context, UploadSourcesView.routeName);
+    Navigator.pop(context);
   }
 
   void navigateToLessonGeneration(BuildContext context) {

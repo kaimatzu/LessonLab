@@ -79,11 +79,11 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
 
             // Start quiz specs test = ===============================
 
-            crate::debug_print!("quiz_page quiz specs: {:?}", quiz_specifications_data_object.quiz_specifications.clone());
+            // crate::debug_print!("quiz_page quiz specs: {:?}", quiz_specifications_data_object.quiz_specifications.clone());
 
-            // End quiz specs test = ===============================
+            // // End quiz specs test = ===============================
 
-            // start REAL CODE = ===============================
+            // // start REAL CODE = ===============================
             // let message_bytes = rust_request.message.unwrap();
             // let request_message = ReadRequest::decode(message_bytes.as_slice()).unwrap();
 
@@ -274,7 +274,7 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
             //         };
             //     }
             // }
-            //
+            
             // RustResponse {
             //     successful: true,
             //     message: Some(response_message.encode_to_vec()),
@@ -326,7 +326,7 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
                         choices: test_choices.clone(),
                     })),
                 });
-                for j in 0..3{
+                for _ in 0..3{
                     test_choices.remove(0);
                 }
             }
