@@ -76,6 +76,8 @@ class _QuizPageViewState extends State<QuizPageView> {
     final quizViewModel = context.watch<QuizPageViewModel>();
     _totalItems = quizViewModel.questions.length;
 
+    quizViewModel.shuffleQuestions();
+
     developer.log("questions.length: ${quizViewModel.questions.length}",
         name: "build");
 
@@ -146,11 +148,11 @@ class _QuizPageViewState extends State<QuizPageView> {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       SecondaryButton(
-                                          width: 70.0,
-                                          handlePress: () {
-                                            _prevQuestion();
-                                          },
-                                          text: '<<',
+                                        width: 70.0,
+                                        handlePress: () {
+                                          _prevQuestion();
+                                        },
+                                        text: '<<',
                                       ),
                                       Container(
                                         padding: const EdgeInsets.only(
@@ -166,11 +168,11 @@ class _QuizPageViewState extends State<QuizPageView> {
                                         ),
                                       ),
                                       SecondaryButton(
-                                          width: 70.0,
-                                          handlePress: () {
-                                            _nextQuestion();
-                                          },
-                                          text: '>>',
+                                        width: 70.0,
+                                        handlePress: () {
+                                          _nextQuestion();
+                                        },
+                                        text: '>>',
                                       ),
                                     ],
                                   ),
@@ -234,10 +236,10 @@ class _QuizPageViewState extends State<QuizPageView> {
     Duration elapsedTime = DateTime.now().difference(startTime);
 
     Navigator.pushNamed(
-      context, 
+      context,
       '/quiz_result',
       arguments: {'elapsedTime': elapsedTime},
-      );
+    );
   }
 
   void _checkAllAnswers() {
