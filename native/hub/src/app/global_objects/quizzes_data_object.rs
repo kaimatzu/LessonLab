@@ -3,6 +3,12 @@ use serde::{Deserialize, Serialize};
 use crate::app::results::lesson_result_data_object::Sources;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
+pub struct PydanticBoth {
+    pub identification: Vec<IdentificationQuestion>,
+    pub multiple_choice: Vec<MultipleChoiceQuestion>
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct PydanticIdentifications {
     pub questions: Vec<IdentificationQuestion>
 }
@@ -26,7 +32,7 @@ pub struct Quiz {
 pub enum Question {
     #[serde(rename = "identification")]
     Identification(IdentificationQuestion),
-    #[serde(rename = "multipleChoice")]
+    #[serde(rename = "multiple_choice")]
     MultipleChoice(MultipleChoiceQuestion)
 }
 

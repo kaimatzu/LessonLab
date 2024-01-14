@@ -20,7 +20,7 @@ use crate::bridge::{RustRequest, RustResponse, RustOperation};
 
 // Data objects
 use crate::app::quiz::quiz_specifications_data_object::QuizSpecificationsDataObject;
-use crate::app::global_objects::quizzes_data_object::{QuizzesDataObject, Quiz, Question, IdentificationQuestion, MultipleChoiceQuestion, PydanticIdentifications, PydanticMultipleChoices, Choice};
+use crate::app::global_objects::quizzes_data_object::{QuizzesDataObject, Quiz, Question, IdentificationQuestion, MultipleChoiceQuestion, PydanticIdentifications, PydanticMultipleChoices, Choice, PydanticBoth};
 use crate::app::entry::menu::menu_data_object::{MenuDataObject, Root};
 use crate::app::entry::upload::upload_sources_data_object::UploadSourcesDataObject;
 use crate::app::settings::settings_data_object::SettingsDataObject;
@@ -162,13 +162,13 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
                 Ok(json) => {
                     // This will return PydanticIdentifications or PydanticMultipleChoices
 
-                    let mut pydantic = PydanticMultipleChoices::default();
+                    let mut pydantic = PydanticBoth::default();
                     match serde_json::from_str(&json) {
                         Ok(returned) => pydantic = returned,
                         Err(err) => { crate::debug_print!("Failed to deserialize quiz {}", err); },
                     }
 
-                    let mut questions_from_pydantic = Vec::new();
+                    let mut questions_from_pydantic: Vec<Question> = Vec::new();
 
                     // ----------- Identification
                     // for i in 0..pydantic.questions.len() {
@@ -179,12 +179,36 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
                     // }
 
                     // ----------- Multiple Choice
-                    for i in 0..pydantic.questions.len() {
-                        questions_from_pydantic.push(Question::MultipleChoice(MultipleChoiceQuestion {
-                            question: pydantic.questions[i].question.clone(),
-                            choices: pydantic.questions[i].choices.clone(),
+                    // for i in 0..pydantic.questions.len() {
+                    //     questions_from_pydantic.push(Question::MultipleChoice(MultipleChoiceQuestion {
+                    //         question: pydantic.questions[i].question.clone(),
+                    //         choices: pydantic.questions[i].choices.clone(),
+                    //     }));
+                    // }
+
+                    // ----------- Both
+                    for i in 0..pydantic.identification.len() {
+                        questions_from_pydantic.push(Question::Identification(IdentificationQuestion { 
+                            question: pydantic.identification[i].question.clone(),
+                            answer: pydantic.identification[i].answer.clone(),
                         }));
                     }
+                    for i in 0..pydantic.multiple_choice.len() {
+                        questions_from_pydantic.push(Question::MultipleChoice(MultipleChoiceQuestion {
+                            question: pydantic.multiple_choice[i].question.clone(),
+                            choices: pydantic.multiple_choice[i].choices.clone(),
+                        }));
+                    }
+                    // for i in 0..pydantic.questions.len() {
+                    //     match pydantic.questions[i].clone() {
+                    //         Question::Identification(identification) => {
+                    //             questions_from_pydantic.push(Question::Identification(identification));
+                    //         },
+                    //         Question::MultipleChoice(multiple_choice) => {
+                    //             questions_from_pydantic.push(Question::MultipleChoice(multiple_choice));
+                    //         },
+                    //     }
+                    // }
                     
                     let mut quiz_from_pydantic = Quiz {
                         id: new_id.clone(),

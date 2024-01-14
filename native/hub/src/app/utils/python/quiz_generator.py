@@ -16,7 +16,7 @@ from llama_index.prompts import ChatPromptTemplate, ChatMessage
 
 #Pydantic model
 from pydantic import BaseModel, Field, Tag, Discriminator
-from typing import Annotated, Any, List, Union, Literal
+from typing import Annotated, Any, List, Literal, Union
 
 #zmq
 import zmq
@@ -48,7 +48,7 @@ class IdentificationQuestionModel(BaseModel):
 
 class MultipleChoiceQuestionModel(BaseModel):
     """Data model for multiple choice question"""
-    question: str = Field(description="The question")
+    question:str = Field(description="The question")
     choices: List[ChoiceModel] = Field(description="Four choices for the multiple choice question type. And only one of them is correct")
 
 class IdentificationQuestionModels(BaseModel):
@@ -58,9 +58,18 @@ class IdentificationQuestionModels(BaseModel):
 class MultipleChoiceQuestionModels(BaseModel):
     """Data model that holds a list of multiple choice question model"""
     questions: List[MultipleChoiceQuestionModel] = Field(description="List of multiple choice question models")
+    
+class Both(BaseModel):
+    """Data model that holds both list of questions"""
+    identification: IdentificationQuestionModel = Field(description="Identification question model")
+    multiple_choice: MultipleChoiceQuestionModel = Field(description="Multiple choice question model")
 
 class QuestionsModels(BaseModel):
-    questions: List[Union[IdentificationQuestionModel, MultipleChoiceQuestionModel]] = Field(description="List of questions")
+    """Data model that holds list of questions"""
+    # questions: List[Both] = Field(description="List of both question type")
+    identification: List[IdentificationQuestionModel] = Field(description="List of identification questions")
+    multiple_choice: List[MultipleChoiceQuestionModel] = Field(description="List of multiple choice questions")
+
 
 
 
@@ -91,16 +100,40 @@ def generate_content_index(files: list[str], urls: list[str], index_path: str):
 
 def generate_both(quiz_specifications: list[str], index: VectorStoreIndex):
     dict_example = {
-        "questions": [
+        "identification": [
             {
+                "identification": {
+                    "type": "identification",
+                    "question" : "Who invented the telephone?",
+                    "answer" : "Alexander Bell"
+                }
+            }
+        ],
+        "multiple_choice": [
+            {
+                "type": "multiple_choice",
                 "question" : "Who invented the telephone?",
-                "answer" : "Alexander Bell"
-            },
-            {
-                "question" : "Who invented the atomic bomb?",
-                "answer" : "Robert Oppenheimer"
+                "choices": [
+                    {
+                        "content": "Isaac Newton",
+                        "is_correct": "false"
+                    },
+                    {
+                        "content": "Alexander Bell",
+                        "is_correct": "true"
+                    },
+                    {
+                        "content": "Alexander Hamilton",
+                        "is_correct": "false"
+                    },
+                    {
+                        "content": "Albert Einstein",
+                        "is_correct": "false"
+                    },
+                ]
             }
         ]
+
     }
 
     json_example = json.dumps(dict_example)
@@ -109,8 +142,11 @@ def generate_both(quiz_specifications: list[str], index: VectorStoreIndex):
         ChatMessage(role="system",
                     content=(
                         "You are a quiz generator. You will be given topic to generate the questions."
+                        "You are to generate multiple choice questions and identification questions."
+                        "If it is an identification question you are to generate a technical question along with the correct answer about the given topic."
+                        "If it is a multiple choice you are to generate a technical question about the given topic along with 4 choices one of which is correct."
                         "You will generate a technical question along with the correct answer about the given topic."
-                        "Make sure you follow the following instructions.Make sure to make the answer concise."
+                        "Make sure you follow the following instructions. Make sure to make the answer concise."
                         "Make sure to always end the question with a question mark. Don't ask questions about the source. Do not mention the references or the documents provided. Don't include the questions about who prepared the document."
                         "Make sure to follow the number of questions in the quiz specifications."
                         "Make sure to make the answer short and concise."
@@ -118,6 +154,7 @@ def generate_both(quiz_specifications: list[str], index: VectorStoreIndex):
                         "Generate a valid JSON in the following format:\n"
                         "{json_example}\n"
                         "Take note this is only an example the user might want to have more questions.\n"
+                        "Take note this is only an example the might want to have identification only or multiple choice only or both so follow the user's quiz specs.\n"
 
                         "Make sure each question are unique"
                         "Do not make a lengthy sentence answer, make the answer short and concise like a word, term, or a phrase"
@@ -135,25 +172,29 @@ def generate_both(quiz_specifications: list[str], index: VectorStoreIndex):
     messages = prompt.format_messages(json_example=json_example, quiz_specifications=quiz_specifications)
 
     query_engine = index.as_query_engine(messages=messages,
-                                         output_cls=IdentificationQuestionModels,
+                                         output_cls=QuestionsModels,
                                          repsonse_mode="accumulate")
     
-    output = query_engine.query(
-        '''
-        Generate the question based on my specifications.
-        Make sure each question are unique
-        Make sure to not ask question about the sources/documents provided
-        Make sure to ask technical questions about the focus topic specification
-        Make sure to follow the number of questions in my specifications
-        Do not make a lengthy sentence answer, make the answer short and concise like a word, term, or a phrase
-        '''
-    )
+    try:
+        output = query_engine.query(
+            '''
+            Generate the question based on my specifications.
+            Make sure each question are unique
+            Make sure to not ask question about the sources/documents provided
+            Make sure to ask technical questions about the focus topic specification
+            Make sure to follow the number of questions in my specifications
+            Do not make a lengthy sentence answer, make the answer short and concise like a word, term, or a phrase
+            '''
+        )
+    except Exception as e:
+        print(f"Error: {e}")
 
-    response = output.response
-    print(f">>> output: {output}")
-    print("\n\n")
-    print(f">>> response: {response}")
-    print("\n\n")
+
+    # response = output.response
+    # print(f">>> output: {output}")
+    # print("\n\n")
+    # print(f">>> response: {response}")
+    # print("\n\n")
 
     # print(f"output: {output.question}")
     # print(f"response: {response.question}")
@@ -186,7 +227,7 @@ def generate_identification(quiz_specifications: list[str], index: VectorStoreIn
                     content=(
                         "You are a quiz generator. You will be given topic to generate the questions."
                         "You will generate a technical question along with the correct answer about the given topic."
-                        "Make sure you follow the following instructions.Make sure to make the answer concise."
+                        "Make sure you follow the following instructions. Make sure to make the answer concise."
                         "Make sure to always end the question with a question mark. Don't ask questions about the source. Do not mention the references or the documents provided. Don't include the questions about who prepared the document."
                         "Make sure to follow the number of questions in the quiz specifications."
                         "Make sure to make the answer short and concise."
@@ -230,11 +271,11 @@ def generate_identification(quiz_specifications: list[str], index: VectorStoreIn
         '''
     )
 
-    response = output.response
-    print(f">>> output: {output}")
-    print("\n\n")
-    print(f">>> response: {response}")
-    print("\n\n")
+    # response = output.response
+    # print(f">>> output: {output}")
+    # print("\n\n")
+    # print(f">>> response: {response}")
+    # print("\n\n")
 
     # print(f"output: {output.question}")
     # print(f"response: {response.question}")
@@ -248,24 +289,28 @@ def generate_identification(quiz_specifications: list[str], index: VectorStoreIn
 
 def generate_multiple_choice(quiz_specifications: list[str], index: VectorStoreIndex, existing_questions: list[str]):
     dict_example = {
-        "question" : "Who invented the telephone?",
-        "choices": [
+        "questions": [
             {
-                "content": "Isaac Newton",
-                "is_correct": "false"
-            },
-            {
-                "content": "Alexander Bell",
-                "is_correct": "true"
-            },
-            {
-                "content": "Alexander Hamilton",
-                "is_correct": "false"
-            },
-            {
-                "content": "Albert Einstein",
-                "is_correct": "false"
-            },
+                "question" : "Who invented the telephone?",
+                "choices": [
+                    {
+                        "content": "Isaac Newton",
+                        "is_correct": "false"
+                    },
+                    {
+                        "content": "Alexander Bell",
+                        "is_correct": "true"
+                    },
+                    {
+                        "content": "Alexander Hamilton",
+                        "is_correct": "false"
+                    },
+                    {
+                        "content": "Albert Einstein",
+                        "is_correct": "false"
+                    },
+                ]
+            }
         ]
     }
 
@@ -274,8 +319,10 @@ def generate_multiple_choice(quiz_specifications: list[str], index: VectorStoreI
     prompt = ChatPromptTemplate(message_templates=[
         ChatMessage(role="system",
                     content=(
-                        "You are a question generator. You will be given data to generate the questions."
+                        "You are a quiz generator. You will be given topic to generate the questions."
                         "You are to generate technical question about the given topic along with 4 choices one of which is correct.\n"
+                        "Make sure you follow the following instructions. Make sure to make the answer concise."
+                        "Make sure to always end the question with a question mark. Don't ask questions about the source. Do not mention the references or the documents provided. Don't include the questions about who prepared the document."
                         "Make sure to follow the number of questions in the quiz specifications."
                         "Don't ask questions about the source."
 
@@ -287,6 +334,7 @@ def generate_multiple_choice(quiz_specifications: list[str], index: VectorStoreI
                         "{existing_questions}"
                         "Do not generate the existing questions above if ther are any because you are a question generator for a quiz and you don't want to generate the same questions multiple times in the same quiz\n"
                         "Make sure each question are unique."
+                        "Do not make a lengthy sentence answer, make the answer short and concise like a word, term, or a phrase"
                     )),
         ChatMessage(role="user",
                     content=(
@@ -305,11 +353,16 @@ def generate_multiple_choice(quiz_specifications: list[str], index: VectorStoreI
 
     query_engine = index.as_query_engine(messages=messages,
                                          output_cls=MultipleChoiceQuestionModels,
-                                         repsonse_mode="compact")
+                                         repsonse_mode="accumulate")
 
     output = query_engine.query(
         '''
-        Generate the question based on the quiz specifications
+        Generate the question based on my specifications.
+        Make sure each question are unique
+        Make sure to not ask question about the sources/documents provided
+        Make sure to ask technical questions about the focus topic specification
+        Make sure to follow the number of questions in my specifications
+        Do not make a lengthy sentence answer, make the answer short and concise like a word, term, or a phrase
         '''
     )
 
@@ -326,16 +379,18 @@ def generate_question(quiz_specifications: list[str],
                       index: VectorStoreIndex,
                       type: int,
                       existing_questions: list[str]):
-    if type == 0:
-        return generate_identification(quiz_specifications=quiz_specifications, index=index, existing_questions=existing_questions)
-    elif type == 1:
-        return generate_multiple_choice(quiz_specifications=quiz_specifications, index=index, existing_questions=existing_questions)
-    else:
-        random_choice = random.choice([True, False])
-        if random_choice:
-            return generate_identification(quiz_specifications=quiz_specifications, index=index, existing_questions=existing_questions)
-        else:
-            return generate_multiple_choice(quiz_specifications=quiz_specifications, index=index, existing_questions=existing_questions)
+    return generate_both(quiz_specifications=quiz_specifications, index=index)
+    # return generate_identification(quiz_specifications=quiz_specifications, index=index, existing_questions=existing_questions)
+    # if type == 0:
+    #     return generate_identification(quiz_specifications=quiz_specifications, index=index, existing_questions=existing_questions)
+    # elif type == 1:
+    #     return generate_multiple_choice(quiz_specifications=quiz_specifications, index=index, existing_questions=existing_questions)
+    # else:
+    #     random_choice = random.choice([True, False])
+    #     if random_choice:
+    #         return generate_identification(quiz_specifications=quiz_specifications, index=index, existing_questions=existing_questions)
+    #     else:
+    #         return generate_multiple_choice(quiz_specifications=quiz_specifications, index=index, existing_questions=existing_questions)
 
 
 
@@ -395,13 +450,14 @@ def generate_questions(quiz_specifications: list[str], index_path: str, num_of_q
     # existing_questions.append(question)
     # questions.append(question)
         # answers.append(answer)
-    print(questions)
+    response = questions.response
+    print(response)
 
     # for i in range(num_of_questions):
     #     print(f"question: {questions}")
     #     # print(f"answer: {questions[i]}")
 
-    return questions
+    return response
 
 
 
@@ -410,8 +466,9 @@ def rust_callback(quiz_specifications: list[str], index_path: str, files: list[s
     # 0 - identifciation
     # 1 - multiple choice
     # 2 - random
-    output = generate_questions(quiz_specifications=quiz_specifications, index_path=index_path, num_of_questions=10, type=1)
-    return output.response.json()
+    output = generate_questions(quiz_specifications=quiz_specifications, index_path=index_path, num_of_questions=10, type=2)
+    return output.json()
+    # return output
     # print(output)
 
 
@@ -421,7 +478,8 @@ def run():
         "Title: Turing Machine\n",
         "Focus Topic: Turing Machine\n",
         "Difficulty: Hard\n",
-        "Number of questions: 10\n"
+        "Number of questions: 10\n",
+        "Type: Both\n"
     ]
     # "Number of Questions: 10\n",
     # "Timeframe: 10 minutes\n",
@@ -431,4 +489,4 @@ def run():
 
     files: list[str] = ["E:/School/Automata Theory/Turing Machine.pdf"]
 
-    rust_callback(quiz_specifications=quiz_specs, index_path=index_path, files=files, urls=[])
+    output = rust_callback(quiz_specifications=quiz_specs, index_path=index_path, files=files, urls=[])
