@@ -26,6 +26,7 @@ class LessonResultViewModel with ChangeNotifier {
   late LessonExportConnectionOrchestrator _lessonExportConnectionOrchestrator;
   late int _lessonId;
   late QuillController quillController;
+  late TextEditingController titleController;
 
   bool _done = false;
   bool get done => _done;
@@ -67,7 +68,7 @@ class LessonResultViewModel with ChangeNotifier {
     // lessonContent = deltaToMd.convert(quillController.document.toDelta());
     developer.log("Lesson content: $lessonContent", name: "returnToMenu");
 
-    await _lessonResultConnectionOrchestrator.saveLesson(lessonContent);
+    await _lessonResultConnectionOrchestrator.saveLesson(lessonContent, _lessonId, titleController.text);
 
     developer.log("Load menu content");
     await menuViewModel.loadViewContent();

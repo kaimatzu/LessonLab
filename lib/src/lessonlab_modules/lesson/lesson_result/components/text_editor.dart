@@ -177,7 +177,7 @@ class _TextEditor extends State<TextEditor> {
             QuillToolbarCustomButtonOptions(
                 icon: Icon(Icons.restart_alt),
                 tooltip: "Regenerate",
-                iconTheme: isTextSelected && lessonResultViewModel.done ? 
+                iconTheme:
                 QuillIconTheme(
                   iconButtonSelectedData: IconButtonData(
                     color: Color.fromARGB(255, 49, 51, 56),
@@ -188,22 +188,6 @@ class _TextEditor extends State<TextEditor> {
                   ),
                   iconButtonUnselectedData: IconButtonData(
                     color: Color.fromARGB(255, 49, 51, 56),
-                    style: IconButton.styleFrom(
-                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
-                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
-                    ),
-                  ),
-                ) :
-                QuillIconTheme(
-                  iconButtonSelectedData: IconButtonData(
-                    color: Color.fromARGB(255, 204, 208, 217),
-                    style: IconButton.styleFrom(
-                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
-                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
-                    ),
-                  ),
-                  iconButtonUnselectedData: IconButtonData(
-                    color: Color.fromARGB(255, 204, 208, 217),
                     style: IconButton.styleFrom(
                       foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
                           (196 + 255) ~/ 2, (27 + 255) ~/ 2),
@@ -221,7 +205,7 @@ class _TextEditor extends State<TextEditor> {
             QuillToolbarCustomButtonOptions(
                 icon: Icon(Icons.add_outlined),
                 tooltip: "Continue lesson from this point",
-                iconTheme: !isTextSelected && lessonResultViewModel.done ? 
+                iconTheme:
                 QuillIconTheme(
                   iconButtonSelectedData: IconButtonData(
                     color: Color.fromARGB(255, 49, 51, 56),
@@ -232,22 +216,6 @@ class _TextEditor extends State<TextEditor> {
                   ),
                   iconButtonUnselectedData: IconButtonData(
                     color: Color.fromARGB(255, 49, 51, 56),
-                    style: IconButton.styleFrom(
-                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
-                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
-                    ),
-                  ),
-                ) :
-                QuillIconTheme(
-                  iconButtonSelectedData: IconButtonData(
-                    color: Color.fromARGB(255, 204, 208, 217),
-                    style: IconButton.styleFrom(
-                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
-                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
-                    ),
-                  ),
-                  iconButtonUnselectedData: IconButtonData(
-                    color: Color.fromARGB(255, 204, 208, 217),
                     style: IconButton.styleFrom(
                       foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
                           (196 + 255) ~/ 2, (27 + 255) ~/ 2),
@@ -265,7 +233,7 @@ class _TextEditor extends State<TextEditor> {
             QuillToolbarCustomButtonOptions(
                 icon: Icon(Icons.picture_as_pdf_outlined),
                 tooltip: "Create PDF from lesson",
-                iconTheme: lessonResultViewModel.done ? 
+                iconTheme:
                 QuillIconTheme(
                   iconButtonSelectedData: IconButtonData(
                     color: Color.fromARGB(255, 49, 51, 56),
@@ -276,22 +244,6 @@ class _TextEditor extends State<TextEditor> {
                   ),
                   iconButtonUnselectedData: IconButtonData(
                     color: Color.fromARGB(255, 49, 51, 56),
-                    style: IconButton.styleFrom(
-                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
-                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
-                    ),
-                  ),
-                ) :
-                QuillIconTheme(
-                  iconButtonSelectedData: IconButtonData(
-                    color: Color.fromARGB(255, 204, 208, 217),
-                    style: IconButton.styleFrom(
-                      foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
-                          (196 + 255) ~/ 2, (27 + 255) ~/ 2),
-                    ),
-                  ),
-                  iconButtonUnselectedData: IconButtonData(
-                    color: Color.fromARGB(255, 204, 208, 217),
                     style: IconButton.styleFrom(
                       foregroundColor: Color.fromARGB(255, (241 + 255) ~/ 2,
                           (196 + 255) ~/ 2, (27 + 255) ~/ 2),

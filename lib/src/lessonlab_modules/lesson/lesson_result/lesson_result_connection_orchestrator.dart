@@ -7,8 +7,8 @@ import 'package:rinf/rinf.dart';
 import 'dart:developer' as developer;
 
 class LessonResultConnectionOrchestrator {
-  Future<void> saveLesson(String content) async {
-    final requestMessage = RinfInterface.CreateRequest(lessonContent: content);
+  Future<void> saveLesson(String content, int lessonId, String newLessonTitle) async {
+    final requestMessage = RinfInterface.CreateRequest(lessonContent: content, lessonId: lessonId, newLessonTitle: newLessonTitle);
     final rustRequest = RustRequest(
       resource: RinfInterface.ID,
       operation: RustOperation.Create,
