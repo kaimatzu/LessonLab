@@ -1,4 +1,5 @@
 use http::StatusCode;
+use serde::de::Error;
 use crate::bridge::send_rust_signal;
 use crate::app::entry::menu::menu_data_object::{Root, MenuDataObject};
 use crate::app::settings::settings_data_object::SettingsDataObject;
@@ -8,10 +9,11 @@ use crate::messages::entry::menu::menu::UpdateRequest;
 // use crate::messages::entry::upload::uploaded_content;
 use prost::Message;
 use tokio_with_wasm::tokio;
+use std::io::{self, Write, Read};
+use std::path::Path;
 
 use crate::app::utils::lesson_generator;
-use std::fs::{OpenOptions, create_dir_all, File};
-use std::io::{Write, Read};
+use std::fs::{self, OpenOptions, create_dir_all, File};
 use std::thread::sleep;
 
 
@@ -28,9 +30,9 @@ pub async fn handle_lesson_open(rust_request: RustRequest,
             let request_message = CreateRequest::decode(message_bytes.as_slice()).unwrap();
             
             let lesson_content = request_message.lesson_content;
-                
             let lesson_id = request_message.lesson_id;
-            
+            let new_lesson_title = request_message.new_lesson_title;
+
             let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
             let config_file_path_temp = settings_save_directory_data_object.save_directory.clone();
             config_file_path.push_str("\\config.json");
@@ -71,6 +73,28 @@ pub async fn handle_lesson_open(rust_request: RustRequest,
                     match write_lesson_to_target_path(&lesson_content, &target_folder_path) {
                         Ok(_) => {
                             crate::debug_print!("Wrote to lesson target file path at {}", target_folder_path);
+                            if lesson.title != new_lesson_title {
+                                let new_folder_name = format!("{}\\{}", &config_file_path_temp, &new_lesson_title);
+
+                                match std::fs::rename(target_folder_path, new_folder_name) {
+                                    Ok(_) => {
+                                        crate::debug_print!("Renamed folder successfully!");
+                                    },
+                                    Err(error) => {
+                                        crate::debug_print!("Failed to rename folder: {}", error);
+                                    }
+                                }
+                                
+                                match change_lesson_title_in_config_file(&config_file_path, lesson_id, new_lesson_title.as_str()){
+                                    Ok(_) => {
+                                        crate::debug_print!("Successfully updated config file!");
+                                    }
+                                    Err(error) => {
+                                        crate::debug_print!("{}", error);
+                                    }
+                                }
+                                // json
+                            }
                         }
                         Err(error) => {
                             crate::debug_print!("Failed to write lesson to target: {}", error);
@@ -279,7 +303,56 @@ pub fn get_lesson_by_id(file_path: &str, lesson_id: u32) -> std::io::Result<Opti
 
     Ok(lesson)
 }
-    
+
+fn change_lesson_title_in_config_file(file_path: &str, lesson_id: u32, new_title: &str) -> io::Result<()> {
+    // Load all lessons in the config file and Deserialize the JSON string
+    let mut root: Root = {
+        // crate::debug_print!("Reading File: {}", file_path);
+        let mut file = File::open(file_path)?;
+        let mut contents = String::new();
+        file.read_to_string(&mut contents)?;
+
+        // Deserialize the JSON string into Root
+        serde_json::from_str(&contents).unwrap_or_else(|e| {
+            // Handle deserialization error, for simplicity, panicking in case of an error
+            crate::debug_print!("Failed to deserialize Root.");
+            panic!("Error deserializing Root: {}", e);
+        })
+    };
+
+    // Find the lesson with the given ID and update its title
+    if let Some(lesson) = root.menu_data_object.lessons_data_object.lessons.iter_mut().find(|l| l.id == lesson_id) {
+        lesson.title = new_title.to_string();
+
+        let new_target_path = format!(
+            "{}/{}",
+            Path::new(&lesson.target_path).parent().unwrap().display(),
+            new_title
+        );
+        lesson.target_path = new_target_path.clone();
+
+        // Rename the folder if it exists
+        if Path::new(&lesson.target_path).exists() {
+            fs::rename(&lesson.target_path, &new_target_path)?;
+        }
+    } else {
+        // Handle the case where the lesson with the given ID is not found
+        return Err(io::Error::new(io::ErrorKind::NotFound, "Lesson not found"));
+    }
+
+    // Serialize the updated MenuDataObject back to JSON
+    let updated_json = serde_json::to_string_pretty(&root)?;
+
+    // Overwrite the content of the JSON file with the updated JSON string
+    let mut file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(file_path)?;
+    file.write_all(updated_json.as_bytes())?;
+
+    Ok(())
+}
+
 
 pub fn read_tcp_stream() -> Result<(), Box<dyn std::error::Error>> {
     use crate::messages::results::open_finished_lesson::open_lesson::{StateSignal, ID};

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/lesson_open_view_model.dart';
+import 'package:provider/provider.dart';
 
 class TitleBar extends StatefulWidget {
   const TitleBar({
@@ -13,6 +15,16 @@ class TitleBar extends StatefulWidget {
 }
 
 class _TitleBar extends State<TitleBar> {
+  late final TextEditingController titleController = TextEditingController(text: widget.title);
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final lessonOpenViewModel = context.watch<LessonOpenViewModel>();
+
+    lessonOpenViewModel.titleController = titleController;
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -20,12 +32,13 @@ class _TitleBar extends State<TitleBar> {
         child: Column(children: [
           // Render title
           TextFormField(
+            controller: titleController,
             style: const TextStyle(
               color: Color.fromARGB(255, 49, 51, 56),
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
-            initialValue: widget.title,
+            // initialValue: widget.title,
             decoration: const InputDecoration(
               hintText: 'Enter your title here...',
               hintStyle: TextStyle(

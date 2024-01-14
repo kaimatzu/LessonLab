@@ -18,6 +18,17 @@ class TitleBar extends StatefulWidget {
 }
 
 class _TitleBar extends State<TitleBar> {
+  late final TextEditingController titleController = TextEditingController(text: widget.title);
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final lessonOpenViewModel = context.watch<LessonResultViewModel>();
+
+    lessonOpenViewModel.titleController = titleController;
+  }
+  
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -25,12 +36,14 @@ class _TitleBar extends State<TitleBar> {
         child: Column(children: [
           // Render title
           TextFormField(
+            controller: titleController,
+            readOnly: true,
             style: const TextStyle(
               color: Color.fromARGB(255, 49, 51, 56),
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
-            initialValue: widget.title,
+            // initialValue: widget.title,
             decoration: const InputDecoration(
               hintText: 'Enter your title here...',
               hintStyle: TextStyle(

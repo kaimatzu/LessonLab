@@ -26,6 +26,7 @@ class LessonOpenViewModel with ChangeNotifier {
   final _statusCode = 0;
   late int _lessonId;
   late QuillController quillController;
+  late TextEditingController titleController;
 
   bool _done = true;
   bool get done => _done;
@@ -65,7 +66,7 @@ class LessonOpenViewModel with ChangeNotifier {
   Future<void> returnToMenu(BuildContext context, MenuViewModel menuViewModel) async {
     var delta = quillController.document.toDelta();
     lessonContent = delta.toHtml();
-    await _lessonOpenConnectionOrchestrator.saveLesson(lessonContent, _lessonId);
+    await _lessonOpenConnectionOrchestrator.saveLesson(lessonContent, _lessonId, titleController.text);
 
     developer.log("Load menu content");
     await menuViewModel.loadViewContent();

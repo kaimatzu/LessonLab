@@ -8,8 +8,9 @@ use prost::Message;
 use tokio_with_wasm::tokio;
 use tokio_with_wasm::tokio::sync::Mutex;
 
-use std::fs::{OpenOptions, create_dir_all, File};
+use std::fs::{self, OpenOptions, create_dir_all, File};
 use std::io::{self, Write, Read};
+use std::path::Path;
 use std::thread::sleep;
 
 use crate::app::utils::{scrapers, lesson_generator};
@@ -35,40 +36,107 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
             let request_message = CreateRequest::decode(message_bytes.as_slice()).unwrap();
             
             let lesson_content = request_message.lesson_content;
+            let lesson_id = request_message.lesson_id;
+            let new_lesson_title = request_message.new_lesson_title;
 
-            let sanitized_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone();
-            let sanitized_title = sanitized_title.split_at(8).1;
+            let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
+            let config_file_path_temp = settings_save_directory_data_object.save_directory.clone();
+            config_file_path.push_str("\\config.json");
 
-            crate::debug_print!("Lesson Title: {}", sanitized_title);
-            let config_file_path = settings_save_directory_data_object.save_directory.clone();
+            // let sanitized_title = lesson_specifications_data_object.lesson_specifications.get(0).unwrap().clone();
+            // let sanitized_title = sanitized_title.split_at(8).1;
 
-            // File path of target/output.md
-            let target_folder_path = format!("{}\\{}", &config_file_path, &sanitized_title);
+            // crate::debug_print!("Lesson Title: {}", sanitized_title);
+            // let config_file_path = settings_save_directory_data_object.save_directory.clone();
 
-            match write_lesson_to_target_path(&lesson_content, &target_folder_path) {
-                Ok(_) => {
-                    crate::debug_print!("Wrote to lesson target file path at {}", target_folder_path);
-                }
-                Err(error) => {
-                    crate::debug_print!("Failed to write lesson to target: {}", error);
-                    let response_message = CreateResponse{
-                        status_code: StatusCode::BAD_REQUEST.as_u16() as u32,
+            // // File path of target/output.md
+            // let target_folder_path = format!("{}\\{}", &config_file_path, &sanitized_title);
+
+            // match write_lesson_to_target_path(&lesson_content, &target_folder_path) {
+            //     Ok(_) => {
+            //         crate::debug_print!("Wrote to lesson target file path at {}", target_folder_path);
+            //     }
+            //     Err(error) => {
+            //         crate::debug_print!("Failed to write lesson to target: {}", error);
+            //         let response_message = CreateResponse{
+            //             status_code: StatusCode::BAD_REQUEST.as_u16() as u32,
+            //         };
+
+            //         return RustResponse {
+            //             successful: false,
+            //             message: Some(response_message.encode_to_vec()),
+            //             blob: None,
+            //         }
+            //     }
+            // }
+            
+            match get_lesson_by_id(&config_file_path, lesson_id) {
+                Ok(Some(lesson)) => {
+                    // Found the lesson, do something with it
+                    crate::debug_print!("{:#?}", lesson);
+                    let target_folder_path = format!("{}\\{}", &config_file_path_temp, &lesson.title);
+                    crate::debug_print!("{}", target_folder_path);
+                    match write_lesson_to_target_path(&lesson_content, &target_folder_path) {
+                        Ok(_) => {
+                            crate::debug_print!("Wrote to lesson target file path at {}", target_folder_path);
+                            if lesson.title != new_lesson_title {
+                                let new_folder_name = format!("{}\\{}", &config_file_path_temp, &new_lesson_title);
+                                
+                                crate::debug_print!("Old path: {}", target_folder_path);
+                                crate::debug_print!("New path: {}", new_folder_name);
+                                match std::fs::rename(target_folder_path, new_folder_name) {
+                                    Ok(_) => {
+                                        crate::debug_print!("Renamed folder successfully!");
+                                    },
+                                    Err(error) => {
+                                        crate::debug_print!("Failed to rename folder: {}", error);
+                                    }
+                                }
+                                
+                                match change_lesson_title_in_config_file(&config_file_path, lesson_id, new_lesson_title.as_str()){
+                                    Ok(_) => {
+                                        crate::debug_print!("Successfully updated config file!");
+                                    }
+                                    Err(error) => {
+                                        crate::debug_print!("{}", error);
+                                    }
+                                }
+                                // json
+                            }
+                        }
+                        Err(error) => {
+                            crate::debug_print!("Failed to write lesson to target: {}", error);
+                            let response_message = CreateResponse{
+                                status_code: StatusCode::BAD_REQUEST.as_u16() as u32,
+                            };
+        
+                            return RustResponse {
+                                successful: false,
+                                message: Some(response_message.encode_to_vec()),
+                                blob: None,
+                            }
+                        }
+                    }
+
+                    let response_message = CreateResponse {
+                        status_code: StatusCode::OK.as_u16() as u32,
                     };
-
+    
                     return RustResponse {
-                        successful: false,
+                        successful: true,
                         message: Some(response_message.encode_to_vec()),
                         blob: None,
                     }
                 }
+                Ok(None) => {
+                    // Lesson with the specified ID not found
+                    crate::debug_print!("Lesson not found.");
+                }
+                Err(err) => {
+                    // Handle the error
+                    crate::debug_print!("Error: {}", err);
+                }
             }
-
-            //Reset data objects
-            upload_sources_data_object.file_paths.clear();
-            upload_sources_data_object.urls.clear();
-            upload_sources_data_object.text_files.clear();
-
-            lesson_specifications_data_object.lesson_specifications.clear();
 
             let response_message = CreateResponse{
                 status_code: StatusCode::OK.as_u16() as u32,
@@ -79,6 +147,23 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
                 message: Some(response_message.encode_to_vec()),
                 blob: None,
             }
+
+            // //Reset data objects
+            // upload_sources_data_object.file_paths.clear();
+            // upload_sources_data_object.urls.clear();
+            // upload_sources_data_object.text_files.clear();
+
+            // lesson_specifications_data_object.lesson_specifications.clear();
+
+            // let response_message = CreateResponse{
+            //     status_code: StatusCode::OK.as_u16() as u32,
+            // };
+
+            // RustResponse {
+            //     successful: true,
+            //     message: Some(response_message.encode_to_vec()),
+            //     blob: None,
+            // }
         },
         RustOperation::Read => {
             // Handles the lesson generation
@@ -212,6 +297,55 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
         },
         RustOperation::Delete => RustResponse::default(),
     }
+}
+
+fn change_lesson_title_in_config_file(file_path: &str, lesson_id: u32, new_title: &str) -> io::Result<()> {
+    // Load all lessons in the config file and Deserialize the JSON string
+    let mut root: Root = {
+        // crate::debug_print!("Reading File: {}", file_path);
+        let mut file = File::open(file_path)?;
+        let mut contents = String::new();
+        file.read_to_string(&mut contents)?;
+
+        // Deserialize the JSON string into Root
+        serde_json::from_str(&contents).unwrap_or_else(|e| {
+            // Handle deserialization error, for simplicity, panicking in case of an error
+            crate::debug_print!("Failed to deserialize Root.");
+            panic!("Error deserializing Root: {}", e);
+        })
+    };
+
+    // Find the lesson with the given ID and update its title
+    if let Some(lesson) = root.menu_data_object.lessons_data_object.lessons.iter_mut().find(|l| l.id == lesson_id) {
+        lesson.title = new_title.to_string();
+        
+        let new_target_path = format!(
+            "{}/{}",
+            Path::new(&lesson.target_path).parent().unwrap().display(),
+            new_title
+        );
+        lesson.target_path = new_target_path.clone();
+
+        // Rename the folder if it exists
+        if Path::new(&lesson.target_path).exists() {
+            fs::rename(&lesson.target_path, &new_target_path)?;
+        }
+    } else {
+        // Handle the case where the lesson with the given ID is not found
+        return Err(io::Error::new(io::ErrorKind::NotFound, "Lesson not found"));
+    }
+
+    // Serialize the updated MenuDataObject back to JSON
+    let updated_json = serde_json::to_string_pretty(&root)?;
+
+    // Overwrite the content of the JSON file with the updated JSON string
+    let mut file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(file_path)?;
+    file.write_all(updated_json.as_bytes())?;
+
+    Ok(())
 }
 
 pub fn read_tcp_stream() -> Result<(), Box<dyn std::error::Error>> {
