@@ -170,7 +170,7 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
 
                     let mut questions_from_pydantic = Vec::new();
 
-                    for i in 1..pydantic.questions.len() {
+                    for i in 0..pydantic.questions.len() {
                         questions_from_pydantic.push(Question::Identification(IdentificationQuestion {
                             answer: pydantic.questions[i].answer.clone(),
                             question: pydantic.questions[i].question.clone(),

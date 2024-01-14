@@ -88,6 +88,81 @@ def generate_content_index(files: list[str], urls: list[str], index_path: str):
     print(index)
 
 
+def generate_both(quiz_specifications: list[str], index: VectorStoreIndex):
+    dict_example = {
+        "questions": [
+            {
+                "question" : "Who invented the telephone?",
+                "answer" : "Alexander Bell"
+            },
+            {
+                "question" : "Who invented the atomic bomb?",
+                "answer" : "Robert Oppenheimer"
+            }
+        ]
+    }
+
+    json_example = json.dumps(dict_example)
+
+    prompt = ChatPromptTemplate(message_templates=[
+        ChatMessage(role="system",
+                    content=(
+                        "You are a quiz generator. You will be given topic to generate the questions."
+                        "You will generate a technical question along with the correct answer about the given topic."
+                        "Make sure you follow the following instructions.Make sure to make the answer concise."
+                        "Make sure to always end the question with a question mark. Don't ask questions about the source. Do not mention the references or the documents provided. Don't include the questions about who prepared the document."
+                        "Make sure to follow the number of questions in the quiz specifications."
+                        "Make sure to make the answer short and concise."
+
+                        "Generate a valid JSON in the following format:\n"
+                        "{json_example}\n"
+                        "Take note this is only an example the user might want to have more questions.\n"
+
+                        "Make sure each question are unique"
+                        "Do not make a lengthy sentence answer, make the answer short and concise like a word, term, or a phrase"
+                    )),
+        ChatMessage(role="user",
+                    content=(
+                        "Here is the quiz specifications: \n"
+                        "------\n"
+                        "{quiz_specifications}\n"
+                        "------"
+                        "I want you to follow these specifications"
+                    )),
+    ])
+
+    messages = prompt.format_messages(json_example=json_example, quiz_specifications=quiz_specifications)
+
+    query_engine = index.as_query_engine(messages=messages,
+                                         output_cls=IdentificationQuestionModels,
+                                         repsonse_mode="accumulate")
+    
+    output = query_engine.query(
+        '''
+        Generate the question based on my specifications.
+        Make sure each question are unique
+        Make sure to not ask question about the sources/documents provided
+        Make sure to ask technical questions about the focus topic specification
+        Make sure to follow the number of questions in my specifications
+        Do not make a lengthy sentence answer, make the answer short and concise like a word, term, or a phrase
+        '''
+    )
+
+    response = output.response
+    print(f">>> output: {output}")
+    print("\n\n")
+    print(f">>> response: {response}")
+    print("\n\n")
+
+    # print(f"output: {output.question}")
+    # print(f"response: {response.question}")
+
+    # output_dict = output.dict()
+    # memory.append(response)
+
+    return output
+
+
 
 def generate_identification(quiz_specifications: list[str], index: VectorStoreIndex, existing_questions: list[str]):
     dict_example = {
@@ -110,7 +185,7 @@ def generate_identification(quiz_specifications: list[str], index: VectorStoreIn
                     content=(
                         "You are a quiz generator. You will be given topic to generate the questions."
                         "You will generate a technical question along with the correct answer about the given topic."
-                        "Make sure you follow the following instructions. Make sure to make the answer concise."
+                        "Make sure you follow the following instructions.Make sure to make the answer concise."
                         "Make sure to always end the question with a question mark. Don't ask questions about the source. Do not mention the references or the documents provided. Don't include the questions about who prepared the document."
                         "Make sure to follow the number of questions in the quiz specifications."
                         "Make sure to make the answer short and concise."
