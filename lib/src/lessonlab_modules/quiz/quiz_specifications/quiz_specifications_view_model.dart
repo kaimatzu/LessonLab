@@ -47,6 +47,9 @@ class FormField {
 
 class QuizSpecificationsViewModel extends ChangeNotifier {
   QuizSpecificationsViewModel() {
+    quizSpecsModel = QuizSpecificationsModel();
+    quizSpecsModel.quizSpecs = [];
+
     final initializeFields = [
       InputField(label: 'Title', hintLabel: 'Enter quiz title'),
       InputField(label: 'Focus Topic', hintLabel: 'Enter focus topic'),
@@ -80,8 +83,8 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
   final InputField titleField =
       InputField(label: 'Title', hintLabel: 'Enter lesson title');
 
-  final quizSpecsModel = QuizSpecificationsModel();
-  var model = QuizSpecificationsModel();
+  late final QuizSpecificationsModel quizSpecsModel;
+  // var model = QuizSpecificationsModel();
   var orchestrator = QuizSpecificationsConnectionOrchestrator();
   var formFields = <FormField>[];
   var quizSpecifications = <String>[];
@@ -153,7 +156,7 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
   void generateQuiz(
       BuildContext context, QuizPageViewModel quizPageViewModel) async {
     collectFormTextValues();
-    orchestrator.sendData(quizSpecifications);
+    sendData();
     await quizPageViewModel.loadQuizModel();
     if (!context.mounted) return;
     Navigator.restorablePushNamed(context, QuizPageView.routeName);

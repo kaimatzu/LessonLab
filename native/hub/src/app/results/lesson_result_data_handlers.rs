@@ -136,7 +136,11 @@ pub async fn handle_lesson_generation(rust_request: RustRequest,
             }
 
             // Spawning the thread for creating the lesson
-            tokio::spawn(create_thread_handles(upload_sources_data_object.file_paths.clone(), upload_sources_data_object.urls.clone(), target_folder_path, lesson_specifications_data_object.lesson_specifications.clone()));
+            tokio::spawn(create_thread_handles(
+                upload_sources_data_object.file_paths.clone(),
+                upload_sources_data_object.urls.clone(),
+                target_folder_path,
+                lesson_specifications_data_object.lesson_specifications.clone()));
             
 
             let response_message = ReadResponse {

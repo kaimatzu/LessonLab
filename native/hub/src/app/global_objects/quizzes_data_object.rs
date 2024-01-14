@@ -3,18 +3,27 @@ use serde::{Deserialize, Serialize};
 use crate::app::results::lesson_result_data_object::Sources;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
-pub struct Quiz{
+pub struct PydanticIdentifications {
+    pub questions: Vec<IdentificationQuestion>
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+pub struct PydanticMultipleChoices {
+    pub questions: Vec<MultipleChoiceQuestion>
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+pub struct Quiz {
     pub id: u32,
     // pub quiz_type: i32, // 1 = Identification | 2 = Multiple Choice 
     pub title: String,
     pub target_path: String,
     pub questions: Vec<Question>,
-    pub sources: Sources // Sources from lesson_result_data_object
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
-pub enum Question{
+pub enum Question {
     #[serde(rename = "identification")]
     Identification(IdentificationQuestion),
     #[serde(rename = "multipleChoice")]

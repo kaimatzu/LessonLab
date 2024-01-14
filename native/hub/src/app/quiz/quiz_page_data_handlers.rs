@@ -11,7 +11,7 @@ use http::StatusCode;
 use prost::Message;
 use tokio_with_wasm::tokio;
 
-use crate::app::entry::menu;
+use crate::app::entry::{menu, upload};
 // Utils
 use crate::app::utils::{quiz_generator, scrapers};
 
@@ -20,12 +20,13 @@ use crate::bridge::{RustRequest, RustResponse, RustOperation};
 
 // Data objects
 use crate::app::quiz::quiz_specifications_data_object::QuizSpecificationsDataObject;
-use crate::app::global_objects::quizzes_data_object::{QuizzesDataObject, Quiz, Question, IdentificationQuestion, MultipleChoiceQuestion};
+use crate::app::global_objects::quizzes_data_object::{QuizzesDataObject, Quiz, Question, IdentificationQuestion, MultipleChoiceQuestion, PydanticIdentifications};
 use crate::app::entry::menu::menu_data_object::{MenuDataObject, Root};
 use crate::app::entry::upload::upload_sources_data_object::UploadSourcesDataObject;
 use crate::app::settings::settings_data_object::SettingsDataObject;
 use crate::app::results::lesson_result_data_object::Sources;
 
+use crate::messages::quiz;
 use crate::messages::quiz::quiz_page::question_model::QuestionType;
 // Messages
 use crate::messages::quiz::quiz_page::{
@@ -81,213 +82,213 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
 
             // crate::debug_print!("quiz_page quiz specs: {:?}", quiz_specifications_data_object.quiz_specifications.clone());
 
-            // // End quiz specs test = ===============================
+            // End quiz specs test = ===============================
 
-            // // start REAL CODE = ===============================
-            // let message_bytes = rust_request.message.unwrap();
-            // let request_message = ReadRequest::decode(message_bytes.as_slice()).unwrap();
+            // start REAL CODE = ===============================
+            let message_bytes = rust_request.message.unwrap();
+            let request_message = ReadRequest::decode(message_bytes.as_slice()).unwrap();
 
-            // let _ = request_message;
+            let _ = request_message;
 
-            // let response_message;
+            let response_message;
 
-            // let mut string_payload: String = String::from("Quiz Specifications \n");
+            let mut sources = Sources::default();
+
+            for file_path in &upload_sources_data_object.file_paths {
+                sources.source_files.push(file_path.clone());
+            }
             
-            // // let quizzes_json = QuizzesDataObject { quizzes: Vec::new() };
-            // let mut sources = Sources::default();
+            for url in &upload_sources_data_object.urls {
+                sources.source_urls.push(url.clone());
+            }
 
-            // for quiz_specification in &quiz_specifications_data_object.quiz_specifications {
-            //     string_payload.push_str(&quiz_specification);
-            //     string_payload.push_str("\n"); 
-            //     crate::debug_print!("Quiz Spec: {}", &quiz_specification);
+            for text in &upload_sources_data_object.text_files {
+                sources.source_texts.push(text.clone())
+            }
+
+            let sanitized_title;
+            match quiz_specifications_data_object.quiz_specifications.get(0) {
+                Some(title) => {
+                    sanitized_title = title.split_at(8).1;
+                },
+                None => {
+                    sanitized_title = "Error_failed_to_get_tile";
+                }
+            }
+            // File path of config.json
+            let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
+            // File path of target/output.md
+            let target_folder_path = format!("{}\\{}", &config_file_path, &sanitized_title);
+
+            match std::fs::create_dir_all(&target_folder_path) {
+                Ok(_) => { crate::debug_print!("Successfully created directory"); },
+                Err(err) => { crate::debug_print!("Failed to create directory {}", err); },
+            }
+
+            let quizzes = menu_data_object.quizzes_data_object.quizzes.clone();
+
+            let mut new_id: u32 = 0;
+            for quiz in quizzes {
+                new_id = quiz.id;
+                new_id += 1;
+            }
+
+            // let quiz = Quiz{
+            //     id: new_id,
+            //     sources,
+            //     target_path: target_folder_path.to_owned(),
+            //     title: quiz_specifications_data_object.quiz_specifications.get(0).unwrap().clone(),
+            //     questions: , // TODO: generate questions from python (AI)
+            //     // or save the question in a file
+            // };
+
+            config_file_path.push_str("\\config.json");
+
+
+            // match write_quiz_to_config_file(&quiz, &config_file_path) {
+            //     Ok(_) => crate::debug_print!("Successfully write to config file"),
+            //     Err(err) => crate::debug_print!("Failed to write to config file: {}", error)
             // }
 
-            // string_payload.push_str("------------------------------- \n");
-
-            // for file_path in &upload_sources_data_object.file_paths {
-            //     if file_path.to_lowercase().ends_with(".pdf") {
-            //         // TODO: Implement other scrapers for other text file formats
-            //         match scrapers::scrape_pdf(file_path.to_string()) {
-            //             Ok(pdf_content) => {
-            //                 string_payload.push_str(&pdf_content);
-            //                 string_payload.push_str("\n"); 
-            //                 sources.source_files.push(file_path.clone())
-            //             }
-            //             Err(err) => {
-            //                 crate::debug_print!("[Scraper] >>> {} ", err);
-            //             }
-            //         }
-            //     }
-            // }
+            let files = upload_sources_data_object.file_paths.clone();
+            let urls = upload_sources_data_object.urls.clone();
             
-            // for url in &upload_sources_data_object.urls {
-            //     match scrapers::scrape_url(url.to_string()) {
-            //         Ok(web_content) => {
-            //             string_payload.push_str(&web_content);
-            //             string_payload.push_str("\n"); 
-            //             sources.source_urls.push(url.clone())
-            //         }
-            //         Err(err) => {
-            //                 crate::debug_print!("[Scraper] >>> {} ", err);
-            //         }
-            //     }
-            // }
+            let title: String;
+            let target_path: String;
+            match quiz_generator::generate(
+                files.clone(), urls.clone(),
+                target_folder_path.clone(),
+                quiz_specifications_data_object.quiz_specifications.clone()){
+                Ok(json) => {
+                    // This will return PydanticIdentifications or PydanticMultipleChoices
 
-            // for text in &upload_sources_data_object.text_files {
-            //     string_payload.push_str(&text.title);
-            //     string_payload.push_str("\n"); 
-            //     string_payload.push_str(&text.content);
-            //     string_payload.push_str("\n"); 
-            //     sources.source_texts.push(text.clone())
-            // }
+                    let mut pydantic = PydanticIdentifications::default();
+                    match serde_json::from_str(&json) {
+                        Ok(returned) => pydantic = returned,
+                        Err(err) => { crate::debug_print!("Failed to deserialize quiz {}", err); },
+                    }
 
-            // // let sanitized_title = quiz_specifications_data_object.quiz_specifications.get(0).unwrap().clone().replace(" ", "_");
-            // let sanitized_title;
+                    let mut questions_from_pydantic = Vec::new();
 
-            // match quiz_specifications_data_object.quiz_specifications.get(0) {
-            //     Some(title) => {
-            //         sanitized_title = title.clone().replace(" ", "_");
-            //     }
-            //     None => {
-            //         sanitized_title = "Error_failed_to_get_tile".to_string();
-            //     }
-            // }
-            // // File path of config.json
-            // let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
-            // // File path of target/output.md
-            // let target_folder_path = format!("{}\\{}", &config_file_path, &sanitized_title);
+                    for i in 1..pydantic.questions.len() {
+                        questions_from_pydantic.push(Question::Identification(IdentificationQuestion {
+                            answer: pydantic.questions[i].answer.clone(),
+                            question: pydantic.questions[i].question.clone(),
+                        }));
+                    }
+                    
+                    let mut quiz_from_pydantic = Quiz {
+                        id: new_id.clone(),
+                        title: sanitized_title.to_string().clone(),
+                        target_path: target_folder_path.clone(),
+                        questions: questions_from_pydantic,
+                    };
 
-            // if let Err(error) = std::fs::create_dir_all(&target_folder_path) {
-            //     crate::debug_print!("Failed to create folder: {}", error);
-            // }
+                    quiz_from_pydantic.id = new_id;
+                    title = quiz_from_pydantic.title.clone();
+                    target_path = quiz_from_pydantic.target_path.clone();
+                    let quiz_clone = quiz_from_pydantic.clone();
+                    menu_data_object.quizzes_data_object.quizzes.push(quiz_clone);
 
-            // let quizzes = menu_data_object.quizzes_data_object.quizzes.clone();
+                    match write_quiz_to_config_file(&quiz_from_pydantic, &config_file_path) {
+                        Ok(_) => { crate::debug_print!("Successfully wrote quiz to config.json"); },
+                        Err(err) => { crate::debug_print!("Failed to write quiz to config.json {}", err); },
+                    }
 
-            // let mut new_id: u32 = 0;
-            // for quiz in quizzes {
-            //     new_id = quiz.id;
-            //     new_id += 1;
-            // }
+                    // Init textfiles
+                    // for text in quiz_from_json.sources.source_texts {
+                    //     text_files.push(TextFileModel {
+                    //         title: text.title,
+                    //         content: text.content,
+                    //     });
+                    // }
 
-            // // let quiz = Quiz{
-            // //     id: new_id,
-            // //     sources,
-            // //     target_path: target_folder_path.to_owned(),
-            // //     title: quiz_specifications_data_object.quiz_specifications.get(0).unwrap().clone(),
-            // //     questions: , // TODO: generate questions from python (AI)
-            // //     // or save the question in a file
-            // // };
+                    // Init sources
 
-            // config_file_path.push_str("\\config.json");
+                    let mut text_files = Vec::new();
+                    text_files.push(TextFileModel {
+                        title: "_".to_string(),
+                        content: "_".to_string(),
+                    });
+                    let sources = SourcesModel {
+                        files,
+                        urls,
+                        texts: text_files
+                    };
 
-            // let title: String;
-            // let target_path: String;
-            // match quiz_generator::generate(string_payload) {
-            //     Ok(json) => {
-            //         // TODO: generate quiz from json string
+                    // Init questions
+                    let mut questions = Vec::new();
+                    for question in quiz_from_pydantic.questions {
 
-            //         let mut quiz_from_json: Quiz = serde_json::from_str(&json).unwrap_or_else(|e| {
-            //             crate::debug_print!("Failed to deserialize Root.");
-            //             panic!("Error deserializing Root: {}", e);
-            //         });
-            //         quiz_from_json.id = new_id;
-            //         title = quiz_from_json.title.clone();
-            //         target_path = quiz_from_json.target_path.clone();
-            //         let quiz_clone = quiz_from_json.clone();
-            //         menu_data_object.quizzes_data_object.quizzes.push(quiz_clone);
-            //         if let Err(error) = write_quiz_to_config_file(&quiz_from_json, &config_file_path) {
-            //             crate::debug_print!("Failed to write to config file: {}", error);
-            //         }
+                        match question {
+                            Question::Identification(identification) => {
 
-            //         // Init textfiles
-            //         let mut text_files = Vec::new();
-            //         for text in quiz_from_json.sources.source_texts {
-            //             text_files.push(TextFileModel {
-            //                 title: text.title,
-            //                 content: text.content,
-            //             });
-            //         }
+                                let question_model = IdentificationQuestionModel {
+                                    answer: identification.answer,
+                                };
 
-            //         // Init sources
-            //         let sources = SourcesModel {
-            //             files: quiz_from_json.sources.source_files,
-            //             urls: quiz_from_json.sources.source_urls,
-            //             texts: text_files,
-            //         };
+                                questions.push(QuestionModel{
+                                    question: identification.question,
+                                    r#type: 1,
+                                    question_type: Some(QuestionType::Identification(question_model)),
+                                });
+                            }
+                            Question::MultipleChoice(multiple_choice) => {
 
-            //         // Init questions
-            //         let mut questions = Vec::new();
-            //         for question in quiz_from_json.questions {
+                                // Create `ChoiceModel` from DTO
+                                let mut choices = Vec::new();
+                                for choice in multiple_choice.choices {
+                                    choices.push(ChoiceModel {
+                                        content: choice.content,
+                                        is_correct: choice.is_correct,
+                                    });
+                                }
 
-            //             match question {
-            //                 Question::Identification(identification) => {
+                                let question_model = MultipleChoiceQuestionModel {
+                                    choices,
+                                };
 
-            //                     let question_model = IdentificationQuestionModel {
-            //                         answer: identification.answer,
-            //                     };
-
-            //                     questions.push(QuestionModel{
-            //                         question: identification.question,
-            //                         r#type: 1,
-            //                         question_type: Some(QuestionType::Identification(question_model)),
-            //                     });
-            //                 }
-            //                 Question::MultipleChoice(multiple_choice) => {
-
-            //                     // Create `ChoiceModel` from DTO
-            //                     let mut choices = Vec::new();
-            //                     for choice in multiple_choice.choices {
-            //                         choices.push(ChoiceModel {
-            //                             content: choice.content,
-            //                             is_correct: choice.is_correct,
-            //                         });
-            //                     }
-
-            //                     let question_model = MultipleChoiceQuestionModel {
-            //                         choices,
-            //                     };
-
-            //                     questions.push(QuestionModel{
-            //                         question: multiple_choice.question,
-            //                         r#type: 2,
-            //                         question_type: Some(QuestionType::MultipleChoice(question_model)),
-            //                     });
-            //                 }
-            //             }  // end match
-            //         } // end for questions
-            //         response_message = ReadResponse {
-            //             status_code: StatusCode::OK.as_u16() as u32,
-            //             quiz_model: Some(QuizModel{
-            //                 id: new_id,
-            //                 title,
-            //                 target_path,
-            //                 questions,
-            //                 sources: Some(sources),
-            //             })
-            //         }
-            //     } // end Ok()
-            //     Err(err) => {
-            //         crate::debug_print!("{:?}", err.to_string());
-            //         response_message = ReadResponse {
-            //             status_code: StatusCode::NOT_FOUND.as_u16() as u32,
-            //             quiz_model: None
-            //         };
-            //     }
-            // }
+                                questions.push(QuestionModel {
+                                    question: multiple_choice.question,
+                                    r#type: 2,
+                                    question_type: Some(QuestionType::MultipleChoice(question_model)),
+                                });
+                            }
+                        }  // end match
+                    } // end for questions
+                    response_message = ReadResponse {
+                        status_code: StatusCode::OK.as_u16() as u32,
+                        quiz_model: Some(QuizModel{
+                            id: new_id,
+                            title,
+                            target_path,
+                            questions,
+                            sources: Some(sources),
+                        })
+                    }
+                }, // end Ok()
+                Err(err) => {
+                    crate::debug_print!("{:?}", err.to_string());
+                    response_message = ReadResponse {
+                        status_code: StatusCode::NOT_FOUND.as_u16() as u32,
+                        quiz_model: None
+                    };
+                }
+            }
             
-            // RustResponse {
-            //     successful: true,
-            //     message: Some(response_message.encode_to_vec()),
-            //     blob: None,
-            // }
+            RustResponse {
+                successful: true,
+                message: Some(response_message.encode_to_vec()),
+                blob: None,
+            }
             // end REAL CODE = ===============================
 
             // Start TEST = ===============================
-            let mut test_source_files = Vec::new();
-            let mut test_source_urls = Vec::new();
-            let mut test_source_texts = Vec::new();
-            let mut test_questions = Vec::new();
-            let mut test_choices = Vec::new();
+            // let mut test_source_files = Vec::new();
+            // let mut test_source_urls = Vec::new();
+            // let mut test_source_texts = Vec::new();
+            // let mut test_questions = Vec::new();
+            // let mut test_choices = Vec::new();
             // for i in 0..3 {
             //     let correct: bool;
             //     if i == 0 {
@@ -300,61 +301,61 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
             //         is_correct: correct,
             //     });
             // }
-            test_source_files.push("rust_test_source_files".to_string());
-            test_source_urls.push("rust_test_source_urls".to_string());
-            test_source_texts.push(TextFileModel {
-                title: "Rust Test Title".to_string(),
-                content: "Rust test content".to_string(),
-            });
-            for i in 0..3 {
-                for j in 0..3 {
-                    let correct: bool;
-                    if j == i {
-                        correct = true
-                    } else {
-                        correct = false
-                    }
-                    test_choices.push(ChoiceModel {
-                        content: "Rust test choice ".to_string() + &j.to_string(),
-                        is_correct: correct,
-                    });
-                }
-                test_questions.push(QuestionModel {
-                    question: "Rust test question ".to_string() + &i.to_string(),
-                    r#type: 2,
-                    question_type: Some(QuestionType::MultipleChoice(MultipleChoiceQuestionModel{
-                        choices: test_choices.clone(),
-                    })),
-                });
-                for _ in 0..3{
-                    test_choices.remove(0);
-                }
-            }
-            test_questions.push(QuestionModel {
-                question: "Test identification question".to_string(),
-                r#type: 1,
-                question_type: Some(QuestionType::Identification(IdentificationQuestionModel{
-                    answer: "Test identification answer".to_string(),
-                })),
-            });
-            RustResponse {
-                successful: true,
-                message: Some(ReadResponse {
-                    status_code: StatusCode::OK.as_u16() as u32,
-                    quiz_model: Some(QuizModel {
-                        id: 100,
-                        title: "rust_test_quiz".to_string(),
-                        target_path: "rust_test_target_path".to_string(),
-                        questions: test_questions,
-                        sources: Some(SourcesModel {
-                            files: test_source_files,
-                            urls: test_source_urls,
-                            texts: test_source_texts,
-                        }),
-                    }),
-                }.encode_to_vec()),
-                blob: None,
-            }
+            // test_source_files.push("rust_test_source_files".to_string());
+            // test_source_urls.push("rust_test_source_urls".to_string());
+            // test_source_texts.push(TextFileModel {
+            //     title: "Rust Test Title".to_string(),
+            //     content: "Rust test content".to_string(),
+            // });
+            // for i in 0..3 {
+            //     for j in 0..3 {
+            //         let correct: bool;
+            //         if j == i {
+            //             correct = true
+            //         } else {
+            //             correct = false
+            //         }
+            //         test_choices.push(ChoiceModel {
+            //             content: "Rust test choice ".to_string() + &j.to_string(),
+            //             is_correct: correct,
+            //         });
+            //     }
+            //     test_questions.push(QuestionModel {
+            //         question: "Rust test question ".to_string() + &i.to_string(),
+            //         r#type: 2,
+            //         question_type: Some(QuestionType::MultipleChoice(MultipleChoiceQuestionModel{
+            //             choices: test_choices.clone(),
+            //         })),
+            //     });
+            //     for _ in 0..3{
+            //         test_choices.remove(0);
+            //     }
+            // }
+            // test_questions.push(QuestionModel {
+            //     question: "Test identification question".to_string(),
+            //     r#type: 1,
+            //     question_type: Some(QuestionType::Identification(IdentificationQuestionModel{
+            //         answer: "Test identification answer".to_string(),
+            //     })),
+            // });
+            // RustResponse {
+            //     successful: true,
+            //     message: Some(ReadResponse {
+            //         status_code: StatusCode::OK.as_u16() as u32,
+            //         quiz_model: Some(QuizModel {
+            //             id: 100,
+            //             title: "rust_test_quiz".to_string(),
+            //             target_path: "rust_test_target_path".to_string(),
+            //             questions: test_questions,
+            //             sources: Some(SourcesModel {
+            //                 files: test_source_files,
+            //                 urls: test_source_urls,
+            //                 texts: test_source_texts,
+            //             }),
+            //         }),
+            //     }.encode_to_vec()),
+            //     blob: None,
+            // }
             // End TEST = ===============================
         }
         RustOperation::Update => {

@@ -61,7 +61,7 @@ class MenuView extends StatelessWidget {
               mainAxisSpacing: 24.0,
               childAspectRatio: cardWidth / cardHeight,
             ),
-            itemCount: quizzes.length + lessons.length,
+            itemCount: lessons.length,
             itemBuilder: (BuildContext context, int index) {
               if (index < lessons.length) {
                 return FutureBuilder<String>(
