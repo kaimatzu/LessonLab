@@ -7,6 +7,8 @@ import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_resu
 
 import 'dart:developer' as developer;
 
+final GlobalKey<ScaffoldState> lessonResultScaffoldKey = GlobalKey<ScaffoldState>();
+
 class LessonResultView extends StatefulWidget {
   const LessonResultView({Key? key}) : super(key: key);
 
@@ -96,18 +98,34 @@ class _LessonResultViewState extends State<LessonResultView> {
     );
 
     return Scaffold(
-      body: const LessonResultScreen(),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(top: 20.0, right: 35.0, bottom: 35.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            export,
-            const SizedBox(width: 30.0),
-            finish,
-          ],
-        ),
+      // key: lessonResultScaffoldKey,
+      body: Column(
+        children: [
+          const LessonResultScreen(),
+          Padding(
+            padding: const EdgeInsets.only(right: 35.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                export,
+                const SizedBox(width: 30.0),
+                finish,
+              ],
+            ),
+          ),
+        ],
       ),
+      // bottomNavigationBar: Padding(
+      //   padding: const EdgeInsets.only(top: 20.0, right: 35.0, bottom: 35.0),
+      //   child: Row(
+      //     mainAxisAlignment: MainAxisAlignment.end,
+      //     children: [
+      //       export,
+      //       const SizedBox(width: 30.0),
+      //       finish,
+      //     ],
+      //   ),
+      // ),
     );
   }
 }

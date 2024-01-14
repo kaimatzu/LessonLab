@@ -4,6 +4,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:lessonlab/src/app.dart';
+import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_result/lesson_result_view_model.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:provider/provider.dart';
@@ -54,20 +56,21 @@ class _TextEditor extends State<TextEditor> {
   String message = "Nothing received yet";
   var markdownContent = "";
   bool isTextSelected = false;
+  bool lessonInitialized = false;
 
   @override
   void initState() {
     // final lessonResultViewModel = context.watch<LessonResultViewModel>(); // PROBLEM HERE
     super.initState();
     _scrollController = ScrollController();
-   _controller.addListener(() { 
+    _controller.addListener(() { 
       if(isTextSelected != (_controller.selection.start != _controller.selection.end)){
-        setState(() {
+        // setState(() {
           isTextSelected = _controller.selection.start != _controller.selection.end;
-        });
+        // });
       }
     });
-
+    
     var mdDocument = md.Document(
         encodeHtml: false,
         extensionSet: md.ExtensionSet.gitHubFlavored,
@@ -78,6 +81,7 @@ class _TextEditor extends State<TextEditor> {
       markdownDocument: mdDocument,
     );
 
+    
     lessonGenerationStream(mdToDelta);
   }
 
@@ -85,6 +89,13 @@ class _TextEditor extends State<TextEditor> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final lessonResultViewModel = context.watch<LessonResultViewModel>();
+
+    // ScaffoldMessenger.of(context).showSnackBar(showLessonGenerationStatus(0, context));
+    // WidgetsBinding.instance.addPostFrameCallback((_) => ScaffoldMessenger.of(context).showSnackBar(showLessonGenerationStatus(0, context)));
+    if(!lessonResultViewModel.done){
+      // WidgetsBinding.instance.addPostFrameCallback((_) => ScaffoldMessenger.of(context).showSnackBar(showLessonGenerationStatus(0, context))); // Creating index notif
+      Future(() => ScaffoldMessenger.of(context).showSnackBar(showLessonGenerationStatus(0, context)));
+    }
 
     _doneGeneratingNotifier.addListener(() {
       var delta = _controller.document.toDelta();
@@ -200,8 +211,11 @@ class _TextEditor extends State<TextEditor> {
                   ),
                 ),
                 onPressed: () {
-                  if(isTextSelected){
+                  if (isTextSelected){
                     lessonResultViewModel.regenerateSection(context, _controller.getPlainText(), _controller, _doneGeneratingNotifier);
+                  } 
+                  else {
+                    WidgetsBinding.instance.addPostFrameCallback((_) => ScaffoldMessenger.of(context).showSnackBar(showLessonGenerationStatus(3, context)));
                   }
                 }),
             QuillToolbarCustomButtonOptions(
@@ -241,8 +255,11 @@ class _TextEditor extends State<TextEditor> {
                   ),
                 ),
                 onPressed: () {
-                  if(!isTextSelected){
+                  if (!isTextSelected){
                     lessonResultViewModel.continueLessonFromHere(context, _controller, _doneGeneratingNotifier);
+                  }
+                  else {
+                    WidgetsBinding.instance.addPostFrameCallback((_) => ScaffoldMessenger.of(context).showSnackBar(showLessonGenerationStatus(4, context)));
                   }
                 }),
             QuillToolbarCustomButtonOptions(
@@ -319,6 +336,9 @@ class _TextEditor extends State<TextEditor> {
                         }));
                     await file.writeAsBytes(await newpdf.save());
                   }
+                  else {
+                    WidgetsBinding.instance.addPostFrameCallback((_) => ScaffoldMessenger.of(context).showSnackBar(showLessonGenerationStatus(5, context)));
+                  }
                 }),
           ]),
     );
@@ -330,7 +350,7 @@ class _TextEditor extends State<TextEditor> {
           controller: _controller,
           autoFocus: true,
           readOnly: !_doneGeneratingNotifier.value,
-          padding: EdgeInsets.only(left: 30, top: 5, right: 30, bottom: 30),
+          padding: EdgeInsets.only(left: 30, top: 5, right: 30),
           elementOptions: const QuillEditorElementOptions(
             orderedList: QuillEditorOrderedListElementOptions(
               useTextColorForDot: true,
@@ -404,7 +424,7 @@ class _TextEditor extends State<TextEditor> {
         ));
 
     return Padding(
-      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0),
       child: Column(
         children: [
           Center(
@@ -447,9 +467,16 @@ class _TextEditor extends State<TextEditor> {
       final signal = streamMessage.StateSignal.fromBuffer(rustSignal.message!);
       final rinfMessage = signal.streamMessage;
       debugPrint(rinfMessage);
+      if(!lessonInitialized && rinfMessage.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => ScaffoldMessenger.of(context).showSnackBar(showLessonGenerationStatus(1, context))); // In progress notif
+        lessonInitialized = true;
+        // ScaffoldMessenger.of(context).showSnackBar(showLessonGenerationStatus(1, context));
+      }
       if (rinfMessage == "[LL_END_STREAM]") {
         _doneGeneratingNotifier.value = true;
         streamSubscription.cancel();
+        // ScaffoldMessenger.of(context).showSnackBar(showLessonGenerationStatus(2, context));
+        WidgetsBinding.instance.addPostFrameCallback((_) => ScaffoldMessenger.of(context).showSnackBar(showLessonGenerationStatus(2, context))); // Done notif
         debugPrint("Done generating: ${_doneGeneratingNotifier.value}");
       } else {
         markdownContent += rinfMessage;
@@ -460,6 +487,258 @@ class _TextEditor extends State<TextEditor> {
         }
         // _controller.document.insert(_controller.plainTextEditingValue.text.length - 1, rinfMessage);
       }
+      
     });
+  }
+
+  SnackBar showLessonGenerationStatus(int mode, BuildContext context) {
+    // 0 = lessonInitialized index
+    // 1 = streaming lesson
+    // 2 = finished
+    // 3 = regenerate section error
+    // 4 = continue lesson from here error
+    // 5 = lesson not done error
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    switch (mode) {
+      case 0:
+        {
+          return SnackBar(
+              content: Row(
+                // We wrap this in a Row to constrain the visible part. It seems dumb but it works.
+                children: [
+                  Container(
+                    height: 75,
+                    width: 300,
+                    padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                    decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, (241 + 255) ~/ 2,
+                            (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Row(
+                      children: [
+                        CircularProgressIndicator(color: Colors.amber
+                            // backgroundColor: Colors.amber,
+                            ),
+                        SizedBox(width: 24),
+                        Text('Generating index...',
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 16)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              elevation: 1000,
+              margin: EdgeInsets.fromLTRB(0, 0, MediaQuery.of(context).size.width / 1.5, 0),
+              backgroundColor: const Color.fromARGB(0, 0, 0, 0),
+              duration: const Duration(minutes: 60),
+              padding: const EdgeInsets.all(16.0),
+              behavior: SnackBarBehavior.floating,
+              hitTestBehavior: HitTestBehavior.translucent,
+          );
+        }
+      case 1: 
+        {
+          return SnackBar(
+              content: Row(
+                // We wrap this in a Row to constrain the visible part. It seems dumb but it works.
+                children: [
+                  Container(
+                    height: 75,
+                    width: 300,
+                    padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                    decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 255, 226, 120),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Row(
+                      children: [
+                        CircularProgressIndicator(color: Colors.amber
+                            // backgroundColor: Colors.amber,
+                            ),
+                        SizedBox(width: 24),
+                        Text('Streaming Lesson...',
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 16)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              elevation: 1000,
+              margin: EdgeInsets.fromLTRB(0, 0, MediaQuery.of(context).size.width / 1.5, 0),
+              backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+              duration: const Duration(minutes: 60),
+              padding: const EdgeInsets.all(16.0),
+              behavior: SnackBarBehavior.floating,
+              hitTestBehavior: HitTestBehavior.translucent,);
+              
+          }
+        case 2: 
+          {
+          return SnackBar(
+              content: Row(
+                // We wrap this in a Row to constrain the visible part. It seems dumb but it works.
+                children: [
+                  Container(
+                    height: 75,
+                    width: 300,
+                    padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                    decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 154, 231, 166),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.check, color: Colors.green),
+                        SizedBox(width: 24),
+                        Text('Finished Lesson Generation',
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 16)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              elevation: 1000,
+              margin: EdgeInsets.fromLTRB(0, 0, MediaQuery.of(context).size.width / 1.5, 0),
+              backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+              duration: const Duration(seconds: 10),
+              padding: const EdgeInsets.all(16.0),
+              behavior: SnackBarBehavior.floating,
+              hitTestBehavior: HitTestBehavior.translucent,);
+          }
+        case 3: 
+          {
+          return SnackBar(
+              content: Row(
+                // We wrap this in a Row to constrain the visible part. It seems dumb but it works.
+                children: [
+                  Container(
+                    height: 75,
+                    width: 300,
+                    padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                    decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 255, 171, 141),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.error, color: Colors.red),
+                        SizedBox(width: 24),
+                        Text('Please select a section of text!',
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 16)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              elevation: 1000,
+              margin: EdgeInsets.fromLTRB(0, 0, MediaQuery.of(context).size.width / 1.5, 0),
+              backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+              duration: const Duration(seconds: 3),
+              padding: const EdgeInsets.all(16.0),
+              behavior: SnackBarBehavior.floating,
+              hitTestBehavior: HitTestBehavior.translucent,);
+          }
+        case 4: 
+          {
+          return SnackBar(
+              content: Row(
+                // We wrap this in a Row to constrain the visible part. It seems dumb but it works.
+                children: [
+                  Container(
+                    height: 75,
+                    width: 300,
+                    padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                    decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 255, 171, 141),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.error, color: Colors.red),
+                        SizedBox(width: 24),
+                        Text('Unselect text!',
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 16)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              elevation: 1000,
+              margin: EdgeInsets.fromLTRB(0, 0, MediaQuery.of(context).size.width / 1.5, 0),
+              backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+              duration: const Duration(seconds: 3),
+              padding: const EdgeInsets.all(16.0),
+              behavior: SnackBarBehavior.floating,
+              hitTestBehavior: HitTestBehavior.translucent,);
+          }
+        case 5: 
+          {
+          return SnackBar(
+              content: Row(
+                // We wrap this in a Row to constrain the visible part. It seems dumb but it works.
+                children: [
+                  Container(
+                    height: 75,
+                    width: 300,
+                    padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                    decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 255, 171, 141),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.error, color: Colors.red),
+                        SizedBox(width: 24),
+                        Text('Generation ongoing!',
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 16)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              elevation: 1000,
+              margin: EdgeInsets.fromLTRB(0, 0, MediaQuery.of(context).size.width / 1.5, 0),
+              backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+              duration: const Duration(seconds: 3),
+              padding: const EdgeInsets.all(16.0),
+              behavior: SnackBarBehavior.floating,
+              hitTestBehavior: HitTestBehavior.translucent,);
+          }
+        default:
+          {
+          return SnackBar(
+              content: Row(
+                // We wrap this in a Row to constrain the visible part. It seems dumb but it works.
+                children: [
+                  Container(
+                    height: 75,
+                    width: 300,
+                    padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                    decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 255, 171, 141),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.error, color: Colors.red),
+                        SizedBox(width: 24),
+                        Text('Error in Lesson Generation',
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 16)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              elevation: 1000,
+              margin: EdgeInsets.fromLTRB(0, 0, MediaQuery.of(context).size.width / 1.5, 0),
+              backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+              duration: const Duration(seconds: 10),
+              padding: const EdgeInsets.all(16.0),
+              behavior: SnackBarBehavior.floating,
+              hitTestBehavior: HitTestBehavior.translucent,);
+          }
+    }
   }
 }

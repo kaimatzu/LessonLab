@@ -70,8 +70,11 @@ class LessonOpenViewModel with ChangeNotifier {
     developer.log("Load menu content");
     await menuViewModel.loadViewContent();
 
-    // ignore: use_build_context_synchronously
-    Navigator.popUntil(context, (route) => route.isFirst);
+    Future(() {
+      ScaffoldMessenger.of(context).clearSnackBars();
+    }); 
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.popUntil(context, (route) => route.isFirst));
   }
 
   Future<void> loadViewContent(int id) async {
@@ -129,7 +132,7 @@ class LessonOpenViewModel with ChangeNotifier {
       //   encodeHtml: false,
       //   extensionSet: md.ExtensionSet.gitHubFlavored,
       // );
-
+      WidgetsBinding.instance.addPostFrameCallback((_) => ScaffoldMessenger.of(context).showSnackBar(showLessonRegenerationStatus(0, context))); // In progress notif
       controller.document.delete(selection.start, selection.extentOffset - selection.baseOffset);
       controller.moveCursorToPosition(selection.start);
       var currentCursorPos = selection.start;
@@ -141,6 +144,7 @@ class LessonOpenViewModel with ChangeNotifier {
         final rinfMessage = signal.streamMessage;
         if (rinfMessage == "[LL_END_STREAM]") {
           streamSubscription.cancel();
+          WidgetsBinding.instance.addPostFrameCallback((_) => ScaffoldMessenger.of(context).showSnackBar(showLessonRegenerationStatus(2, context))); // Done notif
           doneGeneratingNotifier.value = true;
         } else{
           debugPrint("In open lesson: $rinfMessage");
@@ -165,6 +169,8 @@ class LessonOpenViewModel with ChangeNotifier {
       var selection = controller.selection;
       late StreamSubscription<RustSignal> streamSubscription;
 
+      WidgetsBinding.instance.addPostFrameCallback((_) => ScaffoldMessenger.of(context).showSnackBar(showLessonRegenerationStatus(1, context))); // In progress notif
+
       controller.moveCursorToPosition(selection.start);
       var currentCursorPos = selection.start;
       streamSubscription = rustBroadcaster.stream
@@ -175,6 +181,7 @@ class LessonOpenViewModel with ChangeNotifier {
         final rinfMessage = signal.streamMessage;
         if (rinfMessage == "[LL_END_STREAM]") {
           streamSubscription.cancel();
+          WidgetsBinding.instance.addPostFrameCallback((_) => ScaffoldMessenger.of(context).showSnackBar(showLessonRegenerationStatus(2, context))); // Done notif
           doneGeneratingNotifier.value = true;
         } else{
           debugPrint("In open lesson: $rinfMessage");
@@ -240,4 +247,153 @@ class LessonOpenViewModel with ChangeNotifier {
       ),
     );
   }
+
+  SnackBar showLessonRegenerationStatus(int mode, BuildContext context) {
+    // 0 = lessonInitialized index
+    // 1 = streaming lesson
+    // 2 = finished
+    ScaffoldMessenger.of(context).clearSnackBars();
+    switch (mode) {
+      case 0:
+        {
+          return SnackBar(
+              content: Row(
+                // We wrap this in a Row to constrain the visible part. It seems dumb but it works.
+                children: [
+                  Container(
+                    height: 75,
+                    width: 300,
+                    padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                    decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, (241 + 255) ~/ 2,
+                            (196 + 255) ~/ 2, (27 + 255) ~/ 2),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Row(
+                      children: [
+                        CircularProgressIndicator(color: Colors.amber
+                            // backgroundColor: Colors.amber,
+                            ),
+                        SizedBox(width: 24),
+                        Text('Regenerating selected text...',
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 16)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              elevation: 1000,
+              margin: EdgeInsets.fromLTRB(0, 0, MediaQuery.of(context).size.width / 1.5, 0),
+              backgroundColor: const Color.fromARGB(0, 0, 0, 0),
+              duration: const Duration(minutes: 60),
+              padding: const EdgeInsets.all(16.0),
+              behavior: SnackBarBehavior.floating,
+              hitTestBehavior: HitTestBehavior.translucent,
+          );
+        }
+      case 1: 
+        {
+          return SnackBar(
+              content: Row(
+                // We wrap this in a Row to constrain the visible part. It seems dumb but it works.
+                children: [
+                  Container(
+                    height: 75,
+                    width: 300,
+                    padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                    decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 255, 226, 120),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Row(
+                      children: [
+                        CircularProgressIndicator(color: Colors.amber
+                            // backgroundColor: Colors.amber,
+                            ),
+                        SizedBox(width: 24),
+                        Text('Creating new section...',
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 16)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              elevation: 1000,
+              margin: EdgeInsets.fromLTRB(0, 0, MediaQuery.of(context).size.width / 1.5, 0),
+              backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+              duration: const Duration(minutes: 60),
+              padding: const EdgeInsets.all(16.0),
+              behavior: SnackBarBehavior.floating,
+              hitTestBehavior: HitTestBehavior.translucent,);
+              
+          }
+        case 2: 
+          {
+          return SnackBar(
+              content: Row(
+                // We wrap this in a Row to constrain the visible part. It seems dumb but it works.
+                children: [
+                  Container(
+                    height: 75,
+                    width: 300,
+                    padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                    decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 154, 231, 166),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.check, color: Colors.green),
+                        SizedBox(width: 24),
+                        Text('Finished Lesson Generation',
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 16)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              elevation: 1000,
+              margin: EdgeInsets.fromLTRB(0, 0, MediaQuery.of(context).size.width / 1.5, 0),
+              backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+              duration: const Duration(seconds: 10),
+              padding: const EdgeInsets.all(16.0),
+              behavior: SnackBarBehavior.floating,
+              hitTestBehavior: HitTestBehavior.translucent,);
+          }
+        default:
+          {
+          return SnackBar(
+              content: Row(
+                // We wrap this in a Row to constrain the visible part. It seems dumb but it works.
+                children: [
+                  Container(
+                    height: 75,
+                    width: 300,
+                    padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                    decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 255, 171, 141),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.error, color: Colors.red),
+                        SizedBox(width: 24),
+                        Text('Error in Lesson Generation',
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 16)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              elevation: 1000,
+              margin: EdgeInsets.fromLTRB(0, 0, MediaQuery.of(context).size.width / 1.5, 0),
+              backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+              duration: const Duration(seconds: 10),
+              padding: const EdgeInsets.all(16.0),
+              behavior: SnackBarBehavior.floating,
+              hitTestBehavior: HitTestBehavior.translucent,);
+          }
+    }
+  }
 }
+

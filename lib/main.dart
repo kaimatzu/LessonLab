@@ -17,9 +17,32 @@ import 'src/app.dart';
 import 'src/settings/settings_service.dart';
 import 'package:rinf/rinf.dart';
 
+import 'package:window_manager/window_manager.dart';
+import 'dart:io';
+
 void main() async {
   await Rinf.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
+
+  await windowManager.ensureInitialized();
+  // if (Platform.isWindows) {
+  //   WindowManager.instance.setMinimumSize(const Size(800, 600));
+  //   WindowManager.instance.setMaximumSize(const Size(1200, 800));
+  // }
+
+  WindowOptions windowOptions = const WindowOptions(
+    minimumSize: Size(1200, 800),
+    center: true,
+    backgroundColor: Colors.transparent,
+    skipTaskbar: false,
+    // titleBarStyle: TitleBarStyle.hidden,
+  );
+
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
+
 
   final settingsViewModel = SettingsViewModel(SettingsService());
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lessonlab/src/app.dart';
 import 'package:lessonlab/src/global_components/primary_button.dart';
 import 'package:lessonlab/src/lessonlab_modules/lesson/lesson_open/components/lesson_open_screen.dart';
 import 'package:provider/provider.dart';
@@ -16,20 +17,24 @@ class LessonOpenView extends StatefulWidget {
 
 class _LessonOpenViewState extends State<LessonOpenView> {
   bool _isInitialized = false;
-
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     debugPrint("DEP CHANGE");
     
+
     // Check if the initialization has already been performed
     if (!_isInitialized) {
       final lessonOpenViewModel = context.watch<LessonOpenViewModel>();
       _isInitialized = true;
       lessonOpenViewModel.initialize();
-
-      final int? id = ModalRoute.of(context)!.settings.arguments as int?;
       
+      // WidgetsBinding.instance.addPostFrameCallback((_) => ScaffoldMessenger.of(context).showSnackBar(lessonOpenViewModel.showLessonGenerationStatus(0, context)));
+      // Future(() => ScaffoldMessenger.of(context).showSnackBar(lessonOpenViewModel.showLessonGenerationStatus(0, context)));
+      // WidgetsBinding.instance.addPostFrameCallback((_) => rootScaffoldMessengerKey.currentState?.showSnackBar(lessonOpenViewModel.showLessonGenerationStatus(-1, context))
+      // Future(() => rootScaffoldMessengerKey.currentState?.showSnackBar(lessonOpenViewModel.showLessonGenerationStatus(-1, context)));
+      final int? id = ModalRoute.of(context)!.settings.arguments as int?;
       if (id != null) {
         lessonOpenViewModel.loadViewContent(id);
       }
@@ -111,20 +116,37 @@ class _LessonOpenViewState extends State<LessonOpenView> {
     );
 
     return Scaffold(
-      body: const LessonOpenScreen(),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(top: 20.0, right: 35.0, bottom: 35.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            back,
-            const SizedBox(width: 30.0),
-            export,
-            const SizedBox(width: 30.0),
-            finish,
-          ],
-        ),
+      body: Column(
+        children: [
+          const LessonOpenScreen(),
+          Padding(
+            padding: const EdgeInsets.only(right: 35.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                back,
+                const SizedBox(width: 30.0),
+                export,
+                const SizedBox(width: 30.0),
+                finish,
+              ],
+            ),
+          ),
+        ],
       ),
+      // bottomNavigationBar: Padding(
+      //   padding: const EdgeInsets.only(top: 20.0, right: 35.0, bottom: 35.0),
+      //   child: Row(
+      //     mainAxisAlignment: MainAxisAlignment.end,
+      //     children: [
+      //       // back,
+      //       // const SizedBox(width: 30.0),
+      //       export,
+      //       const SizedBox(width: 30.0),
+      //       finish,
+      //     ],
+      //   ),
+      // ),
     );
   }
 }
