@@ -167,6 +167,12 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
     if (!context.mounted) return;
     Navigator.restorablePushNamed(context, QuizPageView.routeName);
     developer.log("page changed");
+    clearQuizSpecs();
+  }
+
+  void clearQuizSpecs() {
+    quizSpecifications.clear();
+    quizSpecsModel.quizSpecs.clear();
   }
 
   void selectQuizSavePath(

@@ -118,7 +118,7 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
             // File path of config.json
             let mut config_file_path = settings_save_directory_data_object.save_directory.clone();
             // File path of target/output.md
-            let target_folder_path = format!("{}\\{}", &config_file_path, &sanitized_title);
+            let target_folder_path = format!("{}\\{}", &config_file_path, "LessonLabQuizFolder");
 
             match std::fs::create_dir_all(&target_folder_path) {
                 Ok(_) => { crate::debug_print!("Successfully created directory"); },
@@ -252,10 +252,11 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
                     let quiz_clone = quiz_from_pydantic.clone();
                     menu_data_object.quizzes_data_object.quizzes.push(quiz_clone);
 
-                    match write_quiz_to_config_file(&quiz_from_pydantic, &config_file_path) {
-                        Ok(_) => { crate::debug_print!("Successfully wrote quiz to config.json"); },
-                        Err(err) => { crate::debug_print!("Failed to write quiz to config.json {}", err); },
-                    }
+                    // THIS IS FOR WRITE TO CONFIG.JSON
+                    // match write_quiz_to_config_file(&quiz_from_pydantic, &config_file_path) {
+                    //     Ok(_) => { crate::debug_print!("Successfully wrote quiz to config.json"); },
+                    //     Err(err) => { crate::debug_print!("Failed to write quiz to config.json {}", err); },
+                    // }
 
                     // Init textfiles
                     // for text in quiz_from_json.sources.source_texts {
