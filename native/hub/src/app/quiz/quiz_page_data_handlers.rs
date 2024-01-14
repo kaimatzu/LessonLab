@@ -161,22 +161,63 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
                 quiz_specifications_data_object.quiz_specifications.clone()){
                 Ok(json) => {
                     // This will return PydanticIdentifications or PydanticMultipleChoices
+                    let mut pydantic_identification = PydanticIdentifications::default();
+                    let mut pydantic_multiple_choice = PydanticMultipleChoices::default();
+                    let mut pydantic_both = PydanticBoth::default();
 
-                    let mut pydantic = PydanticBoth::default();
-                    match serde_json::from_str(&json) {
-                        Ok(returned) => pydantic = returned,
-                        Err(err) => { crate::debug_print!("Failed to deserialize quiz {}", err); },
+                    let substring;
+                    match quiz_specifications_data_object.quiz_specifications.get(2) {
+                        Some(string) => substring = string,
+                        None => todo!(),
                     }
 
                     let mut questions_from_pydantic: Vec<Question> = Vec::new();
+                    if substring.contains("Identification") {
+                        match serde_json::from_str(&json) {
+                            Ok(returned) => pydantic_identification = returned,
+                            Err(err) => { crate::debug_print!("Failed to deserialize quiz {}", err); },
+                        }
+
+                        for i in 0..pydantic_identification.questions.len() {
+                            questions_from_pydantic.push(Question::Identification(IdentificationQuestion {
+                                answer: pydantic_identification.questions[i].answer.clone(),
+                                question: pydantic_identification.questions[i].question.clone(),
+                            }));
+                        }
+                    } else if substring.contains("Multiple") {
+                        match serde_json::from_str(&json) {
+                            Ok(returned) =>pydantic_multiple_choice = returned,
+                            Err(err) => { crate::debug_print!("Failed to deserialize quiz {}", err); },
+                        }
+                        for i in 0..pydantic_multiple_choice.questions.len() {
+                            questions_from_pydantic.push(Question::MultipleChoice(MultipleChoiceQuestion {
+                                question: pydantic_multiple_choice.questions[i].question.clone(),
+                                choices: pydantic_multiple_choice.questions[i].choices.clone(),
+                            }));
+                        }
+                    } else {
+                        match serde_json::from_str(&json) {
+                            Ok(returned) => pydantic_both = returned,
+                            Err(err) => { crate::debug_print!("Failed to deserialize quiz {}", err); },
+                        }
+
+                        for i in 0..pydantic_both.identification.len() {
+                            questions_from_pydantic.push(Question::Identification(IdentificationQuestion { 
+                                question: pydantic_both.identification[i].question.clone(),
+                                answer: pydantic_both.identification[i].answer.clone(),
+                            }));
+                        }
+                        for i in 0..pydantic_both.multiple_choice.len() {
+                            questions_from_pydantic.push(Question::MultipleChoice(MultipleChoiceQuestion {
+                                question: pydantic_both.multiple_choice[i].question.clone(),
+                                choices: pydantic_both.multiple_choice[i].choices.clone(),
+                            }));
+                        }
+                    }
+
+
 
                     // ----------- Identification
-                    // for i in 0..pydantic.questions.len() {
-                    //     questions_from_pydantic.push(Question::Identification(IdentificationQuestion {
-                    //         answer: pydantic.questions[i].answer.clone(),
-                    //         question: pydantic.questions[i].question.clone(),
-                    //     }));
-                    // }
 
                     // ----------- Multiple Choice
                     // for i in 0..pydantic.questions.len() {
@@ -187,18 +228,6 @@ pub async fn handle_quiz_generation(rust_request: RustRequest,
                     // }
 
                     // ----------- Both
-                    for i in 0..pydantic.identification.len() {
-                        questions_from_pydantic.push(Question::Identification(IdentificationQuestion { 
-                            question: pydantic.identification[i].question.clone(),
-                            answer: pydantic.identification[i].answer.clone(),
-                        }));
-                    }
-                    for i in 0..pydantic.multiple_choice.len() {
-                        questions_from_pydantic.push(Question::MultipleChoice(MultipleChoiceQuestion {
-                            question: pydantic.multiple_choice[i].question.clone(),
-                            choices: pydantic.multiple_choice[i].choices.clone(),
-                        }));
-                    }
                     // for i in 0..pydantic.questions.len() {
                     //     match pydantic.questions[i].clone() {
                     //         Question::Identification(identification) => {

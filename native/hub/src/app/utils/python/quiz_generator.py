@@ -206,7 +206,7 @@ def generate_both(quiz_specifications: list[str], index: VectorStoreIndex):
 
 
 
-def generate_identification(quiz_specifications: list[str], index: VectorStoreIndex, existing_questions: list[str]):
+def generate_identification(quiz_specifications: list[str], index: VectorStoreIndex):
     dict_example = {
         "questions": [
             {
@@ -236,9 +236,6 @@ def generate_identification(quiz_specifications: list[str], index: VectorStoreIn
                         "{json_example}\n"
                         "Take note this is only an example the user might want to have more questions.\n"
 
-                        "Do not generate existing questions or similar questions below if there are questions after this line:\n"
-                        "{existing_questions}\n"
-                        "Do not generate the existing questions above if there are any because you are a question generator for a quiz and you don't want to generate the same questions multiple times in the same quiz\n"
                         "Make sure each question are unique"
                         "Do not make a lengthy sentence answer, make the answer short and concise like a word, term, or a phrase"
                     )),
@@ -252,9 +249,7 @@ def generate_identification(quiz_specifications: list[str], index: VectorStoreIn
                     )),
     ])
 
-    messages = prompt.format_messages(json_example=json_example,
-                                      quiz_specifications=quiz_specifications,
-                                      existing_questions=existing_questions)
+    messages = prompt.format_messages(json_example=json_example, quiz_specifications=quiz_specifications)
 
     query_engine = index.as_query_engine(messages=messages,
                                          output_cls=IdentificationQuestionModels,
@@ -287,7 +282,7 @@ def generate_identification(quiz_specifications: list[str], index: VectorStoreIn
 
 
 
-def generate_multiple_choice(quiz_specifications: list[str], index: VectorStoreIndex, existing_questions: list[str]):
+def generate_multiple_choice(quiz_specifications: list[str], index: VectorStoreIndex):
     dict_example = {
         "questions": [
             {
@@ -330,9 +325,6 @@ def generate_multiple_choice(quiz_specifications: list[str], index: VectorStoreI
                         "{json_example}\n"
                         "Take not this is just an example the user may want more questions."
 
-                        "Do not generate these questions if there are questions after this line:\n"
-                        "{existing_questions}"
-                        "Do not generate the existing questions above if ther are any because you are a question generator for a quiz and you don't want to generate the same questions multiple times in the same quiz\n"
                         "Make sure each question are unique."
                         "Do not make a lengthy sentence answer, make the answer short and concise like a word, term, or a phrase"
                     )),
@@ -347,9 +339,7 @@ def generate_multiple_choice(quiz_specifications: list[str], index: VectorStoreI
 
     # memory = []
 
-    messages = prompt.format_messages(json_example=json_example,
-                                      quiz_specifications=quiz_specifications,
-                                      existing_questions=existing_questions)
+    messages = prompt.format_messages(json_example=json_example, quiz_specifications=quiz_specifications)
 
     query_engine = index.as_query_engine(messages=messages,
                                          output_cls=MultipleChoiceQuestionModels,
@@ -375,11 +365,16 @@ def generate_multiple_choice(quiz_specifications: list[str], index: VectorStoreI
 
 
 
-def generate_question(quiz_specifications: list[str],
-                      index: VectorStoreIndex,
-                      type: int,
-                      existing_questions: list[str]):
-    return generate_both(quiz_specifications=quiz_specifications, index=index)
+def generate_question(quiz_specifications: list[str], index: VectorStoreIndex):
+
+    if "Identification" in quiz_specifications[2]:
+        return generate_identification(quiz_specifications=quiz_specifications, index=index)
+    elif "Multiple" in quiz_specifications[2]:
+        return generate_multiple_choice(quiz_specifications=quiz_specifications, index=index)
+    else:
+        return generate_both(quiz_specifications=quiz_specifications, index=index)
+
+    # return generate_both(quiz_specifications=quiz_specifications, index=index)
     # return generate_identification(quiz_specifications=quiz_specifications, index=index, existing_questions=existing_questions)
     # if type == 0:
     #     return generate_identification(quiz_specifications=quiz_specifications, index=index, existing_questions=existing_questions)
@@ -391,29 +386,6 @@ def generate_question(quiz_specifications: list[str],
     #         return generate_identification(quiz_specifications=quiz_specifications, index=index, existing_questions=existing_questions)
     #     else:
     #         return generate_multiple_choice(quiz_specifications=quiz_specifications, index=index, existing_questions=existing_questions)
-
-
-
-def generate_answer(question: str,index: VectorStoreIndex):
-    
-    prompt = ChatPromptTemplate(message_templates=[
-        ChatMessage(role="system",
-                    content=(
-                        "You are a question and answer system."
-                    )),
-    ])
-
-
-    messages = prompt.format_messages()
-    query_engine = index.as_query_engine(messages=messages, response_mode="compact")
-
-    output = query_engine.query(
-        f'''
-        {question}
-        '''
-    )
-
-    return output
 
 
 
@@ -435,27 +407,10 @@ def generate_questions(quiz_specifications: list[str], index_path: str, num_of_q
                                                storage_context=storage_context,
                                                service_context=service_context)
     
-    existing_questions = []
-
-    #for _ in range(num_of_questions):
         
-    questions = generate_question(quiz_specifications=quiz_specifications,
-                                  index=index,
-                                  existing_questions=existing_questions,
-                                  type=type)
-        # answer = generate_answer(question=question.question, index=index)
+    questions = generate_question(quiz_specifications=quiz_specifications, index=index)
         
-
-        # print(f"existing question: {question.question}")
-    # existing_questions.append(question)
-    # questions.append(question)
-        # answers.append(answer)
     response = questions.response
-    print(response)
-
-    # for i in range(num_of_questions):
-    #     print(f"question: {questions}")
-    #     # print(f"answer: {questions[i]}")
 
     return response
 
@@ -463,13 +418,8 @@ def generate_questions(quiz_specifications: list[str], index_path: str, num_of_q
 
 def rust_callback(quiz_specifications: list[str], index_path: str, files: list[str] = [], urls: list[str] = []):
     generate_content_index(files=files, urls=urls, index_path=index_path)
-    # 0 - identifciation
-    # 1 - multiple choice
-    # 2 - random
     output = generate_questions(quiz_specifications=quiz_specifications, index_path=index_path, num_of_questions=10, type=2)
     return output.json()
-    # return output
-    # print(output)
 
 
 

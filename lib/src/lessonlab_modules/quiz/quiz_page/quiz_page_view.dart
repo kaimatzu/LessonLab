@@ -76,8 +76,6 @@ class _QuizPageViewState extends State<QuizPageView> {
     final quizViewModel = context.watch<QuizPageViewModel>();
     _totalItems = quizViewModel.questions.length;
 
-    quizViewModel.shuffleQuestions();
-
     developer.log("questions.length: ${quizViewModel.questions.length}",
         name: "build");
 

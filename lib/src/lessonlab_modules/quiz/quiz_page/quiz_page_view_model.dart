@@ -29,6 +29,7 @@ class QuizPageViewModel extends ChangeNotifier {
     // orchestrator.getQuizModel().then((value) => model.quiz = value);
     model.quiz = await orchestrator.getQuizModel();
     developer.log("load quiz model", name: "function");
+    shuffleQuestions();
   }
 
   void shuffleQuestions() {
