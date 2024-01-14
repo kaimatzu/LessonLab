@@ -4,7 +4,7 @@ import 'package:lessonlab/src/global_models/lesson_model.dart';
 import 'package:lessonlab/src/global_models/quiz_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/menu/menu_view_model.dart';
 import 'package:lessonlab/src/lessonlab_modules/entry/upload/upload_sources_view.dart';
-import 'package:lessonlab/src/lessonlab_modules/quiz/components/dropdown_menu.dart';
+//import 'package:lessonlab/src/lessonlab_modules/quiz/components/dropdown_menu.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/components/input_field.dart';
 import 'dart:developer' as developer;
 
@@ -12,6 +12,7 @@ import 'package:lessonlab/src/lessonlab_modules/quiz/components/number_field.dar
 import 'package:lessonlab/src/lessonlab_modules/quiz/components/text_area.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_page/quiz_page_view_model.dart';
+import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications/components/dropdown_menu.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications/quiz_specifications_connection_orchestrator.dart';
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications/quiz_specifications_model.dart';
 import 'package:lessonlab/src/settings/shared_preferences.dart';
@@ -22,7 +23,6 @@ class FormField {
   final TextArea? textArea;
   final Dropdown? dropdown;
   final NumberField? numberField;
-  // final String? dropdownValue;
 
   FormField({this.inputField, this.dropdown, this.textArea, this.numberField})
       : assert(
@@ -53,16 +53,21 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
     final initializeFields = [
       InputField(label: 'Title', hintLabel: 'Enter quiz title'),
       InputField(label: 'Focus Topic', hintLabel: 'Enter focus topic'),
-      const Dropdown(
+      Dropdown(
         label: 'Type',
         list: <String>['Identification', 'Multiple Choice', 'Both'],
+        stateNotifier: DropdownStateNotifier(),
       ),
-      const Dropdown(label: "Difficulty", list: <String>[
-        'any',
-        'easy',
-        'medium',
-        'hard',
-      ]),
+      Dropdown(
+        label: "Difficulty",
+        list: <String>[
+          'any',
+          'easy',
+          'medium',
+          'hard',
+        ],
+        stateNotifier: DropdownStateNotifier(),
+      ),
       NumberField(label: 'Number of Items', hintLabel: 'Enter number of items'),
       InputField(label: 'Timeframe', hintLabel: 'Enter timeframe'),
     ];
@@ -108,7 +113,8 @@ class QuizSpecificationsViewModel extends ChangeNotifier {
             formField.textArea!.label, formField.textArea!.controller.text));
       } else if (formField.dropdown != null) {
         quizSpecsModel.quizSpecs.add(QuizSpecification(
-            formField.dropdown!.label, formField.dropdown!.getSelectedValue));
+            formField.dropdown!.label,
+            formField.dropdown!.stateNotifier.selectedValue));
       } else if (formField.numberField != null) {
         quizSpecsModel.quizSpecs.add(QuizSpecification(
             formField.numberField!.label,
