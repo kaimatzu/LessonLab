@@ -28,7 +28,8 @@ class ResultItem extends StatelessWidget {
     }
 
     return Container(
-      height: 200.0,
+      constraints: BoxConstraints(minHeight: 200.0),
+      //height: 200.0,
       decoration: BoxDecoration(
           color: result['isCorrect']
               ? Color.fromARGB(255, 223, 255, 219)
@@ -84,32 +85,42 @@ class ResultItem extends StatelessWidget {
                 groupValue: selectedChoiceIndex,
                 onChanged: (value) {},
               ),
-              Row(
-                children: [
-                  Text(
-                    choices[i]['content'] ?? '',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: Color.fromARGB(255, 49, 51, 56),
-                    ),
-                  ),
-                  if (i == correctAnswerIndex && i == selectedChoiceIndex)
-                    Text(
-                      '  ✔',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.green,
+              Expanded(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        choices[i]['content'] ?? '',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Color.fromARGB(255, 49, 51, 56),
+                        ),
+                        softWrap: true,
+                        maxLines: null,
                       ),
                     ),
-                  if (i == selectedChoiceIndex && i != correctAnswerIndex)
-                    Text(
-                      '  ❌',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.red,
+                    if (i == correctAnswerIndex && i == selectedChoiceIndex)
+                      Flexible(
+                        child: Text(
+                          '  ✔',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.green,
+                          ),
+                        ),
                       ),
-                    ),
-                ],
+                    if (i == selectedChoiceIndex && i != correctAnswerIndex)
+                      Flexible(
+                        child: Text(
+                          '  ❌',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ],
           ),
