@@ -26,46 +26,45 @@ class LessonResultScreen extends StatelessWidget {
     );
 
     // This is the div for holding the title bar and the text box
-    var textEditorContainer = Padding(
-      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: FutureBuilder<List<String>>(
-        // The data sent from rust
-        future: Future.wait(
-          [
-            Future.value(lessonResultViewModel.lessonResultModel.lesson.title),
-            Future.value(
-                lessonResultViewModel.lessonResultModel.lesson.content),
-            lessonResultViewModel.lessonResultModel.cssContents,
-          ],
-        ),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return const Text('Error loading lesson content');
-          } else {
-            final List<String> contents = snapshot.data!;
-            final String title = contents[0];
-
-            // developer.log(cssContent, name: 'info');
-            return TitleBar(title: title);
-          }
-        },
-      ),
-    );
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          header,
-          textEditorContainer,
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: TextEditor(),
-          )
+    var textEditorContainer = FutureBuilder<List<String>>(
+      // The data sent from rust
+      future: Future.wait(
+        [
+          Future.value(lessonResultViewModel.lessonResultModel.lesson.title),
+          Future.value(
+              lessonResultViewModel.lessonResultModel.lesson.content),
+          lessonResultViewModel.lessonResultModel.cssContents,
         ],
       ),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return const Text('Error loading lesson content');
+        } else {
+          final List<String> contents = snapshot.data!;
+          final String title = contents[0];
+    
+          // developer.log(cssContent, name: 'info');
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              header,
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                child: TitleBar(title: title),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 20.0, right: 20.0, bottom: 20.0),
+                child: TextEditor(),
+              )
+            ],
+          );
+        }
+      },
     );
+
+    return SingleChildScrollView(child: textEditorContainer);
   }
 }

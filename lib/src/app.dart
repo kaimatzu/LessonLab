@@ -15,6 +15,8 @@ import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_result/quiz_result_vie
 import 'package:lessonlab/src/lessonlab_modules/quiz/quiz_specifications/quiz_specifications_view.dart';
 import 'settings/settings_view.dart';
 
+final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
   const MyApp({
@@ -30,6 +32,7 @@ class MyApp extends StatelessWidget {
       listenable: settingsViewModel,
       builder: (BuildContext context, Widget? child) {
         return MaterialApp(
+          scaffoldMessengerKey: rootScaffoldMessengerKey,
           restorationScopeId: 'app',
           localizationsDelegates: const [
             AppLocalizations.delegate,
