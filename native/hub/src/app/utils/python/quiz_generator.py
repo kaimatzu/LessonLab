@@ -59,8 +59,9 @@ class MultipleChoiceQuestionModels(BaseModel):
     """Data model that holds a list of multiple choice question model"""
     questions: List[MultipleChoiceQuestionModel] = Field(description="List of multiple choice question models")
 
-class QuestionsModels:
+class QuestionsModels(BaseModel):
     questions: List[Union[IdentificationQuestionModel, MultipleChoiceQuestionModel]] = Field(description="List of questions")
+
 
 
 def generate_content_index(files: list[str], urls: list[str], index_path: str):
@@ -289,7 +290,7 @@ def generate_multiple_choice(quiz_specifications: list[str], index: VectorStoreI
                     )),
         ChatMessage(role="user",
                     content=(
-                        "Here is the lesson specifications: \n"
+                        "Here is the quiz specifications you must strictly follow: \n"
                         "------\n"
                         "{quiz_specifications}\n"
                         "------"
@@ -303,7 +304,7 @@ def generate_multiple_choice(quiz_specifications: list[str], index: VectorStoreI
                                       existing_questions=existing_questions)
 
     query_engine = index.as_query_engine(messages=messages,
-                                         output_cls=MultipleChoiceQuestionModel,
+                                         output_cls=MultipleChoiceQuestionModels,
                                          repsonse_mode="compact")
 
     output = query_engine.query(
@@ -313,8 +314,8 @@ def generate_multiple_choice(quiz_specifications: list[str], index: VectorStoreI
     )
 
 
-    output_dict = output.dict()
-    string = f"question: {output.question}, answer: {output.answer}"
+    # output_dict = output.dict()
+    # string = f"question: {output.question}, answer: {output.answer}"
     # memory.append(string)
 
     return output
@@ -409,7 +410,7 @@ def rust_callback(quiz_specifications: list[str], index_path: str, files: list[s
     # 0 - identifciation
     # 1 - multiple choice
     # 2 - random
-    output = generate_questions(quiz_specifications=quiz_specifications, index_path=index_path, num_of_questions=10, type=0)
+    output = generate_questions(quiz_specifications=quiz_specifications, index_path=index_path, num_of_questions=10, type=1)
     return output.response.json()
     # print(output)
 
