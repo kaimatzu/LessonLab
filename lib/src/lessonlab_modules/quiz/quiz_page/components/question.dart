@@ -43,11 +43,11 @@ class _QuestionState extends State<Question> {
             margin: const EdgeInsets.only(
               bottom: 10.0,
             ),
-            height: 350.0,
+            //height: 350.0,
             width: 600.0,
             constraints: const BoxConstraints(
               minHeight: 350.0,
-              maxHeight: 350.0,
+              //maxHeight: 350.0,
               maxWidth: 600.0,
             ),
             padding: EdgeInsets.symmetric(

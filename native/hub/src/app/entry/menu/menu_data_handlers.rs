@@ -405,6 +405,14 @@ fn delete_quiz_file(file_path: &str, menu_data_object: &mut MenuDataObject, id: 
     let quizzes = &mut menu_data_object.quizzes_data_object.quizzes;
 
     if let Some(index) = quizzes.iter_mut().position(|quiz| quiz.id == id) {
+        match quizzes.get(index) {
+            Some(quiz) => {
+                let _ = remove_dir_all(quiz.target_path.clone());
+            },
+            None => {
+                crate::debug_print!("Error: Failed to delete directory");
+            }
+        }
         quizzes.remove(index);
     }
 
@@ -500,6 +508,6 @@ fn rinf_quiz_model_to_quiz(quiz_model: RinfQuizModel) -> Quiz {
         // quiz_type: 1,
         target_path: quiz_model.location,
         questions,
-        sources
+        // sources
     }
 }
